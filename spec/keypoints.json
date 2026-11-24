@@ -1,0 +1,28 @@
+{
+  "spec_version": "0.1.0",
+  "status": "Phase 0 draft: pins the keypoint extractor only. Landmark selection (Phase 1) and normalization constants (Phase 2) are added later.",
+  "extractor": {
+    "mediapipe_version": "1.2.3",
+    "packages": {
+      "python": "mediapipe==1.2.3",
+      "web": "@mediapipe/tasks-vision@1.2.3"
+    },
+    "models": {
+      "holistic_landmarker": {
+        "url": "https://storage.googleapis.com/mediapipe-models/holistic_landmarker/holistic_landmarker/float16/1/holistic_landmarker.task",
+        "sha256": "e2dab61191e2dcd0a15f943d8e3ed1dce13c82dfa597b9dd39f562975a50c3f8",
+        "bytes": 13683609
+      },
+      "hand_landmarker": {
+        "url": "https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task",
+        "sha256": "fbc2a30080c3c557093b5ddfc334698132eb341044ccee322ccf8bcf3607cde1",
+        "bytes": 7819105
+      },
+      "pose_landmarker_full": {
+        "url": "https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_full/float16/1/pose_landmarker_full.task",
+        "sha256": "5134a3aad27a58b93da0088d431f366da362b44e3ccfbe3462b3827a839011b1",
+        "bytes": 9398198
+      }
+    }
+  }
+}
