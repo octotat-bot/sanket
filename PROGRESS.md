@@ -54,3 +54,35 @@ for pnpm 12. Installing `npm i -g pnpm@12.23.0` also works.
 5. ADR 002: decide Holistic vs Hand+Pose with a browser benchmark at the start of Phase 1.
 6. ADR 004: TensorBoard.
 7. Kaggle setup (Python version, API token) needs your account.
+
+## Phase 1: Data pipeline and keypoint extraction ⏳ pre-checks done, waiting on ADR 002 (b)
+
+Phase 0 decisions applied: CC BY 4.0 credit (CLAUDE.md section 6, ADR 003), "session-independent"
+wording everywhere, leakage and 262/263 reporting rules (ADR 003), TensorBoard (ADR 004),
+`opencv-contrib-python` + `pyyaml` pinned, Kaggle token paths gitignored.
+
+**Pre-checks (all reproducible: `make samples check-video-metadata check-extractor`)**
+
+| Check | Result | Where |
+|---|---|---|
+| License sources | Zenodo + official HF card: CC BY 4.0. GitHub: MIT (code only). Derived IEEE DataPort set says CC BY-NC-SA 4.0 | ADR 003 |
+| 30 .MOV (+ 8 .MP4) decode | All H.264 1920×1080 at 25 fps constant. 0 rotated, 0 VFR, 0 mishandled by OpenCV (frames and timestamps exact). **PyAV not needed** | `reports/phase1_video_metadata.md` |
+| Session spot-check (10 runs) | One run = one signer/setting: 10/10. The sitting continues into other classes: 9/9. Runs within a class differ: 10/10. **Sessions span categories**, so blocks must be cut across classes | ADR 005 |
+| ADR 002 (a), 50 videos | Holistic: 0 L/R swaps vs 1.08 per 100 for Hand+Pose. Detection 85.8% vs 84.4% (not significant) | `reports/phase1_extractor_compare.md`, ADR 002 |
+| ADR 002 (b), browser fps | **Waiting for Mukund's run** on his laptop | `/dev/extractor-bench` |
+| Privacy | `@mediapipe/tasks-vision` 1.2.3 POSTs usage metrics to Google. Blocked by `connect-src 'self'` CSP, enforced by an e2e test | ADR 006 |
+
+**How to verify**
+
+```bash
+make test lint typecheck                         # 54 pytest, 7 vitest
+make PNPM="npx -y pnpm@12.23.0" e2e              # 2 Playwright tests incl. fake-camera benchmark
+make samples check-video-metadata check-extractor   # ~1.1 GB of sampled videos, then both reports
+```
+
+**Open items before full extraction**
+
+1. Mukund runs ADR 002 (b) and sends the JSON. Then the choice is made and approved.
+2. Approve ADR 006 (CSP) and the proposed block-boundary procedure in ADR 005.
+3. Disk: only 16 GB free on the laptop (it was 23 GB earlier the same day). Extraction stays
+   one zip at a time (largest zip 1.85 GB), but keep at least 10 GB free.
