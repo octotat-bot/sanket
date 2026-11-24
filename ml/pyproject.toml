@@ -26,6 +26,14 @@ dev = [
 train = [
     "torch==2.15.0",
 ]
+# Only for uploading the processed keypoints as a private Kaggle dataset (approved
+# 2026-11-24). Token lives in ~/.kaggle/access_token or $KAGGLE_API_TOKEN, never in the repo.
+upload = [
+    "kaggle==2.2.5",
+    # kaggle 2.2.5 imports `six` (kaggle/models/upload_file.py) without declaring it; it used
+    # to arrive via python-dateutil, which dropped it in 4.0.
+    "six==1.17.0",
+]
 
 [build-system]
 requires = ["hatchling==1.33.0"]
@@ -47,6 +55,7 @@ select = ["E", "F", "W", "I", "B", "UP", "SIM", "RUF"]
 [tool.ruff.lint.per-file-ignores]
 # Report generators build long Markdown table rows in f-strings.
 "src/sanket/checks/*" = ["E501"]
+"src/sanket/data/report.py" = ["E501"]
 
 [tool.mypy]
 python_version = "3.12"
@@ -54,7 +63,7 @@ strict = true
 files = ["src", "tests"]
 
 [[tool.mypy.overrides]]
-module = ["mediapipe.*"]
+module = ["mediapipe.*", "yaml"]  # pyyaml ships no type hints; no extra stub package
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]
