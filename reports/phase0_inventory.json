@@ -1,0 +1,84 @@
+{
+  "zenodo": {
+    "record_id": 4010759,
+    "n_files": 46,
+    "n_zips": 44,
+    "zip_bytes_total": 56751819975,
+    "non_zip_files": [
+      "README.md",
+      "download_data.sh"
+    ]
+  },
+  "videos_in_zips": {
+    "n": 4284,
+    "n_unique_keys": 4284,
+    "by_extension": {
+      ".MOV": 3679,
+      ".MP4": 605
+    },
+    "n_class_labels": 262,
+    "n_reused_file_names": 508,
+    "not_in_any_split": []
+  },
+  "splits": {
+    "include": {
+      "counts": {
+        "train": 3127,
+        "val": 348,
+        "test": 817
+      },
+      "official_train": 3475,
+      "official_test": 817,
+      "n_label_map_classes": 263,
+      "labels_not_in_label_map": [],
+      "classes_without_videos": [
+        "secondnumber"
+      ],
+      "missing_from_zips": {
+        "train": [
+          "Days_and_Time/Second (Number)/MVI_4647.MOV",
+          "Days_and_Time/Second (Number)/MVI_4649.MOV",
+          "Days_and_Time/Second (Number)/MVI_5503.MOV",
+          "Days_and_Time/Second (Number)/MVI_5504.MOV",
+          "Days_and_Time/Second (Number)/MVI_5505.MOV",
+          "Days_and_Time/Second (Number)/MVI_5506.MOV"
+        ],
+        "val": [
+          "Days_and_Time/Second (Number)/MVI_4648.MOV"
+        ],
+        "test": [
+          "Days_and_Time/Second (Number)/MVI_4650.MOV"
+        ]
+      },
+      "n_missing_from_zips": 8,
+      "n_extension_drift": 605,
+      "train_test_overlap": 0,
+      "duplicate_entries": 0
+    },
+    "include50": {
+      "counts": {
+        "train": 689,
+        "val": 77,
+        "test": 192
+      },
+      "official_train": 766,
+      "official_test": 192,
+      "n_label_map_classes": 50,
+      "labels_not_in_label_map": [],
+      "classes_without_videos": [],
+      "missing_from_zips": {
+        "train": [],
+        "val": [],
+        "test": []
+      },
+      "n_missing_from_zips": 0,
+      "n_extension_drift": 86,
+      "train_test_overlap": 0,
+      "duplicate_entries": 0
+    }
+  },
+  "cross_benchmark": {
+    "include50_train_in_include_test": 146,
+    "include50_test_in_include_train": 159
+  }
+}

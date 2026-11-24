@@ -1,0 +1,227 @@
+"""Phase 0 dataset inventory: what Zenodo actually serves vs. what the official splits expect.
+
+Run:  uv run python -m sanket.data.inventory        (from ml/, or `make inventory`)
+
+It downloads only metadata (the Zenodo record JSON and each zip's table of contents via
+HTTP Range requests, < 1 MB per zip), then writes:
+
+* ml/data/manifests/zenodo_4010759_files.json   every file: name, bytes, md5
+  (the checksum list `make download` will verify against)
+* ml/data/manifests/zenodo_4010759_videos.tsv   every video inside every zip
+* reports/phase0_inventory.json / .md           the numbers quoted in reports/phase0.md
+"""
+
+import argparse
+import json
+from collections import Counter
+from dataclasses import asdict
+from pathlib import Path
+from typing import Any
+
+from sanket.data import remote_zip, zenodo
+from sanket.data.splits import (
+    DATASETS,
+    SPLITS,
+    Dataset,
+    Split,
+    label_of,
+    load_label_map,
+    load_split,
+    video_key,
+)
+from sanket.paths import REPO_ROOT, REPORTS_DIR
+
+MANIFEST_DIR = REPO_ROOT / "ml" / "data" / "manifests"
+VIDEO_EXTS = (".mov", ".mp4", ".avi", ".mkv")
+
+
+def compute_inventory(
+    files: list[zenodo.RemoteFile],
+    videos: list[tuple[str, str, int]],  # (zip key, member path, bytes)
+    splits: dict[tuple[Dataset, Split], list[str]],
+    label_maps: dict[Dataset, dict[str, int]],
+) -> dict[str, Any]:
+    """Pure function: all Phase 0 numbers from already-fetched metadata."""
+    zips = [f for f in files if f.key.endswith(".zip")]
+    zip_paths = [member for _, member, _ in videos]
+    zip_keys = {video_key(p): p for p in zip_paths}
+
+    out: dict[str, Any] = {
+        "zenodo": {
+            "record_id": zenodo.RECORD_ID,
+            "n_files": len(files),
+            "n_zips": len(zips),
+            "zip_bytes_total": sum(f.size for f in zips),
+            "non_zip_files": sorted(f.key for f in files if not f.key.endswith(".zip")),
+        },
+        "videos_in_zips": {
+            "n": len(zip_paths),
+            "n_unique_keys": len(zip_keys),
+            "by_extension": dict(
+                sorted(Counter(Path(p).suffix.upper() for p in zip_paths).items())
+            ),
+            "n_class_labels": len({label_of(p) for p in zip_paths}),
+            "n_reused_file_names": sum(
+                1 for c in Counter(Path(p).stem.upper() for p in zip_paths).values() if c > 1
+            ),
+        },
+    }
+
+    per_dataset: dict[str, Any] = {}
+    for ds in DATASETS:
+        lm = label_maps[ds]
+        entries = {s: splits[(ds, s)] for s in SPLITS}
+        all_paths = [p for s in SPLITS for p in entries[s]]
+        missing = sorted(p for p in all_paths if video_key(p) not in zip_keys)
+        ext_drift = sum(
+            1
+            for p in all_paths
+            if video_key(p) in zip_keys
+            and Path(p).suffix.lower() != Path(zip_keys[video_key(p)]).suffix.lower()
+        )
+        labels_in_splits = {label_of(p) for p in all_paths}
+        labels_in_zips = {
+            label_of(zip_keys[video_key(p)]) for p in all_paths if video_key(p) in zip_keys
+        }
+        per_dataset[ds] = {
+            "counts": {s: len(entries[s]) for s in SPLITS},
+            "official_train": len(entries["train"]) + len(entries["val"]),
+            "official_test": len(entries["test"]),
+            "n_label_map_classes": len(lm),
+            "labels_not_in_label_map": sorted(labels_in_splits - set(lm)),
+            "classes_without_videos": sorted(set(lm) - labels_in_zips),
+            "missing_from_zips": {
+                s: sorted(p for p in entries[s] if video_key(p) not in zip_keys) for s in SPLITS
+            },
+            "n_missing_from_zips": len(missing),
+            "n_extension_drift": ext_drift,
+            "train_test_overlap": len(
+                {video_key(p) for p in entries["train"] + entries["val"]}
+                & {video_key(p) for p in entries["test"]}
+            ),
+            "duplicate_entries": len(all_paths) - len({video_key(p) for p in all_paths}),
+        }
+    out["splits"] = per_dataset
+
+    in_any_split = {video_key(p) for paths in splits.values() for p in paths}
+    out["videos_in_zips"]["not_in_any_split"] = sorted(
+        p for p in zip_paths if video_key(p) not in in_any_split
+    )
+
+    def keys(ds: Dataset, ss: tuple[Split, ...]) -> set[str]:
+        return {video_key(p) for s in ss for p in splits[(ds, s)]}
+
+    out["cross_benchmark"] = {
+        "include50_train_in_include_test": len(
+            keys("include50", ("train", "val")) & keys("include", ("test",))
+        ),
+        "include50_test_in_include_train": len(
+            keys("include50", ("test",)) & keys("include", ("train", "val"))
+        ),
+    }
+    return out
+
+
+def render_markdown(inv: dict[str, Any]) -> str:
+    z, v = inv["zenodo"], inv["videos_in_zips"]
+    lines = [
+        "# Phase 0 dataset inventory (generated)",
+        "",
+        "Generated by `make inventory` (`ml/src/sanket/data/inventory.py`). Do not edit by hand.",
+        "",
+        "## Zenodo record",
+        "",
+        f"- Record {z['record_id']}: {z['n_files']} files, {z['n_zips']} zips, "
+        f"{z['zip_bytes_total'] / 1e9:.2f} GB of zips",
+        f"- Non-zip files: {', '.join(z['non_zip_files'])}",
+        "",
+        "## Videos inside the zips",
+        "",
+        f"- Videos: {v['n']} ({', '.join(f'{k}: {n}' for k, n in v['by_extension'].items())})",
+        f"- Distinct class labels: {v['n_class_labels']}",
+        "- File stems (e.g. MVI_0001) reused across folders (camera counter wraps): "
+        f"{v['n_reused_file_names']}",
+        f"- Videos in zips but in no split file: {len(v['not_in_any_split'])}",
+        "",
+        "## Official splits vs zips",
+        "",
+        "| Dataset | train | val | test | official train (train+val) | label-map classes "
+        "| classes with no video in zips | split entries missing from zips | extension drift "
+        "| train/test overlap |",
+        "|---|---|---|---|---|---|---|---|---|---|",
+    ]
+    for ds, d in inv["splits"].items():
+        c = d["counts"]
+        lines.append(
+            f"| {ds} | {c['train']} | {c['val']} | {c['test']} | {d['official_train']} "
+            f"| {d['n_label_map_classes']} | {', '.join(d['classes_without_videos']) or 'none'} "
+            f"| {d['n_missing_from_zips']} | {d['n_extension_drift']} | {d['train_test_overlap']} |"
+        )
+    lines += ["", "### Split entries with no video in any zip", ""]
+    for ds, d in inv["splits"].items():
+        for s, paths in d["missing_from_zips"].items():
+            for p in paths:
+                lines.append(f"- {ds} / {s}: `{p}`")
+    cb = inv["cross_benchmark"]
+    lines += [
+        "",
+        "## Cross-benchmark overlap (INCLUDE-50 vs INCLUDE split files)",
+        "",
+        "- INCLUDE-50 train+val videos that are in INCLUDE test: "
+        f"{cb['include50_train_in_include_test']}",
+        "- INCLUDE-50 test videos that are in INCLUDE train+val: "
+        f"{cb['include50_test_in_include_train']}",
+        "",
+    ]
+    return "\n".join(lines)
+
+
+def _load_video_listing(
+    zips: list[zenodo.RemoteFile], cache: Path, refresh: bool
+) -> list[tuple[str, str, int]]:
+    cache.mkdir(parents=True, exist_ok=True)
+    rows: list[tuple[str, str, int]] = []
+    for f in zips:
+        cached = cache / f"{f.key}.json"
+        if refresh or not cached.exists():
+            members = remote_zip.list_remote_zip(zenodo.file_url(f.key))
+            cached.write_text(json.dumps([asdict(m) for m in members]))
+            print(f"listed {f.key}: {len(members)} members")
+        for m in json.loads(cached.read_text()):
+            if m["name"].lower().endswith(VIDEO_EXTS):
+                rows.append((f.key, m["name"], int(m["size"])))
+    return sorted(rows, key=lambda r: r[1])
+
+
+def main() -> None:
+    from sanket.paths import CACHE_DIR
+
+    parser = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
+    parser.add_argument("--refresh", action="store_true", help="re-list zips even if cached")
+    args = parser.parse_args()
+
+    files = zenodo.parse_record(zenodo.fetch_record())
+    zips = [f for f in files if f.key.endswith(".zip")]
+    videos = _load_video_listing(zips, CACHE_DIR / "zip_listings", args.refresh)
+    splits = {(ds, s): load_split(ds, s) for ds in DATASETS for s in SPLITS}
+    label_maps = {ds: load_label_map(ds) for ds in DATASETS}
+
+    MANIFEST_DIR.mkdir(parents=True, exist_ok=True)
+    (MANIFEST_DIR / "zenodo_4010759_files.json").write_text(
+        json.dumps([asdict(f) for f in files], indent=2) + "\n"
+    )
+    (MANIFEST_DIR / "zenodo_4010759_videos.tsv").write_text(
+        "zip\tpath\tbytes\n" + "".join(f"{z}\t{p}\t{n}\n" for z, p, n in videos)
+    )
+
+    inv = compute_inventory(files, videos, splits, label_maps)
+    REPORTS_DIR.mkdir(parents=True, exist_ok=True)
+    (REPORTS_DIR / "phase0_inventory.json").write_text(json.dumps(inv, indent=2) + "\n")
+    (REPORTS_DIR / "phase0_inventory.md").write_text(render_markdown(inv))
+    print(f"wrote {REPORTS_DIR / 'phase0_inventory.md'}")
+
+
+if __name__ == "__main__":
+    main()
