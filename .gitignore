@@ -1,0 +1,30 @@
+.DS_Store
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+ml/.cache/
+ml/.pytest_cache/
+ml/.mypy_cache/
+ml/.ruff_cache/
+
+# Dataset files never go in git (videos, keypoints, downloads)
+data/raw/
+data/keypoints/
+*.zip
+*.MOV
+*.mov
+*.MP4
+*.mp4
+*.npz
+
+# Experiment outputs
+runs/
+checkpoints/
+*.onnx
+!web/public/models/**/*.onnx
+
+# Local env
+.env*
+.claude/settings.local.json
