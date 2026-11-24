@@ -65,7 +65,7 @@ bytes.
 
 What *is* visible: within a class, camera numbers form tight runs (Summer: 4565–4568,
 4990–4992, 5420–5424, 9122–9124), and each run is probably one recording session. Options for
-a signer-independent evaluation, for Mukund to choose in Phase 1 or 3:
+a held-out evaluation, for Mukund to choose in Phase 1 or 3:
 
 - **(a)** Email the authors for signer ids. Cleanest, but uncertain to arrive.
 - **(b)** Use **session-held-out** splits from camera-number runs. Recoverable today, but
@@ -129,7 +129,7 @@ dependencies. Phase 1 needs video decoding, so see open question 3.
 
 1. **License** (discrepancy 1): OK to credit INCLUDE as CC BY 4.0 per Zenodo and update
    CLAUDE.md section 6?
-2. **Signer-independent evaluation:** option (b) session-held-out now, plus (a) emailing the
+2. **Held-out evaluation:** option (b) session-held-out now, plus (a) emailing the
    authors?
 3. **Video decoding library (Phase 1)** is not listed in section 4. Options: `opencv-python`
    (already pulled in transitively as `opencv-contrib-python` by mediapipe, so it adds no
