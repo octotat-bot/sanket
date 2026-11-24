@@ -1,6 +1,6 @@
 # ADR 006: Block all third-party network requests with a Content-Security-Policy
 
-- Status: **Proposed** (implemented on branch `phase-1`, awaiting Mukund's approval)
+- Status: Accepted (Mukund, 2026-11-24). The connect-src e2e test is part of CI (`web` job, `pnpm test:e2e`).
 - Date: 2026-11-24
 
 ## Context
@@ -30,7 +30,7 @@ documented way to turn logging off. The Python wheel has no such endpoint (check
 3. **Send `Content-Security-Policy: connect-src 'self'`** for every route. The browser then
    refuses fetch/XHR/WebSocket to any other origin, whatever a library tries to do.
 
-## Decision (proposed)
+## Decision
 
 Option 3, in `web/next.config.ts`. The logger's send fails and the library handles that by
 stopping its timer. Landmark detection is unaffected: both e2e tests pass with the header on.

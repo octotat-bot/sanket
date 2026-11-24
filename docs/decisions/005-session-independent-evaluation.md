@@ -1,7 +1,7 @@
 # ADR 005: Session-independent evaluation from camera-number blocks
 
-- Status: **Partly decided.** The label and the spot-check result are accepted (Mukund,
-  2026-11-24). The block-boundary rule below is **proposed**, to be finalised before Phase 3.
+- Status: Accepted (Mukund, 2026-11-24): blocks across all classes, boundaries checked by eye,
+  plus an inferred-signer split. Execution happens during and after the Phase 1 extraction.
 - Date: 2026-11-24
 
 ## Context
@@ -21,7 +21,9 @@ Days_and_Time, Society, Greetings, Jobs). For each run: the middle frame of the 
 last take, and the take numbered right after the run in a **different class** of the same
 category (9 of the 10 runs have one). The sheets are built by `python -m sanket.checks.session_frames`
 into the gitignored `ml/.cache/spotcheck/`. They are never committed, out of respect for the
-signers (see the HF card's ethics note in ADR 003). The check was visual, done by Claude.
+signers (see the HF card's ethics note in ADR 003). The sheets and the sampled videos were
+**deleted on 2026-11-24** once these results were recorded. `make samples` and
+`python -m sanket.checks.session_frames` recreate them exactly (seeded). The check was visual, done by Claude.
 Mukund can re-run the command and look for himself.
 
 | Hypothesis | Result |
@@ -50,7 +52,7 @@ Further observations:
 2. The result is always called **session-independent**. If the authors provide signer ids, a
    real signer-independent split becomes a separate row. It never replaces this one.
 
-## Proposed: how blocks are cut (to finalise before Phase 3)
+## How blocks are cut
 
 A pure gap rule isn't safe by itself:
 
@@ -60,12 +62,41 @@ A pure gap rule isn't safe by itself:
 - Because of counter wrap-around, 512 `.MOV` numbers are used twice. Sorting by number then
   **merges** unrelated cycles. That is safe (more conservative), but it makes blocks coarser.
 
-Proposal: cut blocks with the gap rule, then **verify every block boundary visually** and merge
+Procedure: cut blocks with the gap rule, then **verify every block boundary visually** and merge
 any boundary where the same person, clothes and room continue on both sides. That frames cost
 nothing extra: during the full Phase 1 extraction every video is decoded anyway, so the extractor
 also saves one small middle frame per video to the local, gitignored cache (about 130 MB, never
 committed). The boundary review uses those frames, and the final block assignment is written to
 a versioned file in `ml/data/splits/` with its own test.
+
+### Frame cache lifecycle (Mukund's condition)
+
+- `ml/.cache/frames/` holds one downscaled middle frame per video. It is gitignored, local
+  only, never uploaded (not even to the private Kaggle dataset), and never shown in the app.
+- Once every block boundary **and** the signer clustering below are verified, the cache is
+  deleted. The deletion date and the command used are recorded here under "Cache deleted".
+- Cache deleted: _not yet (the cache doesn't exist until Phase 1 extraction)._
+
+## Inferred signer-independent split (added by Mukund, 2026-11-24)
+
+Holding out a sitting is not the same as holding out a person: the spot-check already shows
+one signer in several camera ranges. So after extraction we also **cluster sittings into
+inferred people**:
+
+1. Per sitting, compute body-proportion features from our own pose keypoints, which don't
+   change with clothes or day: ratios of shoulder width, upper-arm and forearm lengths,
+   torso height, and hand size (wrist to middle-finger MCP), as medians over all frames
+   where they are visible. Ratios, not raw lengths, so camera distance cancels out.
+2. Cluster sittings on those features (agglomerative clustering with a threshold, so the number
+   of people isn't forced).
+3. Check every cluster by eye with the cached frames (a contact sheet of one frame per
+   sitting per cluster), and fix merges or splits by hand. Each correction is recorded in the
+   split's provenance file.
+4. Report **both** rows: "session-independent" (held-out sittings) and **"inferred
+   signer-independent"** (held-out inferred people). The second is always labelled
+   *inferred*, with the number of inferred people and a note that it is not ground truth. If the
+   authors send real signer ids, those replace the inferred ones, and we report how well our
+   clustering matched them.
 
 ## Tradeoff
 

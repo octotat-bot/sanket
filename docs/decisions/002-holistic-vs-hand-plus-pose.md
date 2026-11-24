@@ -1,7 +1,7 @@
 # ADR 002: Holistic Landmarker vs separate Hand + Pose Landmarkers
 
-- Status: **Measure (a) done. Measure (b) waits on Mukund's browser run. No choice yet, and no
-  full extraction until Mukund approves.**
+- Status: **Decision rule approved by Mukund (2026-11-24).** Measure (a) is done. Measure (b) waits
+  on Mukund's browser run. Full extraction starts only after Mukund sends that JSON.
 - Date: 2026-11-24
 
 ## Context
