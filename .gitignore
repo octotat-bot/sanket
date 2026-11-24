@@ -28,3 +28,9 @@ checkpoints/
 # Local env
 .env*
 .claude/settings.local.json
+
+# Kaggle credentials. The real location is ~/.kaggle/ (outside the repo); these patterns
+# stop a copied token from ever being committed.
+kaggle.json
+access_token
+.kaggle/
