@@ -1,0 +1,74 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ml:
+    name: python (lint, types, tests, MediaPipe smoke)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: astral-sh/setup-uv@v10.4.0
+        with:
+          working-directory: ml
+      - run: uv sync --locked
+        working-directory: ml
+      - run: uv run ruff check src tests && uv run ruff format --check src tests
+        working-directory: ml
+      - run: uv run mypy
+        working-directory: ml
+      - run: uv run pytest -m "not network"
+        working-directory: ml
+      - name: cache pinned MediaPipe models
+        uses: actions/cache@v6.1.0
+        with:
+          path: ml/.cache/models
+          key: mediapipe-models-${{ hashFiles('spec/keypoints.json') }}
+      - name: Python MediaPipe smoke (Phase 0 gate)
+        run: uv run python -m sanket.spec && uv run pytest -m network
+        working-directory: ml
+
+  web:
+    name: web (lint, types, unit, build, Playwright smoke)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: pnpm/action-setup@v6.1.1
+        with:
+          package_json_file: web/package.json
+      - uses: actions/setup-node@v7.1.0
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: web/pnpm-lock.yaml
+      - run: pnpm install --frozen-lockfile
+        working-directory: web
+      - run: pnpm lint && pnpm typecheck && pnpm test
+        working-directory: web
+      - run: pnpm build
+        working-directory: web
+      - uses: astral-sh/setup-uv@v10.4.0
+        with:
+          working-directory: ml
+      - name: cache pinned MediaPipe models
+        uses: actions/cache@v6.1.0
+        with:
+          path: ml/.cache/models
+          key: mediapipe-models-${{ hashFiles('spec/keypoints.json') }}
+      - name: fetch pinned models (sha256-checked)
+        run: uv run --locked python -m sanket.spec
+        working-directory: ml
+      - run: pnpm exec playwright install --with-deps chromium
+        working-directory: web
+      - name: browser MediaPipe smoke (Phase 0 gate)
+        run: pnpm test:e2e
+        working-directory: web
