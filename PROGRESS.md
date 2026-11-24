@@ -55,7 +55,7 @@ for pnpm 12. Installing `npm i -g pnpm@12.23.0` also works.
 6. ADR 004: TensorBoard.
 7. Kaggle setup (Python version, API token) needs your account.
 
-## Phase 1: Data pipeline and keypoint extraction ⏳ pre-checks done, waiting on ADR 002 (b)
+## Phase 1: Data pipeline and keypoint extraction ⏳ pipeline ready, waiting on ADR 002 (b) JSON
 
 Phase 0 decisions applied: CC BY 4.0 credit (CLAUDE.md section 6, ADR 003), "session-independent"
 wording everywhere, leakage and 262/263 reporting rules (ADR 003), TensorBoard (ADR 004),
@@ -86,3 +86,34 @@ make samples check-video-metadata check-extractor   # ~1.1 GB of sampled videos,
 2. Approve ADR 006 (CSP) and the proposed block-boundary procedure in ADR 005.
 3. Disk: only 16 GB free on the laptop (it was 23 GB earlier the same day). Extraction stays
    one zip at a time (largest zip 1.85 GB), but keep at least 10 GB free.
+
+**Approvals received 2026-11-24:** ADR 002 rule, ADR 005 (+ inferred-signer split), ADR 006, Kaggle CLI.
+
+**Pipeline (built and tested; real run not started)**
+
+- `make extract` (`sanket.pipeline.extract`): one zip at a time. Resumable md5-verified
+  download → stream frames through a fresh extractor per video → `.npz` per video + one cached
+  frame → log → delete video → delete zip. Refuses to start until `extractor` is set in
+  `ml/configs/extract.yaml` (ADR 002), and refuses a dirty git tree. Aborts below 10 GB free
+  and deletes its partial download.
+- Stored layout is in `spec/keypoints.json` 0.2.0: pose 0–24 × (x,y,z,visibility), 21 × (x,y,z)
+  per hand, presence flags, t_ms. Pose names are tested against MediaPipe's enum.
+- `make upload KAGGLE_DATASET=user/slug`: private dataset, CC-BY-4.0, refuses incomplete or
+  media-containing folders.
+- `python -m sanket.data.report` → `reports/data.md`: class counts, lengths, detection rates,
+  split sizes vs missing, errors, review list, sha256 duplicates.
+- Determinism (acceptance) on a real INCLUDE-50 video: both extractors bit-identical across
+  runs (`ml/tests/test_extraction_real.py`, network marker, runs in CI).
+- Dry run on `Adjectives_8of8.zip` (63 videos, Holistic): 63 ok / 0 errors, 24.2 ms/frame,
+  peak RSS 430 MB, download ≈2.6 MB/s. Outputs deleted afterwards.
+- **Projected full run: ≈6 h download + ≈1.7 h compute ≈ 8 h. Output ≈200 MB, frame cache ≈46 MB.**
+
+**Disk investigation (2026-11-24)**
+
+- The 7 GB drop came mostly from **macOS swap**: 14 × 1 GB swap files created between
+  10:00 and 12:00 (now 21.5 GB of swap), under memory pressure from builds, Playwright and the
+  1080p comparison script, plus Chrome, VS Code and Ollama. Swap isn't ours to delete. It
+  shrinks as pressure drops, and a reboot clears it.
+- Ours, created today: sample videos 1.1 GB and scratch 0.56 GB (both **deleted**), tool caches
+  (uv 0.8, pnpm 1.1, Playwright 0.6, npm 0.4 GB; kept, needed or shared). No stray `.part` files.
+- Free space after cleanup: 21–24 GB (it moves with swap).
