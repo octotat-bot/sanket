@@ -1,6 +1,6 @@
 {
-  "spec_version": "0.1.0",
-  "status": "Phase 0 draft: pins the keypoint extractor only. Landmark selection (Phase 1) and normalization constants (Phase 2) are added later.",
+  "spec_version": "0.2.0",
+  "status": "Phase 1: extractor pins and stored per-frame keypoints. Normalization constants are added in Phase 2.",
   "extractor": {
     "mediapipe_version": "1.2.3",
     "packages": {
@@ -24,5 +24,84 @@
         "bytes": 9398198
       }
     }
+  },
+  "stored": {
+    "description": "What the offline extractor (Python) and the live extractor (browser) both produce per frame, before normalization.",
+    "coordinates": "MediaPipe normalized image coordinates of the UNMIRRORED frame: x in [0,1] of width (to the right), y in [0,1] of height (down), z as MediaPipe reports it.",
+    "pose": {
+      "indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24
+      ],
+      "names": [
+        "nose",
+        "left_eye_inner",
+        "left_eye",
+        "left_eye_outer",
+        "right_eye_inner",
+        "right_eye",
+        "right_eye_outer",
+        "left_ear",
+        "right_ear",
+        "mouth_left",
+        "mouth_right",
+        "left_shoulder",
+        "right_shoulder",
+        "left_elbow",
+        "right_elbow",
+        "left_wrist",
+        "right_wrist",
+        "left_pinky",
+        "right_pinky",
+        "left_index",
+        "right_index",
+        "left_thumb",
+        "right_thumb",
+        "left_hip",
+        "right_hip"
+      ],
+      "fields": [
+        "x",
+        "y",
+        "z",
+        "visibility"
+      ],
+      "note": "Upper body = MediaPipe pose landmarks 0-24 (face points, arms, hand stubs, hips). Legs 25-32 are dropped. left/right = the signer's own side."
+    },
+    "hands": {
+      "landmarks": 21,
+      "fields": [
+        "x",
+        "y",
+        "z"
+      ],
+      "order": "MediaPipe hand landmark order (0 = wrist ... 20 = pinky tip)",
+      "sides": "left/right = the signer's own hand (measured 99% agreement with pose wrists 15/16 on unmirrored frames, ADR 002)"
+    },
+    "missing": "A missing pose or hand is stored as zeros with its *_present flag false. Never NaN.",
+    "timestamps": "t_ms: int64 milliseconds from the decoder's presentation timestamps, strictly increasing."
   }
 }
