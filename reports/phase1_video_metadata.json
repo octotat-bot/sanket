@@ -1,0 +1,1497 @@
+{
+  "summary": {
+    "n_files": 38,
+    "n_mov": 30,
+    "n_mp4": 8,
+    "n_rotated": 0,
+    "n_vfr": 0,
+    "n_mishandled": 0,
+    "opencv_version": "5.1.0",
+    "ffprobe_version": "ffprobe version 9.0.2 Copyright (c) 2007-2026 the FFmpeg developers",
+    "pyav_needed": false
+  },
+  "files": [
+    {
+      "path": "Adjectives/86. fast/MVI_9406.MOV",
+      "ffprobe": {
+        "codec": "h264",
+        "coded_size": [
+          1920,
+          1080
+        ],
+        "display_size": [
+          1920,
+          1080
+        ],
+        "rotation": 0,
+        "r_frame_rate": "25/1",
+        "avg_frame_rate": "25/1",
+        "n_frames": 55,
+        "frame_interval_ms": {
+          "min": 39.999999999999815,
+          "max": 40.000000000000036,
+          "median": 40.000000000000036
+        },
+        "vfr": false
+      },
+      "opencv": {
+        "opened": true,
+        "fps": 25.0,
+        "frame_count_prop": 55,
+        "orientation_meta": 0.0,
+        "orientation_auto": 1.0,
+        "decoded_frames": 55,
+        "decoded_size": [
+          1920,
+          1080
+        ]
+      },
+      "mishandled": false,
+      "reasons": [],
+      "max_timestamp_error_ms": 2.2737367544323206e-13
+    },
+    {
+      "path": "Adjectives/91. new/MVI_5151.MOV",
+      "ffprobe": {
+        "codec": "h264",
+        "coded_size": [
+          1920,
+          1080
+        ],
+        "display_size": [
+          1920,
+          1080
+        ],
+        "rotation": 0,
+        "r_frame_rate": "25/1",
+        "avg_frame_rate": "25/1",
+        "n_frames": 59,
+        "frame_interval_ms": {
+          "min": 39.99999999999959,
+          "max": 40.000000000000036,
+          "median": 40.000000000000036
+        },
+        "vfr": false
+      },
+      "opencv": {
+        "opened": true,
+        "fps": 25.0,
+        "frame_count_prop": 59,
+        "orientation_meta": 0.0,
+        "orientation_auto": 1.0,
+        "decoded_frames": 59,
+        "decoded_size": [
+          1920,
+          1080
+        ]
+      },
+      "mishandled": false,
+      "reasons": [],
+      "max_timestamp_error_ms": 4.547473508864641e-13
+    },
+    {
+      "path": "Adjectives/93. young/MVI_9427.MOV",
+      "ffprobe": {
+        "codec": "h264",
+        "coded_size": [
+          1920,
+          1080
+        ],
+        "display_size": [
+          1920,
+          1080
+        ],
+        "rotation": 0,
+        "r_frame_rate": "25/1",
+        "avg_frame_rate": "25/1",
+        "n_frames": 45,
+        "frame_interval_ms": {
+          "min": 39.999999999999815,
+          "max": 40.000000000000036,
+          "median": 40.000000000000036
+        },
+        "vfr": false
+      },
+      "opencv": {
+        "opened": true,
+        "fps": 25.0,
+        "frame_count_prop": 45,
+        "orientation_meta": 0.0,
+        "orientation_auto": 1.0,
+        "decoded_frames": 45,
+        "decoded_size": [
+          1920,
+          1080
+        ]
+      },
+      "mishandled": false,
+      "reasons": [],
+      "max_timestamp_error_ms": 2.2737367544323206e-13
+    },
+    {
+      "path": "Adjectives/97. dry/MVI_9522.MOV",
+      "ffprobe": {
+        "codec": "h264",
+        "coded_size": [
+          1920,
+          1080
+        ],
+        "display_size": [
+          1920,
+          1080
+        ],
+        "rotation": 0,
+        "r_frame_rate": "25/1",
+        "avg_frame_rate": "25/1",
+        "n_frames": 64,
+        "frame_interval_ms": {
+          "min": 39.99999999999959,
+          "max": 40.000000000000036,
+          "median": 40.000000000000036
+        },
+        "vfr": false
+      },
+      "opencv": {
+        "opened": true,
+        "fps": 25.0,
+        "frame_count_prop": 64,
+        "orientation_meta": 0.0,
+        "orientation_auto": 1.0,
+        "decoded_frames": 64,
+        "decoded_size": [
+          1920,
+          1080
+        ]
+      },
+      "mishandled": false,
+      "reasons": [],
+      "max_timestamp_error_ms": 4.547473508864641e-13
+    },
+    {
+      "path": "Adjectives/98. sick/MVI_5171.MOV",
+      "ffprobe": {
+        "codec": "h264",
+        "coded_size": [
+          1920,
+          1080
+        ],
+        "display_size": [
+          1920,
+          1080
+        ],
+        "rotation": 0,
+        "r_frame_rate": "25/1",
+        "avg_frame_rate": "25/1",
+        "n_frames": 85,
+        "frame_interval_ms": {
+          "min": 39.99999999999959,
+          "max": 40.000000000000036,
+          "median": 40.000000000000036
+        },
+        "vfr": false
+      },
+      "opencv": {
+        "opened": true,
+        "fps": 25.0,
+        "frame_count_prop": 85,
+        "orientation_meta": 0.0,
+        "orientation_auto": 1.0,
+        "decoded_frames": 85,
+        "decoded_size": [
+          1920,
+          1080
+        ]
+      },
+      "mishandled": false,
+      "reasons": [],
+      "max_timestamp_error_ms": 4.547473508864641e-13
+    },
+    {
+      "path": "Adjectives/98. sick/MVI_9442.MOV",
+      "ffprobe": {
+        "codec": "h264",
+        "coded_size": [
+          1920,
+          1080
+        ],
+        "display_size": [
+          1920,
+          1080
+        ],
+        "rotation": 0,
+        "r_frame_rate": "25/1",
+        "avg_frame_rate": "25/1",
+        "n_frames": 58,
+        "frame_interval_ms": {
+          "min": 39.99999999999959,
+          "max": 40.000000000000036,
+          "median": 40.000000000000036
+        },
+        "vfr": false
+      },
+      "opencv": {
+        "opened": true,
+        "fps": 25.0,
+        "frame_count_prop": 58,
+        "orientation_meta": 0.0,
+        "orientation_auto": 1.0,
+        "decoded_frames": 58,
+        "decoded_size": [
+          1920,
+          1080
+        ]
+      },
+      "mishandled": false,
+      "reasons": [],
+      "max_timestamp_error_ms": 4.547473508864641e-13
+    },
+    {
+      "path": "Animals/1. Dog/MVI_8560.MP4",
+      "ffprobe": {
+        "codec": "h264",
+        "coded_size": [
+          1920,
+          1080
+        ],
+        "display_size": [
+          1920,
+          1080
+        ],
+        "rotation": 0,
+        "r_frame_rate": "25/1",
+        "avg_frame_rate": "25/1",
+        "n_frames": 83,
+        "frame_interval_ms": {
+          "min": 39.99999999999959,
+          "max": 40.000000000000036,
+          "median": 40.000000000000036
+        },
+        "vfr": false
+      },
+      "opencv": {
+        "opened": true,
+        "fps": 25.0,
+        "frame_count_prop": 83,
+        "orientation_meta": 0.0,
+        "orientation_auto": 1.0,
+        "decoded_frames": 83,
+        "decoded_size": [
+          1920,
+          1080
+        ]
+      },
+      "mishandled": false,
+      "reasons": [],
+      "max_timestamp_error_ms": 4.547473508864641e-13
+    },
+    {
+      "path": "Animals/2. Cat/MVI_3089.MOV",
+      "ffprobe": {
+        "codec": "h264",
+        "coded_size": [
+          1920,
+          1080
+        ],
+        "display_size": [
+          1920,
+          1080
+        ],
+        "rotation": 0,
+        "r_frame_rate": "25/1",
+        "avg_frame_rate": "25/1",
+        "n_frames": 80,
+        "frame_interval_ms": {
+          "min": 39.99999999999959,
+          "max": 40.000000000000036,
+          "median": 40.000000000000036
+        },
+        "vfr": false
+      },
+      "opencv": {
+        "opened": true,
+        "fps": 25.0,
+        "frame_count_prop": 80,
+        "orientation_meta": 0.0,
+        "orientation_auto": 1.0,
+        "decoded_frames": 80,
+        "decoded_size": [
+          1920,
+          1080
+        ]
+      },
+      "mishandled": false,
+      "reasons": [],
+      "max_timestamp_error_ms": 4.547473508864641e-13
+    },
+    {
+      "path": "Animals/5. Cow/MVI_4159.MOV",
+      "ffprobe": {
+        "codec": "h264",
+        "coded_size": [
+          1920,
+          1080
+        ],
+        "display_size": [
+          1920,
+          1080
+        ],
+        "rotation": 0,
+        "r_frame_rate": "25/1",
+        "avg_frame_rate": "25/1",
+        "n_frames": 50,
+        "frame_interval_ms": {
+          "min": 39.999999999999815,
+          "max": 40.000000000000036,
+          "median": 40.000000000000036
+        },
+        "vfr": false
+      },
+      "opencv": {
+        "opened": true,
+        "fps": 25.0,
+        "frame_count_prop": 50,
+        "orientation_meta": 0.0,
+        "orientation_auto": 1.0,
+        "decoded_frames": 50,
+        "decoded_size": [
+          1920,
+          1080
+        ]
+      },
+      "mishandled": false,
+      "reasons": [],
+      "max_timestamp_error_ms": 2.2737367544323206e-13
+    },
+    {
+      "path": "Clothes/40. Skirt/MVI_3997.MOV",
+      "ffprobe": {
+        "codec": "h264",
+        "coded_size": [
+          1920,
+          1080
+        ],
+        "display_size": [
+          1920,
+          1080
+        ],
+        "rotation": 0,
+        "r_frame_rate": "25/1",
+        "avg_frame_rate": "25/1",
+        "n_frames": 66,
+        "frame_interval_ms": {
+          "min": 39.99999999999959,
+          "max": 40.000000000000036,
+          "median": 40.000000000000036
+        },
+        "vfr": false
+      },
+      "opencv": {
+        "opened": true,
+        "fps": 25.0,
+        "frame_count_prop": 66,
+        "orientation_meta": 0.0,
+        "orientation_auto": 1.0,
+        "decoded_frames": 66,
+        "decoded_size": [
+          1920,
+          1080
+        ]
+      },
+      "mishandled": false,
+      "reasons": [],
+      "max_timestamp_error_ms": 4.547473508864641e-13
+    },
+    {
+      "path": "Colours/47. Red/MVI_4899.MOV",
+      "ffprobe": {
+        "codec": "h264",
+        "coded_size": [
+          1920,
+          1080
+        ],
+        "display_size": [
+          1920,
+          1080
+        ],
+        "rotation": 0,
+        "r_frame_rate": "25/1",
+        "avg_frame_rate": "25/1",
+        "n_frames": 58,
+        "frame_interval_ms": {
+          "min": 39.99999999999959,
+          "max": 40.000000000000036,
+          "median": 40.000000000000036
+        },
+        "vfr": false
+      },
+      "opencv": {
+        "opened": true,
+        "fps": 25.0,
+        "frame_count_prop": 58,
+        "orientation_meta": 0.0,
+        "orientation_auto": 1.0,
+        "decoded_frames": 58,
+        "decoded_size": [
+          1920,
+          1080
+        ]
+      },
+      "mishandled": false,
+      "reasons": [],
+      "max_timestamp_error_ms": 4.547473508864641e-13
+    },
+    {
+      "path": "Colours/49. Blue/MVI_4026.MOV",
+      "ffprobe": {
+        "codec": "h264",
+        "coded_size": [
+          1920,
+          1080
+        ],
+        "display_size": [
+          1920,
+          1080
+        ],
+        "rotation": 0,
+        "r_frame_rate": "25/1",
+        "avg_frame_rate": "25/1",
+        "n_frames": 56,
+        "frame_interval_ms": {
+          "min": 39.999999999999815,
+          "max": 40.000000000000036,
+          "median": 40.000000000000036
+        },
+        "vfr": false
+      },
+      "opencv": {
+        "opened": true,
+        "fps": 25.0,
+        "frame_count_prop": 56,
+        "orientation_meta": 0.0,
+        "orientation_auto": 1.0,
+        "decoded_frames": 56,
+        "decoded_size": [
+          1920,
+          1080
+        ]
+      },
+      "mishandled": false,
+      "reasons": [],
+      "max_timestamp_error_ms": 2.2737367544323206e-13
+    },
+    {
+      "path": "Days_and_Time/75. Yesterday/MVI_4626.MOV",
+      "ffprobe": {
+        "codec": "h264",
+        "coded_size": [
+          1920,
+          1080
+        ],
+        "display_size": [
+          1920,
+          1080
+        ],
+        "rotation": 0,
+        "r_frame_rate": "25/1",
+        "avg_frame_rate": "25/1",
+        "n_frames": 45,
+        "frame_interval_ms": {
+          "min": 39.999999999999815,
+          "max": 40.000000000000036,
+          "median": 40.000000000000036
+        },
+        "vfr": false
+      },
+      "opencv": {
+        "opened": true,
+        "fps": 25.0,
+        "frame_count_prop": 45,
+        "orientation_meta": 0.0,
+        "orientation_auto": 1.0,
+        "decoded_frames": 45,
+        "decoded_size": [
+          1920,
+          1080
+        ]
+      },
+      "mishandled": false,
+      "reasons": [],
+      "max_timestamp_error_ms": 2.2737367544323206e-13
+    },
+    {
+      "path": "Days_and_Time/86. Time/MVI_5077.MOV",
+      "ffprobe": {
+        "codec": "h264",
+        "coded_size": [
+          1920,
+          1080
+        ],
+        "display_size": [
+          1920,
+          1080
+        ],
+        "rotation": 0,
+        "r_frame_rate": "25/1",
+        "avg_frame_rate": "25/1",
+        "n_frames": 45,
+        "frame_interval_ms": {
+          "min": 39.999999999999815,
+          "max": 40.000000000000036,
+          "median": 40.000000000000036
+        },
+        "vfr": false
+      },
+      "opencv": {
+        "opened": true,
+        "fps": 25.0,
+        "frame_count_prop": 45,
+        "orientation_meta": 0.0,
+        "orientation_auto": 1.0,
+        "decoded_frames": 45,
+        "decoded_size": [
+          1920,
+          1080
+        ]
+      },
+      "mishandled": false,
+      "reasons": [],
+      "max_timestamp_error_ms": 2.2737367544323206e-13
+    },
+    {
+      "path": "Electronics/51. Clock/MVI_4524.MOV",
+      "ffprobe": {
+        "codec": "h264",
+        "coded_size": [
+          1920,
+          1080
+        ],
+        "display_size": [
+          1920,
+          1080
+        ],
+        "rotation": 0,
+        "r_frame_rate": "25/1",
+        "avg_frame_rate": "25/1",
+        "n_frames": 79,
+        "frame_interval_ms": {
+          "min": 39.99999999999959,
+          "max": 40.000000000000036,
+          "median": 40.000000000000036
+        },
+        "vfr": false
+      },
+      "opencv": {
+        "opened": true,
+        "fps": 25.0,
+        "frame_count_prop": 79,
+        "orientation_meta": 0.0,
+        "orientation_auto": 1.0,
+        "decoded_frames": 79,
+        "decoded_size": [
+          1920,
+          1080
+        ]
+      },
+      "mishandled": false,
+      "reasons": [],
+      "max_timestamp_error_ms": 4.547473508864641e-13
+    },
+    {
+      "path": "Greetings/48. Hello/MVI_0030.MOV",
+      "ffprobe": {
+        "codec": "h264",
+        "coded_size": [
+          1920,
+          1080
+        ],
+        "display_size": [
+          1920,
+          1080
+        ],
+        "rotation": 0,
+        "r_frame_rate": "25/1",
+        "avg_frame_rate": "25/1",
+        "n_frames": 74,
+        "frame_interval_ms": {
+          "min": 39.99999999999959,
+          "max": 40.000000000000036,
+          "median": 40.000000000000036
+        },
+        "vfr": false
+      },
+      "opencv": {
+        "opened": true,
+        "fps": 25.0,
+        "frame_count_prop": 74,
+        "orientation_meta": 0.0,
+        "orientation_auto": 1.0,
+        "decoded_frames": 74,
+        "decoded_size": [
+          1920,
+          1080
+        ]
+      },
+      "mishandled": false,
+      "reasons": [],
+      "max_timestamp_error_ms": 4.547473508864641e-13
+    },
+    {
+      "path": "Greetings/56. Pleased/MVI_0066.MOV",
+      "ffprobe": {
+        "codec": "h264",
+        "coded_size": [
+          1920,
+          1080
+        ],
+        "display_size": [
+          1920,
+          1080
+        ],
+        "rotation": 0,
+        "r_frame_rate": "25/1",
+        "avg_frame_rate": "25/1",
+        "n_frames": 79,
+        "frame_interval_ms": {
+          "min": 39.99999999999959,
+          "max": 40.000000000000036,
+          "median": 40.000000000000036
+        },
+        "vfr": false
+      },
+      "opencv": {
+        "opened": true,
+        "fps": 25.0,
+        "frame_count_prop": 79,
+        "orientation_meta": 0.0,
+        "orientation_auto": 1.0,
+        "decoded_frames": 79,
+        "decoded_size": [
+          1920,
+          1080
+        ]
+      },
+      "mishandled": false,
+      "reasons": [],
+      "max_timestamp_error_ms": 4.547473508864641e-13
+    },
+    {
+      "path": "Home/24. Table/MVI_4345.MOV",
+      "ffprobe": {
+        "codec": "h264",
+        "coded_size": [
+          1920,
+          1080
+        ],
+        "display_size": [
+          1920,
+          1080
+        ],
+        "rotation": 0,
+        "r_frame_rate": "25/1",
+        "avg_frame_rate": "25/1",
+        "n_frames": 50,
+        "frame_interval_ms": {
+          "min": 39.999999999999815,
+          "max": 40.000000000000036,
+          "median": 40.000000000000036
+        },
+        "vfr": false
+      },
+      "opencv": {
+        "opened": true,
+        "fps": 25.0,
+        "frame_count_prop": 50,
+        "orientation_meta": 0.0,
+        "orientation_auto": 1.0,
+        "decoded_frames": 50,
+        "decoded_size": [
+          1920,
+          1080
+        ]
+      },
+      "mishandled": false,
+      "reasons": [],
+      "max_timestamp_error_ms": 2.2737367544323206e-13
+    },
+    {
+      "path": "Home/27. Dream/MVI_9012.MP4",
+      "ffprobe": {
+        "codec": "h264",
+        "coded_size": [
+          1920,
+          1080
+        ],
+        "display_size": [
+          1920,
+          1080
+        ],
+        "rotation": 0,
+        "r_frame_rate": "25/1",
+        "avg_frame_rate": "25/1",
+        "n_frames": 85,
+        "frame_interval_ms": {
+          "min": 39.99999999999959,
+          "max": 40.000000000000036,
+          "median": 40.000000000000036
+        },
+        "vfr": false
+      },
+      "opencv": {
+        "opened": true,
+        "fps": 25.0,
+        "frame_count_prop": 85,
+        "orientation_meta": 0.0,
+        "orientation_auto": 1.0,
+        "decoded_frames": 85,
+        "decoded_size": [
+          1920,
+          1080
+        ]
+      },
+      "mishandled": false,
+      "reasons": [],
+      "max_timestamp_error_ms": 4.547473508864641e-13
+    },
+    {
+      "path": "Home/33. Pencil/MVI_8789.MP4",
+      "ffprobe": {
+        "codec": "h264",
+        "coded_size": [
+          1920,
+          1080
+        ],
+        "display_size": [
+          1920,
+          1080
+        ],
+        "rotation": 0,
+        "r_frame_rate": "25/1",
+        "avg_frame_rate": "25/1",
+        "n_frames": 63,
+        "frame_interval_ms": {
+          "min": 39.99999999999959,
+          "max": 40.000000000000036,
+          "median": 40.000000000000036
+        },
+        "vfr": false
+      },
+      "opencv": {
+        "opened": true,
+        "fps": 25.0,
+        "frame_count_prop": 63,
+        "orientation_meta": 0.0,
+        "orientation_auto": 1.0,
+        "decoded_frames": 63,
+        "decoded_size": [
+          1920,
+          1080
+        ]
+      },
+      "mishandled": false,
+      "reasons": [],
+      "max_timestamp_error_ms": 4.547473508864641e-13
+    },
+    {
+      "path": "Home/49. Ring/MVI_8857.MP4",
+      "ffprobe": {
+        "codec": "h264",
+        "coded_size": [
+          1920,
+          1080
+        ],
+        "display_size": [
+          1920,
+          1080
+        ],
+        "rotation": 0,
+        "r_frame_rate": "25/1",
+        "avg_frame_rate": "25/1",
+        "n_frames": 82,
+        "frame_interval_ms": {
+          "min": 39.99999999999959,
+          "max": 40.000000000000036,
+          "median": 40.000000000000036
+        },
+        "vfr": false
+      },
+      "opencv": {
+        "opened": true,
+        "fps": 25.0,
+        "frame_count_prop": 82,
+        "orientation_meta": 0.0,
+        "orientation_auto": 1.0,
+        "decoded_frames": 82,
+        "decoded_size": [
+          1920,
+          1080
+        ]
+      },
+      "mishandled": false,
+      "reasons": [],
+      "max_timestamp_error_ms": 4.547473508864641e-13
+    },
+    {
+      "path": "Jobs/84. Teacher/MVI_4459.MOV",
+      "ffprobe": {
+        "codec": "h264",
+        "coded_size": [
+          1920,
+          1080
+        ],
+        "display_size": [
+          1920,
+          1080
+        ],
+        "rotation": 0,
+        "r_frame_rate": "25/1",
+        "avg_frame_rate": "25/1",
+        "n_frames": 79,
+        "frame_interval_ms": {
+          "min": 39.99999999999959,
+          "max": 40.000000000000036,
+          "median": 40.000000000000036
+        },
+        "vfr": false
+      },
+      "opencv": {
+        "opened": true,
+        "fps": 25.0,
+        "frame_count_prop": 79,
+        "orientation_meta": 0.0,
+        "orientation_auto": 1.0,
+        "decoded_frames": 79,
+        "decoded_size": [
+          1920,
+          1080
+        ]
+      },
+      "mishandled": false,
+      "reasons": [],
+      "max_timestamp_error_ms": 4.547473508864641e-13
+    },
+    {
+      "path": "Jobs/84. Teacher/MVI_5311.MOV",
+      "ffprobe": {
+        "codec": "h264",
+        "coded_size": [
+          1920,
+          1080
+        ],
+        "display_size": [
+          1920,
+          1080
+        ],
+        "rotation": 0,
+        "r_frame_rate": "25/1",
+        "avg_frame_rate": "25/1",
+        "n_frames": 50,
+        "frame_interval_ms": {
+          "min": 39.999999999999815,
+          "max": 40.000000000000036,
+          "median": 40.000000000000036
+        },
+        "vfr": false
+      },
+      "opencv": {
+        "opened": true,
+        "fps": 25.0,
+        "frame_count_prop": 50,
+        "orientation_meta": 0.0,
+        "orientation_auto": 1.0,
+        "decoded_frames": 50,
+        "decoded_size": [
+          1920,
+          1080
+        ]
+      },
+      "mishandled": false,
+      "reasons": [],
+      "max_timestamp_error_ms": 2.2737367544323206e-13
+    },
+    {
+      "path": "Jobs/90. Secretary/MVI_5340.MOV",
+      "ffprobe": {
+        "codec": "h264",
+        "coded_size": [
+          1920,
+          1080
+        ],
+        "display_size": [
+          1920,
+          1080
+        ],
+        "rotation": 0,
+        "r_frame_rate": "25/1",
+        "avg_frame_rate": "25/1",
+        "n_frames": 68,
+        "frame_interval_ms": {
+          "min": 39.99999999999959,
+          "max": 40.000000000000036,
+          "median": 40.000000000000036
+        },
+        "vfr": false
+      },
+      "opencv": {
+        "opened": true,
+        "fps": 25.0,
+        "frame_count_prop": 68,
+        "orientation_meta": 0.0,
+        "orientation_auto": 1.0,
+        "decoded_frames": 68,
+        "decoded_size": [
+          1920,
+          1080
+        ]
+      },
+      "mishandled": false,
+      "reasons": [],
+      "max_timestamp_error_ms": 4.547473508864641e-13
+    },
+    {
+      "path": "Jobs/99. Job/MVI_4523.MOV",
+      "ffprobe": {
+        "codec": "h264",
+        "coded_size": [
+          1920,
+          1080
+        ],
+        "display_size": [
+          1920,
+          1080
+        ],
+        "rotation": 0,
+        "r_frame_rate": "25/1",
+        "avg_frame_rate": "25/1",
+        "n_frames": 72,
+        "frame_interval_ms": {
+          "min": 39.99999999999959,
+          "max": 40.000000000000036,
+          "median": 40.000000000000036
+        },
+        "vfr": false
+      },
+      "opencv": {
+        "opened": true,
+        "fps": 25.0,
+        "frame_count_prop": 72,
+        "orientation_meta": 0.0,
+        "orientation_auto": 1.0,
+        "decoded_frames": 72,
+        "decoded_size": [
+          1920,
+          1080
+        ]
+      },
+      "mishandled": false,
+      "reasons": [],
+      "max_timestamp_error_ms": 4.547473508864641e-13
+    },
+    {
+      "path": "Jobs/99. Job/MVI_5378.MOV",
+      "ffprobe": {
+        "codec": "h264",
+        "coded_size": [
+          1920,
+          1080
+        ],
+        "display_size": [
+          1920,
+          1080
+        ],
+        "rotation": 0,
+        "r_frame_rate": "25/1",
+        "avg_frame_rate": "25/1",
+        "n_frames": 61,
+        "frame_interval_ms": {
+          "min": 39.99999999999959,
+          "max": 40.000000000000036,
+          "median": 40.000000000000036
+        },
+        "vfr": false
+      },
+      "opencv": {
+        "opened": true,
+        "fps": 25.0,
+        "frame_count_prop": 61,
+        "orientation_meta": 0.0,
+        "orientation_auto": 1.0,
+        "decoded_frames": 61,
+        "decoded_size": [
+          1920,
+          1080
+        ]
+      },
+      "mishandled": false,
+      "reasons": [],
+      "max_timestamp_error_ms": 4.547473508864641e-13
+    },
+    {
+      "path": "Means_of_Transportation/10. Plane/MVI_8582.MP4",
+      "ffprobe": {
+        "codec": "h264",
+        "coded_size": [
+          1920,
+          1080
+        ],
+        "display_size": [
+          1920,
+          1080
+        ],
+        "rotation": 0,
+        "r_frame_rate": "25/1",
+        "avg_frame_rate": "25/1",
+        "n_frames": 59,
+        "frame_interval_ms": {
+          "min": 39.99999999999959,
+          "max": 40.000000000000036,
+          "median": 40.000000000000036
+        },
+        "vfr": false
+      },
+      "opencv": {
+        "opened": true,
+        "fps": 25.0,
+        "frame_count_prop": 59,
+        "orientation_meta": 0.0,
+        "orientation_auto": 1.0,
+        "decoded_frames": 59,
+        "decoded_size": [
+          1920,
+          1080
+        ]
+      },
+      "mishandled": false,
+      "reasons": [],
+      "max_timestamp_error_ms": 4.547473508864641e-13
+    },
+    {
+      "path": "Means_of_Transportation/13. Bicycle/MVI_3123.MOV",
+      "ffprobe": {
+        "codec": "h264",
+        "coded_size": [
+          1920,
+          1080
+        ],
+        "display_size": [
+          1920,
+          1080
+        ],
+        "rotation": 0,
+        "r_frame_rate": "25/1",
+        "avg_frame_rate": "25/1",
+        "n_frames": 86,
+        "frame_interval_ms": {
+          "min": 39.99999999999959,
+          "max": 40.000000000000036,
+          "median": 40.000000000000036
+        },
+        "vfr": false
+      },
+      "opencv": {
+        "opened": true,
+        "fps": 25.0,
+        "frame_count_prop": 86,
+        "orientation_meta": 0.0,
+        "orientation_auto": 1.0,
+        "decoded_frames": 86,
+        "decoded_size": [
+          1920,
+          1080
+        ]
+      },
+      "mishandled": false,
+      "reasons": [],
+      "max_timestamp_error_ms": 4.547473508864641e-13
+    },
+    {
+      "path": "Means_of_Transportation/15. Boat/MVI_3130.MOV",
+      "ffprobe": {
+        "codec": "h264",
+        "coded_size": [
+          1920,
+          1080
+        ],
+        "display_size": [
+          1920,
+          1080
+        ],
+        "rotation": 0,
+        "r_frame_rate": "25/1",
+        "avg_frame_rate": "25/1",
+        "n_frames": 113,
+        "frame_interval_ms": {
+          "min": 39.99999999999959,
+          "max": 40.000000000000036,
+          "median": 40.000000000000036
+        },
+        "vfr": false
+      },
+      "opencv": {
+        "opened": true,
+        "fps": 25.0,
+        "frame_count_prop": 113,
+        "orientation_meta": 0.0,
+        "orientation_auto": 1.0,
+        "decoded_frames": 113,
+        "decoded_size": [
+          1920,
+          1080
+        ]
+      },
+      "mishandled": false,
+      "reasons": [],
+      "max_timestamp_error_ms": 4.547473508864641e-13
+    },
+    {
+      "path": "Means_of_Transportation/16. train ticket/MVI_3133.MOV",
+      "ffprobe": {
+        "codec": "h264",
+        "coded_size": [
+          1920,
+          1080
+        ],
+        "display_size": [
+          1920,
+          1080
+        ],
+        "rotation": 0,
+        "r_frame_rate": "25/1",
+        "avg_frame_rate": "25/1",
+        "n_frames": 102,
+        "frame_interval_ms": {
+          "min": 39.99999999999959,
+          "max": 40.000000000000036,
+          "median": 40.000000000000036
+        },
+        "vfr": false
+      },
+      "opencv": {
+        "opened": true,
+        "fps": 25.0,
+        "frame_count_prop": 102,
+        "orientation_meta": 0.0,
+        "orientation_auto": 1.0,
+        "decoded_frames": 102,
+        "decoded_size": [
+          1920,
+          1080
+        ]
+      },
+      "mishandled": false,
+      "reasons": [],
+      "max_timestamp_error_ms": 4.547473508864641e-13
+    },
+    {
+      "path": "People/82. Player/MVI_4126.MOV",
+      "ffprobe": {
+        "codec": "h264",
+        "coded_size": [
+          1920,
+          1080
+        ],
+        "display_size": [
+          1920,
+          1080
+        ],
+        "rotation": 0,
+        "r_frame_rate": "25/1",
+        "avg_frame_rate": "25/1",
+        "n_frames": 62,
+        "frame_interval_ms": {
+          "min": 39.99999999999959,
+          "max": 40.000000000000036,
+          "median": 40.000000000000036
+        },
+        "vfr": false
+      },
+      "opencv": {
+        "opened": true,
+        "fps": 25.0,
+        "frame_count_prop": 62,
+        "orientation_meta": 0.0,
+        "orientation_auto": 1.0,
+        "decoded_frames": 62,
+        "decoded_size": [
+          1920,
+          1080
+        ]
+      },
+      "mishandled": false,
+      "reasons": [],
+      "max_timestamp_error_ms": 4.547473508864641e-13
+    },
+    {
+      "path": "Places/30. Hospital/MVI_3398.MOV",
+      "ffprobe": {
+        "codec": "h264",
+        "coded_size": [
+          1920,
+          1080
+        ],
+        "display_size": [
+          1920,
+          1080
+        ],
+        "rotation": 0,
+        "r_frame_rate": "25/1",
+        "avg_frame_rate": "25/1",
+        "n_frames": 70,
+        "frame_interval_ms": {
+          "min": 39.99999999999959,
+          "max": 40.000000000000036,
+          "median": 40.000000000000036
+        },
+        "vfr": false
+      },
+      "opencv": {
+        "opened": true,
+        "fps": 25.0,
+        "frame_count_prop": 70,
+        "orientation_meta": 0.0,
+        "orientation_auto": 1.0,
+        "decoded_frames": 70,
+        "decoded_size": [
+          1920,
+          1080
+        ]
+      },
+      "mishandled": false,
+      "reasons": [],
+      "max_timestamp_error_ms": 4.547473508864641e-13
+    },
+    {
+      "path": "Places/35. Bank/MVI_3581.MOV",
+      "ffprobe": {
+        "codec": "h264",
+        "coded_size": [
+          1920,
+          1080
+        ],
+        "display_size": [
+          1920,
+          1080
+        ],
+        "rotation": 0,
+        "r_frame_rate": "25/1",
+        "avg_frame_rate": "25/1",
+        "n_frames": 50,
+        "frame_interval_ms": {
+          "min": 39.999999999999815,
+          "max": 40.000000000000036,
+          "median": 40.000000000000036
+        },
+        "vfr": false
+      },
+      "opencv": {
+        "opened": true,
+        "fps": 25.0,
+        "frame_count_prop": 50,
+        "orientation_meta": 0.0,
+        "orientation_auto": 1.0,
+        "decoded_frames": 50,
+        "decoded_size": [
+          1920,
+          1080
+        ]
+      },
+      "mishandled": false,
+      "reasons": [],
+      "max_timestamp_error_ms": 2.2737367544323206e-13
+    },
+    {
+      "path": "Seasons/61. Summer/MVI_4565.MOV",
+      "ffprobe": {
+        "codec": "h264",
+        "coded_size": [
+          1920,
+          1080
+        ],
+        "display_size": [
+          1920,
+          1080
+        ],
+        "rotation": 0,
+        "r_frame_rate": "25/1",
+        "avg_frame_rate": "25/1",
+        "n_frames": 78,
+        "frame_interval_ms": {
+          "min": 39.99999999999959,
+          "max": 40.000000000000036,
+          "median": 40.000000000000036
+        },
+        "vfr": false
+      },
+      "opencv": {
+        "opened": true,
+        "fps": 25.0,
+        "frame_count_prop": 78,
+        "orientation_meta": 0.0,
+        "orientation_auto": 1.0,
+        "decoded_frames": 78,
+        "decoded_size": [
+          1920,
+          1080
+        ]
+      },
+      "mishandled": false,
+      "reasons": [],
+      "max_timestamp_error_ms": 4.547473508864641e-13
+    },
+    {
+      "path": "Seasons/63. Winter/MVI_9130.MP4",
+      "ffprobe": {
+        "codec": "h264",
+        "coded_size": [
+          1920,
+          1080
+        ],
+        "display_size": [
+          1920,
+          1080
+        ],
+        "rotation": 0,
+        "r_frame_rate": "25/1",
+        "avg_frame_rate": "25/1",
+        "n_frames": 77,
+        "frame_interval_ms": {
+          "min": 39.99999999999959,
+          "max": 40.000000000000036,
+          "median": 40.000000000000036
+        },
+        "vfr": false
+      },
+      "opencv": {
+        "opened": true,
+        "fps": 25.0,
+        "frame_count_prop": 77,
+        "orientation_meta": 0.0,
+        "orientation_auto": 1.0,
+        "decoded_frames": 77,
+        "decoded_size": [
+          1920,
+          1080
+        ]
+      },
+      "mishandled": false,
+      "reasons": [],
+      "max_timestamp_error_ms": 4.547473508864641e-13
+    },
+    {
+      "path": "Society/15. Newspaper/MVI_4844.MOV",
+      "ffprobe": {
+        "codec": "h264",
+        "coded_size": [
+          1920,
+          1080
+        ],
+        "display_size": [
+          1920,
+          1080
+        ],
+        "rotation": 0,
+        "r_frame_rate": "25/1",
+        "avg_frame_rate": "25/1",
+        "n_frames": 56,
+        "frame_interval_ms": {
+          "min": 39.999999999999815,
+          "max": 40.000000000000036,
+          "median": 40.000000000000036
+        },
+        "vfr": false
+      },
+      "opencv": {
+        "opened": true,
+        "fps": 25.0,
+        "frame_count_prop": 56,
+        "orientation_meta": 0.0,
+        "orientation_auto": 1.0,
+        "decoded_frames": 56,
+        "decoded_size": [
+          1920,
+          1080
+        ]
+      },
+      "mishandled": false,
+      "reasons": [],
+      "max_timestamp_error_ms": 2.2737367544323206e-13
+    },
+    {
+      "path": "Society/22. Science/MVI_8992.MP4",
+      "ffprobe": {
+        "codec": "h264",
+        "coded_size": [
+          1920,
+          1080
+        ],
+        "display_size": [
+          1920,
+          1080
+        ],
+        "rotation": 0,
+        "r_frame_rate": "25/1",
+        "avg_frame_rate": "25/1",
+        "n_frames": 69,
+        "frame_interval_ms": {
+          "min": 39.99999999999959,
+          "max": 40.000000000000036,
+          "median": 40.000000000000036
+        },
+        "vfr": false
+      },
+      "opencv": {
+        "opened": true,
+        "fps": 25.0,
+        "frame_count_prop": 69,
+        "orientation_meta": 0.0,
+        "orientation_auto": 1.0,
+        "decoded_frames": 69,
+        "decoded_size": [
+          1920,
+          1080
+        ]
+      },
+      "mishandled": false,
+      "reasons": [],
+      "max_timestamp_error_ms": 4.547473508864641e-13
+    },
+    {
+      "path": "Society/9. Technology/MVI_8690.MP4",
+      "ffprobe": {
+        "codec": "h264",
+        "coded_size": [
+          1920,
+          1080
+        ],
+        "display_size": [
+          1920,
+          1080
+        ],
+        "rotation": 0,
+        "r_frame_rate": "25/1",
+        "avg_frame_rate": "25/1",
+        "n_frames": 69,
+        "frame_interval_ms": {
+          "min": 39.99999999999959,
+          "max": 40.000000000000036,
+          "median": 40.000000000000036
+        },
+        "vfr": false
+      },
+      "opencv": {
+        "opened": true,
+        "fps": 25.0,
+        "frame_count_prop": 69,
+        "orientation_meta": 0.0,
+        "orientation_auto": 1.0,
+        "decoded_frames": 69,
+        "decoded_size": [
+          1920,
+          1080
+        ]
+      },
+      "mishandled": false,
+      "reasons": [],
+      "max_timestamp_error_ms": 4.547473508864641e-13
+    }
+  ]
+}
