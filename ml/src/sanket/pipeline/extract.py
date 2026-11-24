@@ -212,7 +212,15 @@ def process_zip(
     return counts
 
 
-def run(cfg: Config, only_zips: list[str] | None = None, log: Any = print) -> None:
+def run(
+    cfg: Config, only_zips: list[str] | None = None, log: Any = print, allow_dirty: bool = False
+) -> None:
+    sha = _git_sha()
+    if sha.endswith("-dirty") and not allow_dirty:
+        raise SystemExit(
+            "working tree has uncommitted changes: commit first so this run is reproducible "
+            "from its git SHA (or pass --allow-dirty for a throwaway dry run)"
+        )
     cfg.out_dir.mkdir(parents=True, exist_ok=True)
     cfg.raw_dir.mkdir(parents=True, exist_ok=True)
     guard = DiskGuard(cfg.raw_dir, min_free=int(cfg.min_free_gb * GB))
@@ -235,7 +243,7 @@ def run(cfg: Config, only_zips: list[str] | None = None, log: Any = print) -> No
         else spec["extractor"]["mediapipe_version"],
         "model_sha256": {p.name: p.sha256 for p in model_pins(spec)},
         "opencv_version": cv2.__version__,
-        "git_sha": _git_sha(),
+        "git_sha": sha,
     }
     run_header = {
         **base_meta,
@@ -274,8 +282,11 @@ def main() -> None:
     )
     ap.add_argument("--config", type=Path, default=REPO_ROOT / "ml" / "configs" / "extract.yaml")
     ap.add_argument("--zips", nargs="*", help="only these zip names (dry runs)")
+    ap.add_argument(
+        "--allow-dirty", action="store_true", help="dry runs only: allow uncommitted changes"
+    )
     args = ap.parse_args()
-    run(Config.load(args.config), only_zips=args.zips)
+    run(Config.load(args.config), only_zips=args.zips, allow_dirty=args.allow_dirty)
 
 
 if __name__ == "__main__":

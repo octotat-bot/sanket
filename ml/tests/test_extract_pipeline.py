@@ -208,3 +208,14 @@ def test_data_report_counts_duplicates_errors_and_review(tmp_path: Path) -> None
     assert list(s["duplicates"].values()) == [["A/1. Dog/MVI_1.MOV", "A/2. Cat/MVI_2.MOV"]]
     assert s["review"] == ["A/2. Cat/MVI_3.MOV"]
     assert "bad" in md
+
+
+def test_run_refuses_a_dirty_working_tree(
+    setup: tuple[Path, Config], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from sanket.pipeline import extract
+
+    _, cfg = setup
+    monkeypatch.setattr(extract, "_git_sha", lambda: "abc123-dirty")
+    with pytest.raises(SystemExit, match="uncommitted"):
+        extract.run(cfg, only_zips=[])
