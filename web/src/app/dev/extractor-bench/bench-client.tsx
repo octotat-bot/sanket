@@ -226,6 +226,12 @@ export default function BenchClient() {
         Keep this tab in front and the laptop plugged in while it runs (about{" "}
         {selected.length * (seconds + warmup) + 5} s). Background tabs are throttled.
       </p>
+      <p className="text-sm font-medium text-amber-700 dark:text-amber-400">
+        While each configuration runs, stand where the camera sees you from the waist up, and keep
+        both hands raised and moving (sign any words). With no hands in view the hand models skip
+        most of their work, and the timings look better than they really are. The &ldquo;frames
+        w/ hand&rdquo; column should be well above 80%.
+      </p>
 
       {/* Preview is mirrored for the user only; landmarks are computed on the unmirrored frames. */}
       <video

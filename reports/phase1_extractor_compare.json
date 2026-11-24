@@ -1,0 +1,2250 @@
+{
+  "summary": {
+    "holistic": {
+      "any_hand": 0.8584768018675226,
+      "both_hands": 0.5774730084622118,
+      "left": 0.7522614531660344,
+      "right": 0.6836883571637,
+      "pose": 0.993872191421068,
+      "body_agreement": 0.9934707202611712,
+      "body_judged": 4901,
+      "swaps_per_100": 0.0,
+      "swap_transitions": 2420,
+      "swaps": 0,
+      "videos_with_zero_hand_frames": 0,
+      "ms_per_frame_python_cpu": 21.520383535626625
+    },
+    "hand_pose": {
+      "any_hand": 0.8435949810329735,
+      "both_hands": 0.537204552086373,
+      "left": 0.6988619784067698,
+      "right": 0.6819375547125766,
+      "pose": 0.9629413481178873,
+      "body_agreement": 0.988795518207283,
+      "body_judged": 4641,
+      "swaps_per_100": 1.0783907092492742,
+      "swap_transitions": 2411,
+      "swaps": 26,
+      "videos_with_zero_hand_frames": 0,
+      "ms_per_frame_python_cpu": 37.916503274940226
+    },
+    "hand_pose_flipped": {
+      "any_hand": 0.8435949810329735,
+      "both_hands": 0.537204552086373,
+      "left": 0.6819375547125766,
+      "right": 0.6988619784067698,
+      "pose": 0.9629413481178873,
+      "body_agreement": 0.011204481792717087,
+      "body_judged": 4641,
+      "swaps_per_100": 1.0783907092492742,
+      "swap_transitions": 2411,
+      "swaps": 26,
+      "videos_with_zero_hand_frames": 0,
+      "ms_per_frame_python_cpu": 37.916503274940226
+    },
+    "n_videos": 50,
+    "n_frames": 3427
+  },
+  "videos": [
+    {
+      "path": "Adjectives/1. loud/MVI_9289.MOV",
+      "n_frames": 55,
+      "size": [
+        1920,
+        1080
+      ],
+      "holistic": {
+        "any_hand": 0.8,
+        "both_hands": 0.7636363636363637,
+        "left": 0.7818181818181819,
+        "right": 0.7818181818181819,
+        "pose": 1.0,
+        "body_judged": 86,
+        "body_agree": 86,
+        "swap_transitions": 39,
+        "swaps": 0
+      },
+      "holistic_ms": 29.89310909073207,
+      "hand_pose": {
+        "any_hand": 0.8,
+        "both_hands": 0.7636363636363637,
+        "left": 0.7818181818181819,
+        "right": 0.7818181818181819,
+        "pose": 1.0,
+        "body_judged": 86,
+        "body_agree": 86,
+        "swap_transitions": 39,
+        "swaps": 0
+      },
+      "hand_pose_ms": 46.14046819941987,
+      "hand_pose_flipped": {
+        "any_hand": 0.8,
+        "both_hands": 0.7636363636363637,
+        "left": 0.7818181818181819,
+        "right": 0.7818181818181819,
+        "pose": 1.0,
+        "body_judged": 86,
+        "body_agree": 0,
+        "swap_transitions": 39,
+        "swaps": 0
+      },
+      "hand_pose_flipped_ms": 46.14046819941987
+    },
+    {
+      "path": "Adjectives/2. quiet/MVI_9537.MOV",
+      "n_frames": 69,
+      "size": [
+        1920,
+        1080
+      ],
+      "holistic": {
+        "any_hand": 1.0,
+        "both_hands": 0.8115942028985508,
+        "left": 1.0,
+        "right": 0.8115942028985508,
+        "pose": 1.0,
+        "body_judged": 125,
+        "body_agree": 125,
+        "swap_transitions": 64,
+        "swaps": 0
+      },
+      "holistic_ms": 28.139309188059155,
+      "hand_pose": {
+        "any_hand": 1.0,
+        "both_hands": 0.7681159420289855,
+        "left": 1.0,
+        "right": 0.7681159420289855,
+        "pose": 1.0,
+        "body_judged": 122,
+        "body_agree": 122,
+        "swap_transitions": 62,
+        "swaps": 0
+      },
+      "hand_pose_ms": 47.517588724524785,
+      "hand_pose_flipped": {
+        "any_hand": 1.0,
+        "both_hands": 0.7681159420289855,
+        "left": 0.7681159420289855,
+        "right": 1.0,
+        "pose": 1.0,
+        "body_judged": 122,
+        "body_agree": 0,
+        "swap_transitions": 62,
+        "swaps": 0
+      },
+      "hand_pose_flipped_ms": 47.517588724524785
+    },
+    {
+      "path": "Adjectives/86. fast/MVI_9406.MOV",
+      "n_frames": 55,
+      "size": [
+        1920,
+        1080
+      ],
+      "holistic": {
+        "any_hand": 1.0,
+        "both_hands": 0.6545454545454545,
+        "left": 1.0,
+        "right": 0.6545454545454545,
+        "pose": 1.0,
+        "body_judged": 91,
+        "body_agree": 91,
+        "swap_transitions": 46,
+        "swaps": 0
+      },
+      "holistic_ms": 23.151693926774897,
+      "hand_pose": {
+        "any_hand": 1.0,
+        "both_hands": 0.6363636363636364,
+        "left": 1.0,
+        "right": 0.6363636363636364,
+        "pose": 1.0,
+        "body_judged": 90,
+        "body_agree": 90,
+        "swap_transitions": 48,
+        "swaps": 0
+      },
+      "hand_pose_ms": 38.36574001840993,
+      "hand_pose_flipped": {
+        "any_hand": 1.0,
+        "both_hands": 0.6363636363636364,
+        "left": 0.6363636363636364,
+        "right": 1.0,
+        "pose": 1.0,
+        "body_judged": 90,
+        "body_agree": 0,
+        "swap_transitions": 48,
+        "swaps": 0
+      },
+      "hand_pose_flipped_ms": 38.36574001840993
+    },
+    {
+      "path": "Adjectives/87. hot/MVI_5136.MOV",
+      "n_frames": 71,
+      "size": [
+        1920,
+        1080
+      ],
+      "holistic": {
+        "any_hand": 0.8591549295774648,
+        "both_hands": 0.647887323943662,
+        "left": 0.7183098591549296,
+        "right": 0.7887323943661971,
+        "pose": 1.0,
+        "body_judged": 107,
+        "body_agree": 104,
+        "swap_transitions": 48,
+        "swaps": 0
+      },
+      "holistic_ms": 21.49008093036967,
+      "hand_pose": {
+        "any_hand": 0.8450704225352113,
+        "both_hands": 0.6056338028169014,
+        "left": 0.7323943661971831,
+        "right": 0.7183098591549296,
+        "pose": 1.0,
+        "body_judged": 103,
+        "body_agree": 91,
+        "swap_transitions": 45,
+        "swaps": 6
+      },
+      "hand_pose_ms": 38.36489371796758,
+      "hand_pose_flipped": {
+        "any_hand": 0.8450704225352113,
+        "both_hands": 0.6056338028169014,
+        "left": 0.7183098591549296,
+        "right": 0.7323943661971831,
+        "pose": 1.0,
+        "body_judged": 103,
+        "body_agree": 12,
+        "swap_transitions": 45,
+        "swaps": 6
+      },
+      "hand_pose_flipped_ms": 38.36489371796758
+    },
+    {
+      "path": "Adjectives/91. new/MVI_5151.MOV",
+      "n_frames": 59,
+      "size": [
+        1920,
+        1080
+      ],
+      "holistic": {
+        "any_hand": 1.0,
+        "both_hands": 0.7796610169491526,
+        "left": 1.0,
+        "right": 0.7796610169491526,
+        "pose": 1.0,
+        "body_judged": 105,
+        "body_agree": 105,
+        "swap_transitions": 54,
+        "swaps": 0
+      },
+      "holistic_ms": 22.521297949054514,
+      "hand_pose": {
+        "any_hand": 1.0,
+        "both_hands": 0.7966101694915254,
+        "left": 1.0,
+        "right": 0.7966101694915254,
+        "pose": 1.0,
+        "body_judged": 106,
+        "body_agree": 106,
+        "swap_transitions": 52,
+        "swaps": 0
+      },
+      "hand_pose_ms": 40.41707974570503,
+      "hand_pose_flipped": {
+        "any_hand": 1.0,
+        "both_hands": 0.7966101694915254,
+        "left": 0.7966101694915254,
+        "right": 1.0,
+        "pose": 1.0,
+        "body_judged": 106,
+        "body_agree": 0,
+        "swap_transitions": 52,
+        "swaps": 0
+      },
+      "hand_pose_flipped_ms": 40.41707974570503
+    },
+    {
+      "path": "Adjectives/93. young/MVI_9427.MOV",
+      "n_frames": 45,
+      "size": [
+        1920,
+        1080
+      ],
+      "holistic": {
+        "any_hand": 1.0,
+        "both_hands": 0.5333333333333333,
+        "left": 1.0,
+        "right": 0.5333333333333333,
+        "pose": 1.0,
+        "body_judged": 69,
+        "body_agree": 69,
+        "swap_transitions": 38,
+        "swaps": 0
+      },
+      "holistic_ms": 45.72496022220649,
+      "hand_pose": {
+        "any_hand": 1.0,
+        "both_hands": 0.6222222222222222,
+        "left": 1.0,
+        "right": 0.6222222222222222,
+        "pose": 1.0,
+        "body_judged": 73,
+        "body_agree": 72,
+        "swap_transitions": 34,
+        "swaps": 0
+      },
+      "hand_pose_ms": 48.16223244415596,
+      "hand_pose_flipped": {
+        "any_hand": 1.0,
+        "both_hands": 0.6222222222222222,
+        "left": 0.6222222222222222,
+        "right": 1.0,
+        "pose": 1.0,
+        "body_judged": 73,
+        "body_agree": 1,
+        "swap_transitions": 34,
+        "swaps": 0
+      },
+      "hand_pose_flipped_ms": 48.16223244415596
+    },
+    {
+      "path": "Adjectives/97. dry/MVI_9522.MOV",
+      "n_frames": 64,
+      "size": [
+        1920,
+        1080
+      ],
+      "holistic": {
+        "any_hand": 0.890625,
+        "both_hands": 0.6875,
+        "left": 0.78125,
+        "right": 0.796875,
+        "pose": 1.0,
+        "body_judged": 101,
+        "body_agree": 101,
+        "swap_transitions": 49,
+        "swaps": 0
+      },
+      "holistic_ms": 21.260178281750086,
+      "hand_pose": {
+        "any_hand": 0.890625,
+        "both_hands": 0.625,
+        "left": 0.78125,
+        "right": 0.734375,
+        "pose": 1.0,
+        "body_judged": 97,
+        "body_agree": 95,
+        "swap_transitions": 48,
+        "swaps": 1
+      },
+      "hand_pose_ms": 43.627283328305566,
+      "hand_pose_flipped": {
+        "any_hand": 0.890625,
+        "both_hands": 0.625,
+        "left": 0.734375,
+        "right": 0.78125,
+        "pose": 1.0,
+        "body_judged": 97,
+        "body_agree": 2,
+        "swap_transitions": 48,
+        "swaps": 1
+      },
+      "hand_pose_flipped_ms": 43.627283328305566
+    },
+    {
+      "path": "Adjectives/98. sick/MVI_5171.MOV",
+      "n_frames": 85,
+      "size": [
+        1920,
+        1080
+      ],
+      "holistic": {
+        "any_hand": 0.9529411764705882,
+        "both_hands": 0.8,
+        "left": 0.9529411764705882,
+        "right": 0.8,
+        "pose": 1.0,
+        "body_judged": 149,
+        "body_agree": 149,
+        "swap_transitions": 70,
+        "swaps": 0
+      },
+      "holistic_ms": 23.04415541165166,
+      "hand_pose": {
+        "any_hand": 0.9294117647058824,
+        "both_hands": 0.8117647058823529,
+        "left": 0.8941176470588236,
+        "right": 0.8470588235294118,
+        "pose": 1.0,
+        "body_judged": 148,
+        "body_agree": 146,
+        "swap_transitions": 70,
+        "swaps": 1
+      },
+      "hand_pose_ms": 36.06355192896444,
+      "hand_pose_flipped": {
+        "any_hand": 0.9294117647058824,
+        "both_hands": 0.8117647058823529,
+        "left": 0.8470588235294118,
+        "right": 0.8941176470588236,
+        "pose": 1.0,
+        "body_judged": 148,
+        "body_agree": 2,
+        "swap_transitions": 70,
+        "swaps": 1
+      },
+      "hand_pose_flipped_ms": 36.06355192896444
+    },
+    {
+      "path": "Adjectives/98. sick/MVI_9442.MOV",
+      "n_frames": 58,
+      "size": [
+        1920,
+        1080
+      ],
+      "holistic": {
+        "any_hand": 0.8275862068965517,
+        "both_hands": 0.7586206896551724,
+        "left": 0.8275862068965517,
+        "right": 0.7586206896551724,
+        "pose": 1.0,
+        "body_judged": 92,
+        "body_agree": 92,
+        "swap_transitions": 43,
+        "swaps": 0
+      },
+      "holistic_ms": 20.94208410324364,
+      "hand_pose": {
+        "any_hand": 0.8103448275862069,
+        "both_hands": 0.7068965517241379,
+        "left": 0.7758620689655172,
+        "right": 0.7413793103448276,
+        "pose": 1.0,
+        "body_judged": 88,
+        "body_agree": 87,
+        "swap_transitions": 39,
+        "swaps": 0
+      },
+      "hand_pose_ms": 37.75572556935066,
+      "hand_pose_flipped": {
+        "any_hand": 0.8103448275862069,
+        "both_hands": 0.7068965517241379,
+        "left": 0.7413793103448276,
+        "right": 0.7758620689655172,
+        "pose": 1.0,
+        "body_judged": 88,
+        "body_agree": 1,
+        "swap_transitions": 39,
+        "swaps": 0
+      },
+      "hand_pose_flipped_ms": 37.75572556935066
+    },
+    {
+      "path": "Animals/1. Dog/MVI_8560.MP4",
+      "n_frames": 83,
+      "size": [
+        1920,
+        1080
+      ],
+      "holistic": {
+        "any_hand": 0.3855421686746988,
+        "both_hands": 0.1566265060240964,
+        "left": 0.20481927710843373,
+        "right": 0.3373493975903614,
+        "pose": 0.9759036144578314,
+        "body_judged": 43,
+        "body_agree": 43,
+        "swap_transitions": 23,
+        "swaps": 0
+      },
+      "holistic_ms": 20.979893602362793,
+      "hand_pose": {
+        "any_hand": 0.3373493975903614,
+        "both_hands": 0.13253012048192772,
+        "left": 0.13253012048192772,
+        "right": 0.3373493975903614,
+        "pose": 0.4819277108433735,
+        "body_judged": 30,
+        "body_agree": 30,
+        "swap_transitions": 23,
+        "swaps": 0
+      },
+      "hand_pose_ms": 33.00334438560629,
+      "hand_pose_flipped": {
+        "any_hand": 0.3373493975903614,
+        "both_hands": 0.13253012048192772,
+        "left": 0.3373493975903614,
+        "right": 0.13253012048192772,
+        "pose": 0.4819277108433735,
+        "body_judged": 30,
+        "body_agree": 0,
+        "swap_transitions": 23,
+        "swaps": 0
+      },
+      "hand_pose_flipped_ms": 33.00334438560629
+    },
+    {
+      "path": "Animals/2. Cat/MVI_3089.MOV",
+      "n_frames": 80,
+      "size": [
+        1920,
+        1080
+      ],
+      "holistic": {
+        "any_hand": 0.7875,
+        "both_hands": 0.675,
+        "left": 0.6875,
+        "right": 0.775,
+        "pose": 1.0,
+        "body_judged": 117,
+        "body_agree": 117,
+        "swap_transitions": 56,
+        "swaps": 0
+      },
+      "holistic_ms": 20.608117737083376,
+      "hand_pose": {
+        "any_hand": 0.7875,
+        "both_hands": 0.75,
+        "left": 0.7625,
+        "right": 0.775,
+        "pose": 1.0,
+        "body_judged": 123,
+        "body_agree": 123,
+        "swap_transitions": 57,
+        "swaps": 0
+      },
+      "hand_pose_ms": 34.225297949888045,
+      "hand_pose_flipped": {
+        "any_hand": 0.7875,
+        "both_hands": 0.75,
+        "left": 0.775,
+        "right": 0.7625,
+        "pose": 1.0,
+        "body_judged": 123,
+        "body_agree": 0,
+        "swap_transitions": 57,
+        "swaps": 0
+      },
+      "hand_pose_flipped_ms": 34.225297949888045
+    },
+    {
+      "path": "Animals/5. Cow/MVI_4159.MOV",
+      "n_frames": 50,
+      "size": [
+        1920,
+        1080
+      ],
+      "holistic": {
+        "any_hand": 0.8,
+        "both_hands": 0.72,
+        "left": 0.72,
+        "right": 0.8,
+        "pose": 1.0,
+        "body_judged": 76,
+        "body_agree": 76,
+        "swap_transitions": 34,
+        "swaps": 0
+      },
+      "holistic_ms": 20.665334179793717,
+      "hand_pose": {
+        "any_hand": 0.78,
+        "both_hands": 0.66,
+        "left": 0.72,
+        "right": 0.72,
+        "pose": 1.0,
+        "body_judged": 72,
+        "body_agree": 71,
+        "swap_transitions": 33,
+        "swaps": 1
+      },
+      "hand_pose_ms": 36.1296924596536,
+      "hand_pose_flipped": {
+        "any_hand": 0.78,
+        "both_hands": 0.66,
+        "left": 0.72,
+        "right": 0.72,
+        "pose": 1.0,
+        "body_judged": 72,
+        "body_agree": 1,
+        "swap_transitions": 33,
+        "swaps": 1
+      },
+      "hand_pose_flipped_ms": 36.1296924596536
+    },
+    {
+      "path": "Clothes/40. Skirt/MVI_3997.MOV",
+      "n_frames": 66,
+      "size": [
+        1920,
+        1080
+      ],
+      "holistic": {
+        "any_hand": 0.9848484848484849,
+        "both_hands": 0.7727272727272727,
+        "left": 0.7878787878787878,
+        "right": 0.9696969696969697,
+        "pose": 1.0,
+        "body_judged": 116,
+        "body_agree": 116,
+        "swap_transitions": 51,
+        "swaps": 0
+      },
+      "holistic_ms": 20.39442490841435,
+      "hand_pose": {
+        "any_hand": 0.8939393939393939,
+        "both_hands": 0.6666666666666666,
+        "left": 0.7575757575757576,
+        "right": 0.803030303030303,
+        "pose": 1.0,
+        "body_judged": 103,
+        "body_agree": 96,
+        "swap_transitions": 44,
+        "swaps": 2
+      },
+      "hand_pose_ms": 36.87929539404594,
+      "hand_pose_flipped": {
+        "any_hand": 0.8939393939393939,
+        "both_hands": 0.6666666666666666,
+        "left": 0.803030303030303,
+        "right": 0.7575757575757576,
+        "pose": 1.0,
+        "body_judged": 103,
+        "body_agree": 7,
+        "swap_transitions": 44,
+        "swaps": 2
+      },
+      "hand_pose_flipped_ms": 36.87929539404594
+    },
+    {
+      "path": "Colours/47. Red/MVI_4899.MOV",
+      "n_frames": 58,
+      "size": [
+        1920,
+        1080
+      ],
+      "holistic": {
+        "any_hand": 1.0,
+        "both_hands": 0.603448275862069,
+        "left": 1.0,
+        "right": 0.603448275862069,
+        "pose": 1.0,
+        "body_judged": 93,
+        "body_agree": 93,
+        "swap_transitions": 53,
+        "swaps": 0
+      },
+      "holistic_ms": 20.79499998317574,
+      "hand_pose": {
+        "any_hand": 1.0,
+        "both_hands": 0.7586206896551724,
+        "left": 1.0,
+        "right": 0.7586206896551724,
+        "pose": 1.0,
+        "body_judged": 102,
+        "body_agree": 102,
+        "swap_transitions": 53,
+        "swaps": 0
+      },
+      "hand_pose_ms": 37.425712655335545,
+      "hand_pose_flipped": {
+        "any_hand": 1.0,
+        "both_hands": 0.7586206896551724,
+        "left": 0.7586206896551724,
+        "right": 1.0,
+        "pose": 1.0,
+        "body_judged": 102,
+        "body_agree": 0,
+        "swap_transitions": 53,
+        "swaps": 0
+      },
+      "hand_pose_flipped_ms": 37.425712655335545
+    },
+    {
+      "path": "Colours/49. Blue/MVI_4026.MOV",
+      "n_frames": 56,
+      "size": [
+        1920,
+        1080
+      ],
+      "holistic": {
+        "any_hand": 1.0,
+        "both_hands": 0.8392857142857143,
+        "left": 1.0,
+        "right": 0.8392857142857143,
+        "pose": 1.0,
+        "body_judged": 103,
+        "body_agree": 103,
+        "swap_transitions": 49,
+        "swaps": 0
+      },
+      "holistic_ms": 21.31118612474633,
+      "hand_pose": {
+        "any_hand": 1.0,
+        "both_hands": 0.7857142857142857,
+        "left": 1.0,
+        "right": 0.7857142857142857,
+        "pose": 1.0,
+        "body_judged": 100,
+        "body_agree": 100,
+        "swap_transitions": 51,
+        "swaps": 0
+      },
+      "hand_pose_ms": 35.85743380374749,
+      "hand_pose_flipped": {
+        "any_hand": 1.0,
+        "both_hands": 0.7857142857142857,
+        "left": 0.7857142857142857,
+        "right": 1.0,
+        "pose": 1.0,
+        "body_judged": 100,
+        "body_agree": 0,
+        "swap_transitions": 51,
+        "swaps": 0
+      },
+      "hand_pose_flipped_ms": 35.85743380374749
+    },
+    {
+      "path": "Days_and_Time/75. Yesterday/MVI_4626.MOV",
+      "n_frames": 45,
+      "size": [
+        1920,
+        1080
+      ],
+      "holistic": {
+        "any_hand": 1.0,
+        "both_hands": 0.4222222222222222,
+        "left": 1.0,
+        "right": 0.4222222222222222,
+        "pose": 1.0,
+        "body_judged": 64,
+        "body_agree": 64,
+        "swap_transitions": 35,
+        "swaps": 0
+      },
+      "holistic_ms": 21.35385100053908,
+      "hand_pose": {
+        "any_hand": 0.6444444444444445,
+        "both_hands": 0.13333333333333333,
+        "left": 0.2222222222222222,
+        "right": 0.5555555555555556,
+        "pose": 1.0,
+        "body_judged": 35,
+        "body_agree": 33,
+        "swap_transitions": 22,
+        "swaps": 1
+      },
+      "hand_pose_ms": 40.737730577529874,
+      "hand_pose_flipped": {
+        "any_hand": 0.6444444444444445,
+        "both_hands": 0.13333333333333333,
+        "left": 0.5555555555555556,
+        "right": 0.2222222222222222,
+        "pose": 1.0,
+        "body_judged": 35,
+        "body_agree": 2,
+        "swap_transitions": 22,
+        "swaps": 1
+      },
+      "hand_pose_flipped_ms": 40.737730577529874
+    },
+    {
+      "path": "Days_and_Time/79. Hour/MVI_5051.MOV",
+      "n_frames": 51,
+      "size": [
+        1920,
+        1080
+      ],
+      "holistic": {
+        "any_hand": 0.7843137254901961,
+        "both_hands": 0.39215686274509803,
+        "left": 0.7254901960784313,
+        "right": 0.45098039215686275,
+        "pose": 1.0,
+        "body_judged": 60,
+        "body_agree": 60,
+        "swap_transitions": 28,
+        "swaps": 0
+      },
+      "holistic_ms": 20.543656745205368,
+      "hand_pose": {
+        "any_hand": 0.21568627450980393,
+        "both_hands": 0.0,
+        "left": 0.17647058823529413,
+        "right": 0.0392156862745098,
+        "pose": 1.0,
+        "body_judged": 11,
+        "body_agree": 10,
+        "swap_transitions": 8,
+        "swaps": 0
+      },
+      "hand_pose_ms": 40.58029164683403,
+      "hand_pose_flipped": {
+        "any_hand": 0.21568627450980393,
+        "both_hands": 0.0,
+        "left": 0.0392156862745098,
+        "right": 0.17647058823529413,
+        "pose": 1.0,
+        "body_judged": 11,
+        "body_agree": 1,
+        "swap_transitions": 8,
+        "swaps": 0
+      },
+      "hand_pose_flipped_ms": 40.58029164683403
+    },
+    {
+      "path": "Days_and_Time/86. Time/MVI_5077.MOV",
+      "n_frames": 45,
+      "size": [
+        1920,
+        1080
+      ],
+      "holistic": {
+        "any_hand": 0.5333333333333333,
+        "both_hands": 0.17777777777777778,
+        "left": 0.5333333333333333,
+        "right": 0.17777777777777778,
+        "pose": 1.0,
+        "body_judged": 32,
+        "body_agree": 32,
+        "swap_transitions": 17,
+        "swaps": 0
+      },
+      "holistic_ms": 20.529426844829384,
+      "hand_pose": {
+        "any_hand": 0.5111111111111111,
+        "both_hands": 0.0,
+        "left": 0.4888888888888889,
+        "right": 0.022222222222222223,
+        "pose": 1.0,
+        "body_judged": 22,
+        "body_agree": 22,
+        "swap_transitions": 21,
+        "swaps": 0
+      },
+      "hand_pose_ms": 36.05691482160991,
+      "hand_pose_flipped": {
+        "any_hand": 0.5111111111111111,
+        "both_hands": 0.0,
+        "left": 0.022222222222222223,
+        "right": 0.4888888888888889,
+        "pose": 1.0,
+        "body_judged": 22,
+        "body_agree": 0,
+        "swap_transitions": 21,
+        "swaps": 0
+      },
+      "hand_pose_flipped_ms": 36.05691482160991
+    },
+    {
+      "path": "Electronics/51. Clock/MVI_4524.MOV",
+      "n_frames": 79,
+      "size": [
+        1920,
+        1080
+      ],
+      "holistic": {
+        "any_hand": 0.9240506329113924,
+        "both_hands": 0.43037974683544306,
+        "left": 0.8607594936708861,
+        "right": 0.4936708860759494,
+        "pose": 1.0,
+        "body_judged": 107,
+        "body_agree": 106,
+        "swap_transitions": 53,
+        "swaps": 0
+      },
+      "holistic_ms": 20.789543784476223,
+      "hand_pose": {
+        "any_hand": 0.9113924050632911,
+        "both_hands": 0.3037974683544304,
+        "left": 0.7721518987341772,
+        "right": 0.4430379746835443,
+        "pose": 0.8607594936708861,
+        "body_judged": 81,
+        "body_agree": 79,
+        "swap_transitions": 56,
+        "swaps": 2
+      },
+      "hand_pose_ms": 41.2102969619556,
+      "hand_pose_flipped": {
+        "any_hand": 0.9113924050632911,
+        "both_hands": 0.3037974683544304,
+        "left": 0.4430379746835443,
+        "right": 0.7721518987341772,
+        "pose": 0.8607594936708861,
+        "body_judged": 81,
+        "body_agree": 2,
+        "swap_transitions": 56,
+        "swaps": 2
+      },
+      "hand_pose_flipped_ms": 41.2102969619556
+    },
+    {
+      "path": "Greetings/48. Hello/MVI_0030.MOV",
+      "n_frames": 74,
+      "size": [
+        1920,
+        1080
+      ],
+      "holistic": {
+        "any_hand": 1.0,
+        "both_hands": 0.8918918918918919,
+        "left": 1.0,
+        "right": 0.8918918918918919,
+        "pose": 1.0,
+        "body_judged": 140,
+        "body_agree": 140,
+        "swap_transitions": 69,
+        "swaps": 0
+      },
+      "holistic_ms": 21.19008954055922,
+      "hand_pose": {
+        "any_hand": 1.0,
+        "both_hands": 0.8648648648648649,
+        "left": 1.0,
+        "right": 0.8648648648648649,
+        "pose": 1.0,
+        "body_judged": 138,
+        "body_agree": 138,
+        "swap_transitions": 67,
+        "swaps": 0
+      },
+      "hand_pose_ms": 35.045310797490735,
+      "hand_pose_flipped": {
+        "any_hand": 1.0,
+        "both_hands": 0.8648648648648649,
+        "left": 0.8648648648648649,
+        "right": 1.0,
+        "pose": 1.0,
+        "body_judged": 138,
+        "body_agree": 0,
+        "swap_transitions": 67,
+        "swaps": 0
+      },
+      "hand_pose_flipped_ms": 35.045310797490735
+    },
+    {
+      "path": "Greetings/54. Good night/MVI_9982.MOV",
+      "n_frames": 84,
+      "size": [
+        1920,
+        1080
+      ],
+      "holistic": {
+        "any_hand": 1.0,
+        "both_hands": 0.8809523809523809,
+        "left": 1.0,
+        "right": 0.8809523809523809,
+        "pose": 1.0,
+        "body_judged": 158,
+        "body_agree": 158,
+        "swap_transitions": 75,
+        "swaps": 0
+      },
+      "holistic_ms": 21.004563546912756,
+      "hand_pose": {
+        "any_hand": 1.0,
+        "both_hands": 0.8333333333333334,
+        "left": 1.0,
+        "right": 0.8333333333333334,
+        "pose": 1.0,
+        "body_judged": 154,
+        "body_agree": 154,
+        "swap_transitions": 77,
+        "swaps": 0
+      },
+      "hand_pose_ms": 35.11669892820161,
+      "hand_pose_flipped": {
+        "any_hand": 1.0,
+        "both_hands": 0.8333333333333334,
+        "left": 0.8333333333333334,
+        "right": 1.0,
+        "pose": 1.0,
+        "body_judged": 154,
+        "body_agree": 0,
+        "swap_transitions": 77,
+        "swaps": 0
+      },
+      "hand_pose_flipped_ms": 35.11669892820161
+    },
+    {
+      "path": "Greetings/56. Pleased/MVI_0066.MOV",
+      "n_frames": 79,
+      "size": [
+        1920,
+        1080
+      ],
+      "holistic": {
+        "any_hand": 1.0,
+        "both_hands": 0.8354430379746836,
+        "left": 1.0,
+        "right": 0.8354430379746836,
+        "pose": 1.0,
+        "body_judged": 145,
+        "body_agree": 145,
+        "swap_transitions": 64,
+        "swaps": 0
+      },
+      "holistic_ms": 21.789362367196155,
+      "hand_pose": {
+        "any_hand": 1.0,
+        "both_hands": 0.8481012658227848,
+        "left": 1.0,
+        "right": 0.8481012658227848,
+        "pose": 1.0,
+        "body_judged": 146,
+        "body_agree": 146,
+        "swap_transitions": 68,
+        "swaps": 0
+      },
+      "hand_pose_ms": 37.05960819031675,
+      "hand_pose_flipped": {
+        "any_hand": 1.0,
+        "both_hands": 0.8481012658227848,
+        "left": 0.8481012658227848,
+        "right": 1.0,
+        "pose": 1.0,
+        "body_judged": 146,
+        "body_agree": 0,
+        "swap_transitions": 68,
+        "swaps": 0
+      },
+      "hand_pose_flipped_ms": 37.05960819031675
+    },
+    {
+      "path": "Home/24. Table/MVI_4345.MOV",
+      "n_frames": 50,
+      "size": [
+        1920,
+        1080
+      ],
+      "holistic": {
+        "any_hand": 0.9,
+        "both_hands": 0.66,
+        "left": 0.74,
+        "right": 0.82,
+        "pose": 1.0,
+        "body_judged": 78,
+        "body_agree": 78,
+        "swap_transitions": 30,
+        "swaps": 0
+      },
+      "holistic_ms": 22.509492519602645,
+      "hand_pose": {
+        "any_hand": 0.8,
+        "both_hands": 0.48,
+        "left": 0.62,
+        "right": 0.66,
+        "pose": 1.0,
+        "body_judged": 64,
+        "body_agree": 62,
+        "swap_transitions": 30,
+        "swaps": 3
+      },
+      "hand_pose_ms": 38.567592519684695,
+      "hand_pose_flipped": {
+        "any_hand": 0.8,
+        "both_hands": 0.48,
+        "left": 0.66,
+        "right": 0.62,
+        "pose": 1.0,
+        "body_judged": 64,
+        "body_agree": 2,
+        "swap_transitions": 30,
+        "swaps": 3
+      },
+      "hand_pose_flipped_ms": 38.567592519684695
+    },
+    {
+      "path": "Home/27. Dream/MVI_9012.MP4",
+      "n_frames": 85,
+      "size": [
+        1920,
+        1080
+      ],
+      "holistic": {
+        "any_hand": 0.8705882352941177,
+        "both_hands": 0.6823529411764706,
+        "left": 0.8705882352941177,
+        "right": 0.6823529411764706,
+        "pose": 1.0,
+        "body_judged": 131,
+        "body_agree": 118,
+        "swap_transitions": 59,
+        "swaps": 0
+      },
+      "holistic_ms": 20.902705823091846,
+      "hand_pose": {
+        "any_hand": 0.8588235294117647,
+        "both_hands": 0.4470588235294118,
+        "left": 0.7411764705882353,
+        "right": 0.5647058823529412,
+        "pose": 1.0,
+        "body_judged": 109,
+        "body_agree": 105,
+        "swap_transitions": 58,
+        "swaps": 1
+      },
+      "hand_pose_ms": 41.21357349410091,
+      "hand_pose_flipped": {
+        "any_hand": 0.8588235294117647,
+        "both_hands": 0.4470588235294118,
+        "left": 0.5647058823529412,
+        "right": 0.7411764705882353,
+        "pose": 1.0,
+        "body_judged": 109,
+        "body_agree": 4,
+        "swap_transitions": 58,
+        "swaps": 1
+      },
+      "hand_pose_flipped_ms": 41.21357349410091
+    },
+    {
+      "path": "Home/33. Pencil/MVI_8789.MP4",
+      "n_frames": 63,
+      "size": [
+        1920,
+        1080
+      ],
+      "holistic": {
+        "any_hand": 0.3333333333333333,
+        "both_hands": 0.0,
+        "left": 0.0,
+        "right": 0.3333333333333333,
+        "pose": 1.0,
+        "body_judged": 21,
+        "body_agree": 21,
+        "swap_transitions": 19,
+        "swaps": 0
+      },
+      "holistic_ms": 24.245445793360613,
+      "hand_pose": {
+        "any_hand": 0.9047619047619048,
+        "both_hands": 0.6507936507936508,
+        "left": 0.8888888888888888,
+        "right": 0.6666666666666666,
+        "pose": 1.0,
+        "body_judged": 98,
+        "body_agree": 98,
+        "swap_transitions": 51,
+        "swaps": 0
+      },
+      "hand_pose_ms": 39.245347238431265,
+      "hand_pose_flipped": {
+        "any_hand": 0.9047619047619048,
+        "both_hands": 0.6507936507936508,
+        "left": 0.6666666666666666,
+        "right": 0.8888888888888888,
+        "pose": 1.0,
+        "body_judged": 98,
+        "body_agree": 0,
+        "swap_transitions": 51,
+        "swaps": 0
+      },
+      "hand_pose_flipped_ms": 39.245347238431265
+    },
+    {
+      "path": "Home/49. Ring/MVI_8857.MP4",
+      "n_frames": 82,
+      "size": [
+        1920,
+        1080
+      ],
+      "holistic": {
+        "any_hand": 0.7195121951219512,
+        "both_hands": 0.3170731707317073,
+        "left": 0.6951219512195121,
+        "right": 0.34146341463414637,
+        "pose": 1.0,
+        "body_judged": 85,
+        "body_agree": 85,
+        "swap_transitions": 53,
+        "swaps": 0
+      },
+      "holistic_ms": 22.57409602369568,
+      "hand_pose": {
+        "any_hand": 0.8170731707317073,
+        "both_hands": 0.7804878048780488,
+        "left": 0.7926829268292683,
+        "right": 0.8048780487804879,
+        "pose": 1.0,
+        "body_judged": 131,
+        "body_agree": 131,
+        "swap_transitions": 61,
+        "swaps": 0
+      },
+      "hand_pose_ms": 34.07835569536163,
+      "hand_pose_flipped": {
+        "any_hand": 0.8170731707317073,
+        "both_hands": 0.7804878048780488,
+        "left": 0.8048780487804879,
+        "right": 0.7926829268292683,
+        "pose": 1.0,
+        "body_judged": 131,
+        "body_agree": 0,
+        "swap_transitions": 61,
+        "swaps": 0
+      },
+      "hand_pose_flipped_ms": 34.07835569536163
+    },
+    {
+      "path": "Jobs/84. Teacher/MVI_4459.MOV",
+      "n_frames": 79,
+      "size": [
+        1920,
+        1080
+      ],
+      "holistic": {
+        "any_hand": 0.7848101265822784,
+        "both_hands": 0.4936708860759494,
+        "left": 0.6455696202531646,
+        "right": 0.6329113924050633,
+        "pose": 1.0,
+        "body_judged": 99,
+        "body_agree": 99,
+        "swap_transitions": 45,
+        "swaps": 0
+      },
+      "holistic_ms": 19.977420303584488,
+      "hand_pose": {
+        "any_hand": 0.8227848101265823,
+        "both_hands": 0.31645569620253167,
+        "left": 0.35443037974683544,
+        "right": 0.7848101265822784,
+        "pose": 0.9367088607594937,
+        "body_judged": 75,
+        "body_agree": 74,
+        "swap_transitions": 50,
+        "swaps": 0
+      },
+      "hand_pose_ms": 38.43370831674304,
+      "hand_pose_flipped": {
+        "any_hand": 0.8227848101265823,
+        "both_hands": 0.31645569620253167,
+        "left": 0.7848101265822784,
+        "right": 0.35443037974683544,
+        "pose": 0.9367088607594937,
+        "body_judged": 75,
+        "body_agree": 1,
+        "swap_transitions": 50,
+        "swaps": 0
+      },
+      "hand_pose_flipped_ms": 38.43370831674304
+    },
+    {
+      "path": "Jobs/84. Teacher/MVI_5311.MOV",
+      "n_frames": 50,
+      "size": [
+        1920,
+        1080
+      ],
+      "holistic": {
+        "any_hand": 0.86,
+        "both_hands": 0.68,
+        "left": 0.76,
+        "right": 0.78,
+        "pose": 1.0,
+        "body_judged": 71,
+        "body_agree": 71,
+        "swap_transitions": 34,
+        "swaps": 0
+      },
+      "holistic_ms": 20.362101680220803,
+      "hand_pose": {
+        "any_hand": 0.8,
+        "both_hands": 0.32,
+        "left": 0.38,
+        "right": 0.74,
+        "pose": 1.0,
+        "body_judged": 56,
+        "body_agree": 56,
+        "swap_transitions": 35,
+        "swaps": 0
+      },
+      "hand_pose_ms": 37.685506660782266,
+      "hand_pose_flipped": {
+        "any_hand": 0.8,
+        "both_hands": 0.32,
+        "left": 0.74,
+        "right": 0.38,
+        "pose": 1.0,
+        "body_judged": 56,
+        "body_agree": 0,
+        "swap_transitions": 35,
+        "swaps": 0
+      },
+      "hand_pose_flipped_ms": 37.685506660782266
+    },
+    {
+      "path": "Jobs/90. Secretary/MVI_5340.MOV",
+      "n_frames": 68,
+      "size": [
+        1920,
+        1080
+      ],
+      "holistic": {
+        "any_hand": 0.9705882352941176,
+        "both_hands": 0.7058823529411765,
+        "left": 0.7941176470588235,
+        "right": 0.8823529411764706,
+        "pose": 1.0,
+        "body_judged": 112,
+        "body_agree": 108,
+        "swap_transitions": 51,
+        "swaps": 0
+      },
+      "holistic_ms": 19.955636661667512,
+      "hand_pose": {
+        "any_hand": 0.9411764705882353,
+        "both_hands": 0.5882352941176471,
+        "left": 0.7352941176470589,
+        "right": 0.7941176470588235,
+        "pose": 1.0,
+        "body_judged": 103,
+        "body_agree": 99,
+        "swap_transitions": 46,
+        "swaps": 0
+      },
+      "hand_pose_ms": 36.743174014940024,
+      "hand_pose_flipped": {
+        "any_hand": 0.9411764705882353,
+        "both_hands": 0.5882352941176471,
+        "left": 0.7941176470588235,
+        "right": 0.7352941176470589,
+        "pose": 1.0,
+        "body_judged": 103,
+        "body_agree": 4,
+        "swap_transitions": 46,
+        "swaps": 0
+      },
+      "hand_pose_flipped_ms": 36.743174014940024
+    },
+    {
+      "path": "Jobs/95. Author/MVI_5360.MOV",
+      "n_frames": 104,
+      "size": [
+        1920,
+        1080
+      ],
+      "holistic": {
+        "any_hand": 0.8942307692307693,
+        "both_hands": 0.75,
+        "left": 0.8365384615384616,
+        "right": 0.8076923076923077,
+        "pose": 1.0,
+        "body_judged": 171,
+        "body_agree": 171,
+        "swap_transitions": 76,
+        "swaps": 0
+      },
+      "holistic_ms": 19.544553643684665,
+      "hand_pose": {
+        "any_hand": 0.9134615384615384,
+        "both_hands": 0.6442307692307693,
+        "left": 0.8173076923076923,
+        "right": 0.7403846153846154,
+        "pose": 1.0,
+        "body_judged": 162,
+        "body_agree": 161,
+        "swap_transitions": 71,
+        "swaps": 1
+      },
+      "hand_pose_ms": 37.545670211679514,
+      "hand_pose_flipped": {
+        "any_hand": 0.9134615384615384,
+        "both_hands": 0.6442307692307693,
+        "left": 0.7403846153846154,
+        "right": 0.8173076923076923,
+        "pose": 1.0,
+        "body_judged": 162,
+        "body_agree": 1,
+        "swap_transitions": 71,
+        "swaps": 1
+      },
+      "hand_pose_flipped_ms": 37.545670211679514
+    },
+    {
+      "path": "Jobs/99. Job/MVI_4523.MOV",
+      "n_frames": 72,
+      "size": [
+        1920,
+        1080
+      ],
+      "holistic": {
+        "any_hand": 1.0,
+        "both_hands": 0.5416666666666666,
+        "left": 1.0,
+        "right": 0.5416666666666666,
+        "pose": 1.0,
+        "body_judged": 111,
+        "body_agree": 111,
+        "swap_transitions": 60,
+        "swaps": 0
+      },
+      "holistic_ms": 20.407431139271164,
+      "hand_pose": {
+        "any_hand": 0.9861111111111112,
+        "both_hands": 0.5833333333333334,
+        "left": 0.9305555555555556,
+        "right": 0.6388888888888888,
+        "pose": 0.6666666666666666,
+        "body_judged": 82,
+        "body_agree": 82,
+        "swap_transitions": 64,
+        "swaps": 2
+      },
+      "hand_pose_ms": 38.546913750198854,
+      "hand_pose_flipped": {
+        "any_hand": 0.9861111111111112,
+        "both_hands": 0.5833333333333334,
+        "left": 0.6388888888888888,
+        "right": 0.9305555555555556,
+        "pose": 0.6666666666666666,
+        "body_judged": 82,
+        "body_agree": 0,
+        "swap_transitions": 64,
+        "swaps": 2
+      },
+      "hand_pose_flipped_ms": 38.546913750198854
+    },
+    {
+      "path": "Jobs/99. Job/MVI_5378.MOV",
+      "n_frames": 61,
+      "size": [
+        1920,
+        1080
+      ],
+      "holistic": {
+        "any_hand": 1.0,
+        "both_hands": 0.7213114754098361,
+        "left": 1.0,
+        "right": 0.7213114754098361,
+        "pose": 1.0,
+        "body_judged": 105,
+        "body_agree": 105,
+        "swap_transitions": 56,
+        "swaps": 0
+      },
+      "holistic_ms": 20.3965375581365,
+      "hand_pose": {
+        "any_hand": 1.0,
+        "both_hands": 0.7540983606557377,
+        "left": 1.0,
+        "right": 0.7540983606557377,
+        "pose": 1.0,
+        "body_judged": 107,
+        "body_agree": 107,
+        "swap_transitions": 56,
+        "swaps": 0
+      },
+      "hand_pose_ms": 36.349655705247436,
+      "hand_pose_flipped": {
+        "any_hand": 1.0,
+        "both_hands": 0.7540983606557377,
+        "left": 0.7540983606557377,
+        "right": 1.0,
+        "pose": 1.0,
+        "body_judged": 107,
+        "body_agree": 0,
+        "swap_transitions": 56,
+        "swaps": 0
+      },
+      "hand_pose_flipped_ms": 36.349655705247436
+    },
+    {
+      "path": "Means_of_Transportation/10. Plane/MVI_8582.MP4",
+      "n_frames": 59,
+      "size": [
+        1920,
+        1080
+      ],
+      "holistic": {
+        "any_hand": 0.22033898305084745,
+        "both_hands": 0.0,
+        "left": 0.0,
+        "right": 0.22033898305084745,
+        "pose": 0.6779661016949152,
+        "body_judged": 11,
+        "body_agree": 11,
+        "swap_transitions": 10,
+        "swaps": 0
+      },
+      "holistic_ms": 21.02806572866492,
+      "hand_pose": {
+        "any_hand": 0.288135593220339,
+        "both_hands": 0.0,
+        "left": 0.01694915254237288,
+        "right": 0.2711864406779661,
+        "pose": 0.2542372881355932,
+        "body_judged": 4,
+        "body_agree": 3,
+        "swap_transitions": 14,
+        "swaps": 1
+      },
+      "hand_pose_ms": 34.5490712885078,
+      "hand_pose_flipped": {
+        "any_hand": 0.288135593220339,
+        "both_hands": 0.0,
+        "left": 0.2711864406779661,
+        "right": 0.01694915254237288,
+        "pose": 0.2542372881355932,
+        "body_judged": 4,
+        "body_agree": 1,
+        "swap_transitions": 14,
+        "swaps": 1
+      },
+      "hand_pose_flipped_ms": 34.5490712885078
+    },
+    {
+      "path": "Means_of_Transportation/13. Bicycle/MVI_3123.MOV",
+      "n_frames": 86,
+      "size": [
+        1920,
+        1080
+      ],
+      "holistic": {
+        "any_hand": 0.8953488372093024,
+        "both_hands": 0.06976744186046512,
+        "left": 0.22093023255813954,
+        "right": 0.7441860465116279,
+        "pose": 1.0,
+        "body_judged": 83,
+        "body_agree": 83,
+        "swap_transitions": 57,
+        "swaps": 0
+      },
+      "holistic_ms": 20.352754884042106,
+      "hand_pose": {
+        "any_hand": 0.8023255813953488,
+        "both_hands": 0.03488372093023256,
+        "left": 0.13953488372093023,
+        "right": 0.6976744186046512,
+        "pose": 1.0,
+        "body_judged": 72,
+        "body_agree": 71,
+        "swap_transitions": 52,
+        "swaps": 1
+      },
+      "hand_pose_ms": 42.470092488571915,
+      "hand_pose_flipped": {
+        "any_hand": 0.8023255813953488,
+        "both_hands": 0.03488372093023256,
+        "left": 0.6976744186046512,
+        "right": 0.13953488372093023,
+        "pose": 1.0,
+        "body_judged": 72,
+        "body_agree": 1,
+        "swap_transitions": 52,
+        "swaps": 1
+      },
+      "hand_pose_flipped_ms": 42.470092488571915
+    },
+    {
+      "path": "Means_of_Transportation/15. Boat/MVI_3130.MOV",
+      "n_frames": 113,
+      "size": [
+        1920,
+        1080
+      ],
+      "holistic": {
+        "any_hand": 0.6991150442477876,
+        "both_hands": 0.2743362831858407,
+        "left": 0.35398230088495575,
+        "right": 0.6194690265486725,
+        "pose": 1.0,
+        "body_judged": 106,
+        "body_agree": 99,
+        "swap_transitions": 55,
+        "swaps": 0
+      },
+      "holistic_ms": 21.5196755482399,
+      "hand_pose": {
+        "any_hand": 0.7168141592920354,
+        "both_hands": 0.1592920353982301,
+        "left": 0.3008849557522124,
+        "right": 0.5752212389380531,
+        "pose": 1.0,
+        "body_judged": 95,
+        "body_agree": 92,
+        "swap_transitions": 55,
+        "swaps": 0
+      },
+      "hand_pose_ms": 39.95157228348791,
+      "hand_pose_flipped": {
+        "any_hand": 0.7168141592920354,
+        "both_hands": 0.1592920353982301,
+        "left": 0.5752212389380531,
+        "right": 0.3008849557522124,
+        "pose": 1.0,
+        "body_judged": 95,
+        "body_agree": 3,
+        "swap_transitions": 55,
+        "swaps": 0
+      },
+      "hand_pose_flipped_ms": 39.95157228348791
+    },
+    {
+      "path": "Means_of_Transportation/16. train ticket/MVI_3133.MOV",
+      "n_frames": 102,
+      "size": [
+        1920,
+        1080
+      ],
+      "holistic": {
+        "any_hand": 0.9019607843137255,
+        "both_hands": 0.20588235294117646,
+        "left": 0.4411764705882353,
+        "right": 0.6666666666666666,
+        "pose": 1.0,
+        "body_judged": 113,
+        "body_agree": 113,
+        "swap_transitions": 74,
+        "swaps": 0
+      },
+      "holistic_ms": 20.40285250954113,
+      "hand_pose": {
+        "any_hand": 0.8529411764705882,
+        "both_hands": 0.19607843137254902,
+        "left": 0.4215686274509804,
+        "right": 0.6274509803921569,
+        "pose": 1.0,
+        "body_judged": 107,
+        "body_agree": 107,
+        "swap_transitions": 73,
+        "swaps": 0
+      },
+      "hand_pose_ms": 40.097382823624486,
+      "hand_pose_flipped": {
+        "any_hand": 0.8529411764705882,
+        "both_hands": 0.19607843137254902,
+        "left": 0.6274509803921569,
+        "right": 0.4215686274509804,
+        "pose": 1.0,
+        "body_judged": 107,
+        "body_agree": 0,
+        "swap_transitions": 73,
+        "swaps": 0
+      },
+      "hand_pose_flipped_ms": 40.097382823624486
+    },
+    {
+      "path": "Means_of_Transportation/16. train ticket/MVI_3164.MOV",
+      "n_frames": 111,
+      "size": [
+        1920,
+        1080
+      ],
+      "holistic": {
+        "any_hand": 0.8738738738738738,
+        "both_hands": 0.5225225225225225,
+        "left": 0.7837837837837838,
+        "right": 0.6126126126126126,
+        "pose": 1.0,
+        "body_judged": 155,
+        "body_agree": 155,
+        "swap_transitions": 75,
+        "swaps": 0
+      },
+      "holistic_ms": 20.458848666617865,
+      "hand_pose": {
+        "any_hand": 0.9459459459459459,
+        "both_hands": 0.6936936936936937,
+        "left": 0.8468468468468469,
+        "right": 0.7927927927927928,
+        "pose": 1.0,
+        "body_judged": 182,
+        "body_agree": 182,
+        "swap_transitions": 89,
+        "swaps": 0
+      },
+      "hand_pose_ms": 36.35582691030986,
+      "hand_pose_flipped": {
+        "any_hand": 0.9459459459459459,
+        "both_hands": 0.6936936936936937,
+        "left": 0.7927927927927928,
+        "right": 0.8468468468468469,
+        "pose": 1.0,
+        "body_judged": 182,
+        "body_agree": 0,
+        "swap_transitions": 89,
+        "swaps": 0
+      },
+      "hand_pose_flipped_ms": 36.35582691030986
+    },
+    {
+      "path": "People/63. Baby/MVI_4947.MOV",
+      "n_frames": 54,
+      "size": [
+        1920,
+        1080
+      ],
+      "holistic": {
+        "any_hand": 0.9074074074074074,
+        "both_hands": 0.7222222222222222,
+        "left": 0.9074074074074074,
+        "right": 0.7222222222222222,
+        "pose": 1.0,
+        "body_judged": 88,
+        "body_agree": 88,
+        "swap_transitions": 41,
+        "swaps": 0
+      },
+      "holistic_ms": 21.181788537635132,
+      "hand_pose": {
+        "any_hand": 0.8148148148148148,
+        "both_hands": 0.6851851851851852,
+        "left": 0.7962962962962963,
+        "right": 0.7037037037037037,
+        "pose": 1.0,
+        "body_judged": 81,
+        "body_agree": 81,
+        "swap_transitions": 37,
+        "swaps": 0
+      },
+      "hand_pose_ms": 38.2832369444562,
+      "hand_pose_flipped": {
+        "any_hand": 0.8148148148148148,
+        "both_hands": 0.6851851851851852,
+        "left": 0.7037037037037037,
+        "right": 0.7962962962962963,
+        "pose": 1.0,
+        "body_judged": 81,
+        "body_agree": 0,
+        "swap_transitions": 37,
+        "swaps": 0
+      },
+      "hand_pose_flipped_ms": 38.2832369444562
+    },
+    {
+      "path": "People/76. Neighbour/MVI_5130.MOV",
+      "n_frames": 64,
+      "size": [
+        1920,
+        1080
+      ],
+      "holistic": {
+        "any_hand": 0.765625,
+        "both_hands": 0.46875,
+        "left": 0.640625,
+        "right": 0.59375,
+        "pose": 1.0,
+        "body_judged": 79,
+        "body_agree": 79,
+        "swap_transitions": 34,
+        "swaps": 0
+      },
+      "holistic_ms": 21.11950974983756,
+      "hand_pose": {
+        "any_hand": 0.765625,
+        "both_hands": 0.359375,
+        "left": 0.5,
+        "right": 0.625,
+        "pose": 1.0,
+        "body_judged": 72,
+        "body_agree": 71,
+        "swap_transitions": 37,
+        "swaps": 1
+      },
+      "hand_pose_ms": 36.435134718658446,
+      "hand_pose_flipped": {
+        "any_hand": 0.765625,
+        "both_hands": 0.359375,
+        "left": 0.625,
+        "right": 0.5,
+        "pose": 1.0,
+        "body_judged": 72,
+        "body_agree": 1,
+        "swap_transitions": 37,
+        "swaps": 1
+      },
+      "hand_pose_flipped_ms": 36.435134718658446
+    },
+    {
+      "path": "People/82. Player/MVI_4126.MOV",
+      "n_frames": 62,
+      "size": [
+        1920,
+        1080
+      ],
+      "holistic": {
+        "any_hand": 0.9193548387096774,
+        "both_hands": 0.7419354838709677,
+        "left": 0.8225806451612904,
+        "right": 0.8387096774193549,
+        "pose": 1.0,
+        "body_judged": 103,
+        "body_agree": 103,
+        "swap_transitions": 47,
+        "swaps": 0
+      },
+      "holistic_ms": 20.761468500788926,
+      "hand_pose": {
+        "any_hand": 0.9032258064516129,
+        "both_hands": 0.6935483870967742,
+        "left": 0.8064516129032258,
+        "right": 0.7903225806451613,
+        "pose": 1.0,
+        "body_judged": 99,
+        "body_agree": 99,
+        "swap_transitions": 44,
+        "swaps": 0
+      },
+      "hand_pose_ms": 37.51191664512941,
+      "hand_pose_flipped": {
+        "any_hand": 0.9032258064516129,
+        "both_hands": 0.6935483870967742,
+        "left": 0.7903225806451613,
+        "right": 0.8064516129032258,
+        "pose": 1.0,
+        "body_judged": 99,
+        "body_agree": 0,
+        "swap_transitions": 44,
+        "swaps": 0
+      },
+      "hand_pose_flipped_ms": 37.51191664512941
+    },
+    {
+      "path": "Places/30. Hospital/MVI_3398.MOV",
+      "n_frames": 70,
+      "size": [
+        1920,
+        1080
+      ],
+      "holistic": {
+        "any_hand": 0.8857142857142857,
+        "both_hands": 0.6285714285714286,
+        "left": 0.7571428571428571,
+        "right": 0.7571428571428571,
+        "pose": 1.0,
+        "body_judged": 106,
+        "body_agree": 106,
+        "swap_transitions": 49,
+        "swaps": 0
+      },
+      "holistic_ms": 20.806908471006732,
+      "hand_pose": {
+        "any_hand": 0.8285714285714286,
+        "both_hands": 0.5428571428571428,
+        "left": 0.6571428571428571,
+        "right": 0.7142857142857143,
+        "pose": 1.0,
+        "body_judged": 96,
+        "body_agree": 96,
+        "swap_transitions": 47,
+        "swaps": 0
+      },
+      "hand_pose_ms": 35.995564271745806,
+      "hand_pose_flipped": {
+        "any_hand": 0.8285714285714286,
+        "both_hands": 0.5428571428571428,
+        "left": 0.7142857142857143,
+        "right": 0.6571428571428571,
+        "pose": 1.0,
+        "body_judged": 96,
+        "body_agree": 0,
+        "swap_transitions": 47,
+        "swaps": 0
+      },
+      "hand_pose_flipped_ms": 35.995564271745806
+    },
+    {
+      "path": "Places/33. India/MVI_3573.MOV",
+      "n_frames": 54,
+      "size": [
+        1920,
+        1080
+      ],
+      "holistic": {
+        "any_hand": 1.0,
+        "both_hands": 0.7592592592592593,
+        "left": 1.0,
+        "right": 0.7592592592592593,
+        "pose": 1.0,
+        "body_judged": 95,
+        "body_agree": 95,
+        "swap_transitions": 45,
+        "swaps": 0
+      },
+      "holistic_ms": 20.871604999734295,
+      "hand_pose": {
+        "any_hand": 1.0,
+        "both_hands": 0.7407407407407407,
+        "left": 1.0,
+        "right": 0.7407407407407407,
+        "pose": 1.0,
+        "body_judged": 94,
+        "body_agree": 94,
+        "swap_transitions": 47,
+        "swaps": 0
+      },
+      "hand_pose_ms": 36.10142131475624,
+      "hand_pose_flipped": {
+        "any_hand": 1.0,
+        "both_hands": 0.7407407407407407,
+        "left": 0.7407407407407407,
+        "right": 1.0,
+        "pose": 1.0,
+        "body_judged": 94,
+        "body_agree": 0,
+        "swap_transitions": 47,
+        "swaps": 0
+      },
+      "hand_pose_flipped_ms": 36.10142131475624
+    },
+    {
+      "path": "Places/34. Ground/MVI_3498.MOV",
+      "n_frames": 55,
+      "size": [
+        1920,
+        1080
+      ],
+      "holistic": {
+        "any_hand": 0.8545454545454545,
+        "both_hands": 0.7636363636363637,
+        "left": 0.7818181818181819,
+        "right": 0.8363636363636363,
+        "pose": 1.0,
+        "body_judged": 88,
+        "body_agree": 84,
+        "swap_transitions": 40,
+        "swaps": 0
+      },
+      "holistic_ms": 20.830721890987743,
+      "hand_pose": {
+        "any_hand": 0.8363636363636363,
+        "both_hands": 0.7818181818181819,
+        "left": 0.8,
+        "right": 0.8181818181818182,
+        "pose": 1.0,
+        "body_judged": 89,
+        "body_agree": 89,
+        "swap_transitions": 41,
+        "swaps": 0
+      },
+      "hand_pose_ms": 34.30718563653169,
+      "hand_pose_flipped": {
+        "any_hand": 0.8363636363636363,
+        "both_hands": 0.7818181818181819,
+        "left": 0.8181818181818182,
+        "right": 0.8,
+        "pose": 1.0,
+        "body_judged": 89,
+        "body_agree": 0,
+        "swap_transitions": 41,
+        "swaps": 0
+      },
+      "hand_pose_flipped_ms": 34.30718563653169
+    },
+    {
+      "path": "Places/35. Bank/MVI_3581.MOV",
+      "n_frames": 50,
+      "size": [
+        1920,
+        1080
+      ],
+      "holistic": {
+        "any_hand": 0.74,
+        "both_hands": 0.32,
+        "left": 0.34,
+        "right": 0.72,
+        "pose": 1.0,
+        "body_judged": 53,
+        "body_agree": 53,
+        "swap_transitions": 31,
+        "swaps": 0
+      },
+      "holistic_ms": 19.521675879950635,
+      "hand_pose": {
+        "any_hand": 0.72,
+        "both_hands": 0.26,
+        "left": 0.32,
+        "right": 0.66,
+        "pose": 1.0,
+        "body_judged": 49,
+        "body_agree": 48,
+        "swap_transitions": 28,
+        "swaps": 1
+      },
+      "hand_pose_ms": 36.59516412008088,
+      "hand_pose_flipped": {
+        "any_hand": 0.72,
+        "both_hands": 0.26,
+        "left": 0.66,
+        "right": 0.32,
+        "pose": 1.0,
+        "body_judged": 49,
+        "body_agree": 1,
+        "swap_transitions": 28,
+        "swaps": 1
+      },
+      "hand_pose_flipped_ms": 36.59516412008088
+    },
+    {
+      "path": "Seasons/61. Summer/MVI_4565.MOV",
+      "n_frames": 78,
+      "size": [
+        1920,
+        1080
+      ],
+      "holistic": {
+        "any_hand": 1.0,
+        "both_hands": 0.48717948717948717,
+        "left": 0.9615384615384616,
+        "right": 0.5256410256410257,
+        "pose": 1.0,
+        "body_judged": 116,
+        "body_agree": 116,
+        "swap_transitions": 63,
+        "swaps": 0
+      },
+      "holistic_ms": 19.43663194833789,
+      "hand_pose": {
+        "any_hand": 1.0,
+        "both_hands": 0.47435897435897434,
+        "left": 1.0,
+        "right": 0.47435897435897434,
+        "pose": 1.0,
+        "body_judged": 115,
+        "body_agree": 115,
+        "swap_transitions": 69,
+        "swaps": 0
+      },
+      "hand_pose_ms": 39.23942302571959,
+      "hand_pose_flipped": {
+        "any_hand": 1.0,
+        "both_hands": 0.47435897435897434,
+        "left": 0.47435897435897434,
+        "right": 1.0,
+        "pose": 1.0,
+        "body_judged": 115,
+        "body_agree": 0,
+        "swap_transitions": 69,
+        "swaps": 0
+      },
+      "hand_pose_flipped_ms": 39.23942302571959
+    },
+    {
+      "path": "Seasons/63. Winter/MVI_9130.MP4",
+      "n_frames": 77,
+      "size": [
+        1920,
+        1080
+      ],
+      "holistic": {
+        "any_hand": 0.8181818181818182,
+        "both_hands": 0.7922077922077922,
+        "left": 0.8051948051948052,
+        "right": 0.8051948051948052,
+        "pose": 1.0,
+        "body_judged": 124,
+        "body_agree": 124,
+        "swap_transitions": 57,
+        "swaps": 0
+      },
+      "holistic_ms": 19.59556599987471,
+      "hand_pose": {
+        "any_hand": 0.8051948051948052,
+        "both_hands": 0.7142857142857143,
+        "left": 0.7532467532467533,
+        "right": 0.7662337662337663,
+        "pose": 1.0,
+        "body_judged": 117,
+        "body_agree": 117,
+        "swap_transitions": 53,
+        "swaps": 0
+      },
+      "hand_pose_ms": 33.886425843645284,
+      "hand_pose_flipped": {
+        "any_hand": 0.8051948051948052,
+        "both_hands": 0.7142857142857143,
+        "left": 0.7662337662337663,
+        "right": 0.7532467532467533,
+        "pose": 1.0,
+        "body_judged": 117,
+        "body_agree": 0,
+        "swap_transitions": 53,
+        "swaps": 0
+      },
+      "hand_pose_flipped_ms": 33.886425843645284
+    },
+    {
+      "path": "Society/13. Attack/MVI_4299.MOV",
+      "n_frames": 73,
+      "size": [
+        1920,
+        1080
+      ],
+      "holistic": {
+        "any_hand": 1.0,
+        "both_hands": 0.7123287671232876,
+        "left": 1.0,
+        "right": 0.7123287671232876,
+        "pose": 1.0,
+        "body_judged": 125,
+        "body_agree": 125,
+        "swap_transitions": 60,
+        "swaps": 0
+      },
+      "holistic_ms": 19.29679843804429,
+      "hand_pose": {
+        "any_hand": 1.0,
+        "both_hands": 0.6575342465753424,
+        "left": 1.0,
+        "right": 0.6575342465753424,
+        "pose": 1.0,
+        "body_judged": 121,
+        "body_agree": 121,
+        "swap_transitions": 64,
+        "swaps": 0
+      },
+      "hand_pose_ms": 35.54467291791273,
+      "hand_pose_flipped": {
+        "any_hand": 1.0,
+        "both_hands": 0.6575342465753424,
+        "left": 0.6575342465753424,
+        "right": 1.0,
+        "pose": 1.0,
+        "body_judged": 121,
+        "body_agree": 0,
+        "swap_transitions": 64,
+        "swaps": 0
+      },
+      "hand_pose_flipped_ms": 35.54467291791273
+    },
+    {
+      "path": "Society/15. Newspaper/MVI_4844.MOV",
+      "n_frames": 56,
+      "size": [
+        1920,
+        1080
+      ],
+      "holistic": {
+        "any_hand": 0.9107142857142857,
+        "both_hands": 0.7142857142857143,
+        "left": 0.7678571428571429,
+        "right": 0.8571428571428571,
+        "pose": 1.0,
+        "body_judged": 91,
+        "body_agree": 91,
+        "swap_transitions": 42,
+        "swaps": 0
+      },
+      "holistic_ms": 21.05559667831715,
+      "hand_pose": {
+        "any_hand": 0.7857142857142857,
+        "both_hands": 0.30357142857142855,
+        "left": 0.375,
+        "right": 0.7142857142857143,
+        "pose": 1.0,
+        "body_judged": 61,
+        "body_agree": 60,
+        "swap_transitions": 32,
+        "swaps": 1
+      },
+      "hand_pose_ms": 36.83878496459719,
+      "hand_pose_flipped": {
+        "any_hand": 0.7857142857142857,
+        "both_hands": 0.30357142857142855,
+        "left": 0.7142857142857143,
+        "right": 0.375,
+        "pose": 1.0,
+        "body_judged": 61,
+        "body_agree": 1,
+        "swap_transitions": 32,
+        "swaps": 1
+      },
+      "hand_pose_flipped_ms": 36.83878496459719
+    },
+    {
+      "path": "Society/22. Science/MVI_8992.MP4",
+      "n_frames": 69,
+      "size": [
+        1920,
+        1080
+      ],
+      "holistic": {
+        "any_hand": 0.8840579710144928,
+        "both_hands": 0.7536231884057971,
+        "left": 0.782608695652174,
+        "right": 0.855072463768116,
+        "pose": 1.0,
+        "body_judged": 113,
+        "body_agree": 113,
+        "swap_transitions": 51,
+        "swaps": 0
+      },
+      "holistic_ms": 20.24190815923182,
+      "hand_pose": {
+        "any_hand": 0.8260869565217391,
+        "both_hands": 0.6086956521739131,
+        "left": 0.6666666666666666,
+        "right": 0.7681159420289855,
+        "pose": 1.0,
+        "body_judged": 99,
+        "body_agree": 99,
+        "swap_transitions": 45,
+        "swaps": 0
+      },
+      "hand_pose_ms": 36.822676377187896,
+      "hand_pose_flipped": {
+        "any_hand": 0.8260869565217391,
+        "both_hands": 0.6086956521739131,
+        "left": 0.7681159420289855,
+        "right": 0.6666666666666666,
+        "pose": 1.0,
+        "body_judged": 99,
+        "body_agree": 0,
+        "swap_transitions": 45,
+        "swaps": 0
+      },
+      "hand_pose_flipped_ms": 36.822676377187896
+    },
+    {
+      "path": "Society/9. Technology/MVI_8690.MP4",
+      "n_frames": 69,
+      "size": [
+        1920,
+        1080
+      ],
+      "holistic": {
+        "any_hand": 0.7971014492753623,
+        "both_hands": 0.4927536231884058,
+        "left": 0.7971014492753623,
+        "right": 0.4927536231884058,
+        "pose": 1.0,
+        "body_judged": 89,
+        "body_agree": 89,
+        "swap_transitions": 48,
+        "swaps": 0
+      },
+      "holistic_ms": 20.221035042819835,
+      "hand_pose": {
+        "any_hand": 0.7536231884057971,
+        "both_hands": 0.2753623188405797,
+        "left": 0.2898550724637681,
+        "right": 0.7391304347826086,
+        "pose": 1.0,
+        "body_judged": 71,
+        "body_agree": 70,
+        "swap_transitions": 45,
+        "swaps": 0
+      },
+      "hand_pose_ms": 35.02739792758434,
+      "hand_pose_flipped": {
+        "any_hand": 0.7536231884057971,
+        "both_hands": 0.2753623188405797,
+        "left": 0.7391304347826086,
+        "right": 0.2898550724637681,
+        "pose": 1.0,
+        "body_judged": 71,
+        "body_agree": 1,
+        "swap_transitions": 45,
+        "swaps": 0
+      },
+      "hand_pose_flipped_ms": 35.02739792758434
+    }
+  ]
+}
