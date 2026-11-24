@@ -7,7 +7,7 @@ ML   := cd ml &&
 WEB  := cd web &&
 
 .PHONY: help setup models inventory lint typecheck test test-ml test-web smoke e2e build ci clean \
-        samples check-video-metadata check-extractor bench-page
+        samples check-video-metadata check-extractor bench-page extract upload
 
 help:  ## list targets
 	@grep -hE '^[a-zA-Z_-]+:.*## ' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "  %-22s %s\n", $$1, $$2}'
@@ -66,6 +66,15 @@ bench-page: models  ## ADR 002 measure (b): serve the browser benchmark at /dev/
 	$(WEB) $(PNPM) build
 	@echo "Open http://localhost:3000/dev/extractor-bench in Chrome (plugged in, tab in front)"
 	$(WEB) $(PNPM) exec next start -p 3000
+
+# ---- Phase 1 extraction (starts only after ADR 002 is decided; see ml/configs/extract.yaml) ----
+
+extract: models  ## download + extract all 44 zips, one at a time (resumable; aborts below 10 GB free)
+	$(ML) $(UV) run python -m sanket.pipeline.extract
+
+upload:  ## upload keypoints as a PRIVATE Kaggle dataset: make upload KAGGLE_DATASET=user/slug
+	@test -n "$(KAGGLE_DATASET)" || (echo "set KAGGLE_DATASET=<kaggle-user>/<slug>"; exit 1)
+	$(ML) $(UV) run --group upload python -m sanket.pipeline.upload --dataset $(KAGGLE_DATASET)
 
 clean:
 	rm -rf web/.next web/test-results web/playwright-report ml/.pytest_cache ml/.mypy_cache ml/.ruff_cache

@@ -33,7 +33,12 @@ jobs:
         with:
           path: ml/.cache/models
           key: mediapipe-models-${{ hashFiles('spec/keypoints.json') }}
-      - name: Python MediaPipe smoke (Phase 0 gate)
+      - name: cache the INCLUDE test video used by the determinism test
+        uses: actions/cache@v6.1.0
+        with:
+          path: ml/.cache/videos
+          key: include-test-video-${{ hashFiles('ml/data/splits/include50_test.txt') }}
+      - name: Python MediaPipe smoke + real-extractor determinism
         run: uv run python -m sanket.spec && uv run pytest -m network
         working-directory: ml
 
