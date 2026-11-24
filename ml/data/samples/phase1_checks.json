@@ -1,0 +1,271 @@
+{
+  "seed": 0,
+  "session_spotcheck": [
+    {
+      "run": "c0r0",
+      "span": "9100-9102",
+      "role": "first",
+      "path": "Electronics/54. Cell phone/MVI_9100.MP4"
+    },
+    {
+      "run": "c0r0",
+      "span": "9100-9102",
+      "role": "last",
+      "path": "Electronics/54. Cell phone/MVI_9102.MP4"
+    },
+    {
+      "run": "c0r0",
+      "span": "9100-9102",
+      "role": "neighbor",
+      "path": "Electronics/55. Computer/MVI_9103.MP4"
+    },
+    {
+      "run": "c0r1",
+      "span": "4967-4969",
+      "role": "first",
+      "path": "Electronics/54. Cell phone/MVI_4967.MOV"
+    },
+    {
+      "run": "c0r1",
+      "span": "4967-4969",
+      "role": "last",
+      "path": "Electronics/54. Cell phone/MVI_4969.MOV"
+    },
+    {
+      "run": "c0r1",
+      "span": "4967-4969",
+      "role": "neighbor",
+      "path": "Electronics/55. Computer/MVI_4970.MOV"
+    },
+    {
+      "run": "c1r0",
+      "span": "9188-9190",
+      "role": "first",
+      "path": "Days_and_Time/82. Morning/MVI_9188.MP4"
+    },
+    {
+      "run": "c1r0",
+      "span": "9188-9190",
+      "role": "last",
+      "path": "Days_and_Time/82. Morning/MVI_9190.MP4"
+    },
+    {
+      "run": "c1r0",
+      "span": "9188-9190",
+      "role": "neighbor",
+      "path": "Days_and_Time/83. Afternoon/MVI_9191.MP4"
+    },
+    {
+      "run": "c1r1",
+      "span": "5060-5062",
+      "role": "first",
+      "path": "Days_and_Time/82. Morning/MVI_5060.MOV"
+    },
+    {
+      "run": "c1r1",
+      "span": "5060-5062",
+      "role": "last",
+      "path": "Days_and_Time/82. Morning/MVI_5062.MOV"
+    },
+    {
+      "run": "c1r1",
+      "span": "5060-5062",
+      "role": "neighbor",
+      "path": "Days_and_Time/83. Afternoon/MVI_5063.MOV"
+    },
+    {
+      "run": "c2r0",
+      "span": "4845-4847",
+      "role": "first",
+      "path": "Society/16. Gun/MVI_4845.MOV"
+    },
+    {
+      "run": "c2r0",
+      "span": "4845-4847",
+      "role": "last",
+      "path": "Society/16. Gun/MVI_4847.MOV"
+    },
+    {
+      "run": "c2r0",
+      "span": "4845-4847",
+      "role": "neighbor",
+      "path": "Society/17. Sport/MVI_4848.MOV"
+    },
+    {
+      "run": "c2r1",
+      "span": "8718-8721",
+      "role": "first",
+      "path": "Society/16. Gun/MVI_8718.MP4"
+    },
+    {
+      "run": "c2r1",
+      "span": "8718-8721",
+      "role": "last",
+      "path": "Society/16. Gun/MVI_8721.MP4"
+    },
+    {
+      "run": "c2r1",
+      "span": "8718-8721",
+      "role": "neighbor",
+      "path": "Society/17. Sport/MVI_8722.MP4"
+    },
+    {
+      "run": "c3r0",
+      "span": "95-97",
+      "role": "first",
+      "path": "Greetings/50. Alright/MVI_0095.MOV"
+    },
+    {
+      "run": "c3r0",
+      "span": "95-97",
+      "role": "last",
+      "path": "Greetings/50. Alright/MVI_0097.MOV"
+    },
+    {
+      "run": "c3r0",
+      "span": "95-97",
+      "role": "neighbor",
+      "path": "Greetings/51. Good Morning/MVI_0098.MOV"
+    },
+    {
+      "run": "c3r1",
+      "span": "9923-9926",
+      "role": "first",
+      "path": "Greetings/50. Alright/MVI_9923.MOV"
+    },
+    {
+      "run": "c3r1",
+      "span": "9923-9926",
+      "role": "last",
+      "path": "Greetings/50. Alright/MVI_9926.MOV"
+    },
+    {
+      "run": "c4r0",
+      "span": "4782-4784",
+      "role": "first",
+      "path": "Jobs/95. Author/MVI_4782.MOV"
+    },
+    {
+      "run": "c4r0",
+      "span": "4782-4784",
+      "role": "last",
+      "path": "Jobs/95. Author/MVI_4784.MOV"
+    },
+    {
+      "run": "c4r0",
+      "span": "4782-4784",
+      "role": "neighbor",
+      "path": "Jobs/96. Manager/MVI_4785.MOV"
+    },
+    {
+      "run": "c4r1",
+      "span": "4504-4507",
+      "role": "first",
+      "path": "Jobs/95. Author/MVI_4504.MOV"
+    },
+    {
+      "run": "c4r1",
+      "span": "4504-4507",
+      "role": "last",
+      "path": "Jobs/95. Author/MVI_4507.MOV"
+    },
+    {
+      "run": "c4r1",
+      "span": "4504-4507",
+      "role": "neighbor",
+      "path": "Jobs/96. Manager/MVI_4508.MOV"
+    }
+  ],
+  "extractor_bench": [
+    "Adjectives/1. loud/MVI_9289.MOV",
+    "Adjectives/2. quiet/MVI_9537.MOV",
+    "Adjectives/86. fast/MVI_9406.MOV",
+    "Adjectives/87. hot/MVI_5136.MOV",
+    "Adjectives/91. new/MVI_5151.MOV",
+    "Adjectives/93. young/MVI_9427.MOV",
+    "Adjectives/97. dry/MVI_9522.MOV",
+    "Adjectives/98. sick/MVI_5171.MOV",
+    "Adjectives/98. sick/MVI_9442.MOV",
+    "Animals/1. Dog/MVI_8560.MP4",
+    "Animals/2. Cat/MVI_3089.MOV",
+    "Animals/5. Cow/MVI_4159.MOV",
+    "Clothes/40. Skirt/MVI_3997.MOV",
+    "Colours/47. Red/MVI_4899.MOV",
+    "Colours/49. Blue/MVI_4026.MOV",
+    "Days_and_Time/75. Yesterday/MVI_4626.MOV",
+    "Days_and_Time/79. Hour/MVI_5051.MOV",
+    "Days_and_Time/86. Time/MVI_5077.MOV",
+    "Electronics/51. Clock/MVI_4524.MOV",
+    "Greetings/48. Hello/MVI_0030.MOV",
+    "Greetings/54. Good night/MVI_9982.MOV",
+    "Greetings/56. Pleased/MVI_0066.MOV",
+    "Home/24. Table/MVI_4345.MOV",
+    "Home/27. Dream/MVI_9012.MP4",
+    "Home/33. Pencil/MVI_8789.MP4",
+    "Home/49. Ring/MVI_8857.MP4",
+    "Jobs/84. Teacher/MVI_4459.MOV",
+    "Jobs/84. Teacher/MVI_5311.MOV",
+    "Jobs/90. Secretary/MVI_5340.MOV",
+    "Jobs/95. Author/MVI_5360.MOV",
+    "Jobs/99. Job/MVI_4523.MOV",
+    "Jobs/99. Job/MVI_5378.MOV",
+    "Means_of_Transportation/10. Plane/MVI_8582.MP4",
+    "Means_of_Transportation/13. Bicycle/MVI_3123.MOV",
+    "Means_of_Transportation/15. Boat/MVI_3130.MOV",
+    "Means_of_Transportation/16. train ticket/MVI_3133.MOV",
+    "Means_of_Transportation/16. train ticket/MVI_3164.MOV",
+    "People/63. Baby/MVI_4947.MOV",
+    "People/76. Neighbour/MVI_5130.MOV",
+    "People/82. Player/MVI_4126.MOV",
+    "Places/30. Hospital/MVI_3398.MOV",
+    "Places/33. India/MVI_3573.MOV",
+    "Places/34. Ground/MVI_3498.MOV",
+    "Places/35. Bank/MVI_3581.MOV",
+    "Seasons/61. Summer/MVI_4565.MOV",
+    "Seasons/63. Winter/MVI_9130.MP4",
+    "Society/13. Attack/MVI_4299.MOV",
+    "Society/15. Newspaper/MVI_4844.MOV",
+    "Society/22. Science/MVI_8992.MP4",
+    "Society/9. Technology/MVI_8690.MP4"
+  ],
+  "video_metadata": [
+    "Adjectives/86. fast/MVI_9406.MOV",
+    "Adjectives/91. new/MVI_5151.MOV",
+    "Adjectives/93. young/MVI_9427.MOV",
+    "Adjectives/97. dry/MVI_9522.MOV",
+    "Adjectives/98. sick/MVI_5171.MOV",
+    "Adjectives/98. sick/MVI_9442.MOV",
+    "Animals/1. Dog/MVI_8560.MP4",
+    "Animals/2. Cat/MVI_3089.MOV",
+    "Animals/5. Cow/MVI_4159.MOV",
+    "Clothes/40. Skirt/MVI_3997.MOV",
+    "Colours/47. Red/MVI_4899.MOV",
+    "Colours/49. Blue/MVI_4026.MOV",
+    "Days_and_Time/75. Yesterday/MVI_4626.MOV",
+    "Days_and_Time/86. Time/MVI_5077.MOV",
+    "Electronics/51. Clock/MVI_4524.MOV",
+    "Greetings/48. Hello/MVI_0030.MOV",
+    "Greetings/56. Pleased/MVI_0066.MOV",
+    "Home/24. Table/MVI_4345.MOV",
+    "Home/27. Dream/MVI_9012.MP4",
+    "Home/33. Pencil/MVI_8789.MP4",
+    "Home/49. Ring/MVI_8857.MP4",
+    "Jobs/84. Teacher/MVI_4459.MOV",
+    "Jobs/84. Teacher/MVI_5311.MOV",
+    "Jobs/90. Secretary/MVI_5340.MOV",
+    "Jobs/99. Job/MVI_4523.MOV",
+    "Jobs/99. Job/MVI_5378.MOV",
+    "Means_of_Transportation/10. Plane/MVI_8582.MP4",
+    "Means_of_Transportation/13. Bicycle/MVI_3123.MOV",
+    "Means_of_Transportation/15. Boat/MVI_3130.MOV",
+    "Means_of_Transportation/16. train ticket/MVI_3133.MOV",
+    "People/82. Player/MVI_4126.MOV",
+    "Places/30. Hospital/MVI_3398.MOV",
+    "Places/35. Bank/MVI_3581.MOV",
+    "Seasons/61. Summer/MVI_4565.MOV",
+    "Seasons/63. Winter/MVI_9130.MP4",
+    "Society/15. Newspaper/MVI_4844.MOV",
+    "Society/22. Science/MVI_8992.MP4",
+    "Society/9. Technology/MVI_8690.MP4"
+  ]
+}

@@ -1,8 +1,11 @@
 import io
 import os
 import zipfile
+from pathlib import Path
 
-from sanket.data.remote_zip import RangeReader, list_members
+import pytest
+
+from sanket.data.remote_zip import RangeReader, extract_members, list_members
 
 
 def _make_zip() -> bytes:
@@ -38,3 +41,17 @@ def test_range_reader_seek_and_read() -> None:
     assert r.read() == data[90:]
     r.seek(5)
     assert r.read(3) == data[5:8]
+
+
+def test_extract_members_writes_files_and_verifies_crc(tmp_path: Path) -> None:
+    blob = _make_zip()
+    fetch = lambda a, b: blob[a : b + 1]  # noqa: E731
+    name = "Seasons/61. Summer/MVI_9122.MP4"
+    [path] = extract_members(len(blob), fetch, [name], tmp_path)
+    assert path == tmp_path / name and path.read_bytes() == b"x" * 10
+
+    # Flip one byte of the payload: the CRC check must reject it.
+    i = blob.index(b"x" * 10)
+    corrupt = blob[:i] + b"y" + blob[i + 1 :]
+    with pytest.raises(zipfile.BadZipFile):
+        extract_members(len(corrupt), lambda a, b: corrupt[a : b + 1], [name], tmp_path / "c")

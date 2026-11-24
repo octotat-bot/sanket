@@ -9,6 +9,7 @@ import io
 import zipfile
 from collections.abc import Callable
 from dataclasses import dataclass
+from pathlib import Path
 
 from sanket import net
 
@@ -68,3 +69,35 @@ def list_members(size: int, fetch: RangeFetcher) -> list[ZipMember]:
 
 def list_remote_zip(url: str) -> list[ZipMember]:
     return list_members(net.content_length(url), lambda a, b: net.get_range(url, a, b))
+
+
+def extract_members(
+    size: int, fetch: RangeFetcher, names: list[str], dest_root: Path
+) -> list[Path]:
+    """Extract selected members to dest_root/<member path>, skipping files already present.
+
+    `ZipFile.read` checks each member's CRC-32, so a corrupted transfer raises instead of
+    leaving a bad video on disk. The whole member is read in one call, which RangeReader
+    turns into one HTTP Range request.
+    """
+    out: list[Path] = []
+    reader = io.BufferedReader(RangeReader(size, fetch), buffer_size=1 << 16)
+    with zipfile.ZipFile(reader) as zf:
+        for name in names:
+            dest = dest_root / name
+            if not dest.exists():
+                dest.parent.mkdir(parents=True, exist_ok=True)
+                tmp = dest.with_name(dest.name + ".part")
+                tmp.write_bytes(zf.read(name))
+                tmp.replace(dest)
+            out.append(dest)
+    return out
+
+
+def extract_remote_members(url: str, names: list[str], dest_root: Path) -> list[Path]:
+    return extract_members(
+        net.content_length(url),
+        lambda a, b: net.get_range(url, a, b, timeout=600),
+        names,
+        dest_root,
+    )
