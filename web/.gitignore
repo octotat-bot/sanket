@@ -48,3 +48,6 @@ next-env.d.ts
 
 # pinned MediaPipe models are fetched + sha256-checked by `make models`, not committed
 /public/models/mediapipe/
+# copied from node_modules / ../spec by scripts/copy-mediapipe-assets.mjs
+/public/mediapipe/
+/public/spec/

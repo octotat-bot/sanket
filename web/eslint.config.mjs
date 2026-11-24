@@ -12,6 +12,11 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Generated / vendored assets copied in by scripts/copy-mediapipe-assets.mjs
+    "public/mediapipe/**",
+    "public/spec/**",
+    "test-results/**",
+    "playwright-report/**",
   ]),
 ]);
 
