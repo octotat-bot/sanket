@@ -1,7 +1,8 @@
 # ADR 002: Holistic Landmarker vs separate Hand + Pose Landmarkers
 
-- Status: **Decision rule approved by Mukund (2026-11-24).** Measure (a) is done. Measure (b) waits
-  on Mukund's browser run. Full extraction starts only after Mukund sends that JSON.
+- Status: **Decision rule approved by Mukund (2026-11-24).** Measure (a) done. Measure (b) run 1 was
+  invalid (hand rate < 80%). Investigation done (2026-11-25). Waiting on Mukund's rerun (file +
+  camera) and on his decision about the proposed 15 fps rule below. No extraction until then.
 - Date: 2026-11-24
 
 ## Context
@@ -62,34 +63,122 @@ How to read it honestly:
   with hands lowered. This is Phase 1's per-video detection log's job, not a difference between
   A and B.
 
-## Measure (b): browser fps (waiting for Mukund's run)
+## Measure (b): browser fps
 
 Page: `/dev/extractor-bench` (`make bench-page`, then open
-http://localhost:3000/dev/extractor-bench in Chrome). It runs A and B on the GPU and the CPU
-delegate, on live 640×480 camera frames. Each `.task` file is checked against
-`spec/keypoints.json` by sha256 in the browser before use. For each configuration it measures
-ms/frame (p50, p95), processed fps vs camera fps, and the share of frames with a hand. Results
-are saved as a local JSON file. The page cannot send anything anywhere (ADR 006).
+http://localhost:3000/dev/extractor-bench in Chrome). Each `.task` file is checked against
+`spec/keypoints.json` by sha256 in the browser before use. Results are saved as a local JSON
+file. The page cannot send anything anywhere (ADR 006).
 
-Decision rule, fixed before seeing the numbers. "Sustains 30 fps" means p95 ≤ 33.3 ms **and**
-processed fps ≥ 95% of camera fps, with hands in view in > 80% of frames.
+### Run 1 (2026-11-24, Mukund's laptop): INVALID
 
-1. If **A on GPU** sustains 30 fps, choose **A**. It wins on swaps and matches or beats B on
-   detection.
-2. If A doesn't but **B on GPU** does, the tradeoff is real. Bring both numbers back to Mukund
-   and don't decide alone.
-3. If neither does, choose the faster one, and Phase 5 handles it with adaptive frame skipping
-   on timestamps. Report it.
+Apple M3 Pro, Chrome 157, camera 640×480 at 30 fps. Raw JSON:
+`reports/bench/2026-11-24T06-55-50Z-run1-INVALID.json`.
 
-| Configuration | p50 ms | p95 ms | processed / camera fps | frames with hand | ≥ 30 fps? |
-|---|---|---|---|---|---|
-| A · Holistic · GPU | _pending_ | | | | |
-| B · Hand+Pose · GPU | _pending_ | | | | |
-| A · Holistic · CPU | _pending_ | | | | |
-| B · Hand+Pose · CPU | _pending_ | | | | |
+| Configuration | p50 ms | p95 ms | processed / camera fps | frames with hand |
+|---|---|---|---|---|
+| A · Holistic · GPU | 133.9 | 191.8 | 7.4 / 29.7 | 57% |
+| B · Hand+Pose · GPU | 26.2 | 55.3 | 27.5 / 30.0 | 9% |
+| A · Holistic · CPU | 53.4 | 64.0 | 19.8 / 30.0 | 70% |
+| B · Hand+Pose · CPU | 62.5 | 73.1 | 16.4 / 29.9 | 0% |
 
-Device: _pending (from the saved JSON)_
+Mukund ruled the run invalid because hand rate was below 80% in every row, so the rule was not
+applied. Two anomalies were investigated before a rerun.
+
+### Investigation 1: why did Hand+Pose find almost no hands? (2026-11-25)
+
+Every code-side cause was ruled out with an experiment, using an INCLUDE-50 test video
+(`Animals/4. Bird/MVI_2988.MOV`, 83 frames; Python: Holistic 88.0%, Hand+Pose 68.7%):
+
+| Suspect | Experiment | Result |
+|---|---|---|
+| Browser MediaPipe differs from Python | Same OpenCV-decoded frames (lossless PNG) and timestamps in both | **Identical** hand rates (88.0 / 68.7%). Presence agrees on 99.4% / 100% of frames, landmark distance median 0.0003 / 0.00008 (normalized). Now a test: `web/tests/e2e/extractor-parity.spec.ts` |
+| Browser video decoder vs OpenCV (colour skew) | Browser-decoded frame vs OpenCV frame, per-channel linear fit | browser ≈ 1.000 × OpenCV + ≤ 0.2: **same pixels** |
+| Playing `<video>` element as input | INCLUDE video played at 1× through requestVideoFrameCallback | Hand 65.3%, Holistic 85.7% |
+| 640-px camera resolution | Frames downscaled to 640×360 | Hand 67.5%, Holistic 86.7% |
+| `modelAssetBuffer` vs `modelAssetPath` | Same model loaded both ways | Identical (67.5%) |
+| Shared fileset, run 1's config order, float timestamps | Exact bench sequence on the same frames | Hand+Pose 64% (GPU) / 70% (CPU) |
+| The bench page itself | **Real page in the new file mode** on the INCLUDE video | Holistic 89.4% (Python 88.0%), Hand+Pose 67.2% (68.7%). Now a test: `web/tests/e2e/extractor-bench-file.spec.ts` |
+
+Conclusion: the code is correct. The 9% / 0% came from the **live scene in run 1**, and the
+mechanism is clear. HandLandmarker has to find hands in the *whole frame* with its palm detector.
+On a full 1920×1080 INCLUDE frame the hand is about 99 px (5% of the width), and **both Python
+and the browser find 0 hands on that frame, but 1 on a crop around the hand.** In video, B only
+works once the palm detector catches a hand and tracking takes over. Holistic finds hand regions
+from the body pose, so it never depends on the palm detector. In a waist-up webcam view, small,
+motion-blurred or edge-of-frame hands can keep the palm detector from ever firing. Run 1's scene
+can't be inspected from here, so the bench now draws each configuration's detected hand points
+on screen (display only, never stored).
+
+This is itself evidence for A. The app needs waist-up framing (shoulders are the normalization
+anchor), and that is exactly where B's palm-detector dependency is weakest.
+
+(Along the way, a bug in my own investigation harness was found and fixed: in headless Chromium,
+`seeked` fired without presenting the new frame, so early numbers came from frame 0 repeated.
+The bench page doesn't seek, and the committed tests don't depend on seeking.)
+
+### Investigation 2: Holistic GPU slower than Holistic CPU (to be settled by the rerun)
+
+Run 1 measured from 3 s after start in a fixed order. At about 7 fps, that is only about 20
+warm-up frames, so start-up cost could have leaked in. The bench now:
+
+- warms up for ≥ 8 s **and** ≥ 60 frames, excluded from timings;
+- records init time and the first 10 frame times separately, so shader compilation is visible;
+- runs configs in a **seeded random order per round** (default 2 rounds), with the seed and
+  order saved in the JSON.
+
+If Holistic GPU is still slower than CPU after that, it is a property of the 1.2.3 GPU path on
+Apple Metal, not of the measurement, and the app would use the faster delegate.
+
+### Bench changes for the rerun (Mukund's items 3 and 4)
+
+- **Cross-origin isolated:** COOP `same-origin` + COEP `require-corp` on every route
+  (`web/next.config.ts`). The e2e test asserts `crossOriginIsolated === true`.
+- **INCLUDE video-file source:** the same local file for every config, rewound to its first
+  frame before each, so hands are always in view. **"Both"** runs the file and then the
+  camera in one go, and every result row is tagged with its source.
+
+## How many fps does the app need? (proposal, for Mukund's decision)
+
+Evidence: `python -m sanket.checks.fps_sensitivity` → `reports/phase1_fps_sensitivity_holistic.md`.
+On the 50 `extractor_bench` videos, Holistic was run on only the frames a slower camera would
+deliver, with real timestamps, and compared with the full 25 fps run. Errors are mean hand-landmark
+distance in **shoulder widths**.
+
+| fps | hand rate (25 fps run, same frames) | tracking jitter on shared frames, median / p90 | lost motion on skipped frames (linear interp.), median / p90 |
+|---|---|---|---|
+| 20 | 85.5% (85.9%) | 0.002 / 0.016 | 0.008 / 0.042 |
+| 15 | 84.7% (85.8%) | 0.004 / 0.020 | 0.008 / 0.043 |
+| 12.5 | 84.6% (85.8%) | 0.004 / 0.021 | 0.008 / 0.040 |
+| 10 | 85.2% (85.9%) | 0.005 / 0.022 | 0.010 / 0.053 |
+
+Reading:
+
+- **Tracking does not degrade** down to 10 fps: hand rate stays within about 1 point of the
+  25 fps run on the same frames.
+- **Little motion is lost.** Between 20 and 12.5 fps the median interpolation error is a flat
+  0.008 shoulder widths (about 3 mm for a 35–40 cm adult shoulder width, an approximation), and
+  p90 is about 0.04. It starts to grow at 10 fps (p90 0.053). The classifier will also resample
+  every sign to a fixed length (Phase 2 ADR), which already treats time this coarsely.
+- Limits: this measures keypoint fidelity, not accuracy. A 25 fps source can't give perfectly
+  even 20 fps spacing.
+
+**Proposal:** replace "sustains 30 fps" with **"sustains 15 fps"**: p95 ≤ 66.7 ms and processed
+fps ≥ 15. It keeps the hand-rate condition (> 80% in camera mode, within 0.15 of Python in file
+mode) and judges each extractor on **its faster delegate** (GPU or CPU), since the app would use
+whichever is faster. 15 rather than 10 leaves margin before the error starts to grow.
+
+- The rule would be: (1) if A sustains 15 fps in both file and camera mode → A. (2) If only B
+  does → bring both to Mukund. (3) If neither → the faster one, with adaptive frame skipping in
+  Phase 5.
+- **Confirmed in Phase 2 with accuracy:** the baseline is evaluated on INCLUDE-50 test re-extracted
+  at 25 / 20 / 15 / 10 fps, and trained with frame-drop and time-stretch augmentation. If
+  accuracy at 15 fps is more than 1 point below 25 fps, the floor goes back up.
+- Related, not changed: CLAUDE.md section 3's end-to-end target of ≥ 25 fps is a résumé metric.
+  If 15 fps is accepted here, that target should be revisited at the same time (for example
+  ≥ 15 fps sustained, with 25 as the stretch goal). That is Mukund's call.
 
 ## Decision
 
-_Pending measure (b) and Mukund's approval._ On measure (a) alone, A is preferred.
+_Pending Mukund's rerun (file + camera) and his decision on the fps proposal._ On measure (a),
+and on the palm-detector finding above, A is preferred.

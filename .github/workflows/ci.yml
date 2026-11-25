@@ -69,8 +69,13 @@ jobs:
         with:
           path: ml/.cache/models
           key: mediapipe-models-${{ hashFiles('spec/keypoints.json') }}
-      - name: fetch pinned models (sha256-checked)
-        run: uv run --locked python -m sanket.spec
+      - name: cache the INCLUDE test video for the parity fixture
+        uses: actions/cache@v6.1.0
+        with:
+          path: ml/.cache/videos
+          key: include-test-video-${{ hashFiles('ml/data/splits/include50_test.txt') }}
+      - name: fetch pinned models (sha256-checked) and build the Python-vs-browser parity fixture
+        run: uv run --locked python -m sanket.spec && uv run --locked python -m sanket.checks.browser_parity_fixture
         working-directory: ml
       - run: pnpm exec playwright install --with-deps chromium
         working-directory: web

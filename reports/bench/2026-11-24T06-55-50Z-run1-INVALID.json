@@ -1,0 +1,28 @@
+{
+  "_note": "Run 1 of ADR 002 measure (b), declared INVALID by Mukund (hand rate < 80% in every row). Kept unmodified below for the record; see ADR 002.",
+  "createdAt": "2026-11-24T06:55:50.216Z",
+  "mediapipeVersion": "1.2.3",
+  "source": "camera",
+  "videoSize": [640, 480],
+  "warmupSeconds": 3,
+  "seconds": 15,
+  "device": {
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36",
+    "hardwareConcurrency": 11,
+    "deviceMemoryGb": 16,
+    "webglRenderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M3 Pro, Unspecified Version)",
+    "webgpuAdapter": "apple / metal-3",
+    "crossOriginIsolated": false
+  },
+  "models": [
+    {"name": "holistic_landmarker", "sha256": "e2dab61191e2dcd0a15f943d8e3ed1dce13c82dfa597b9dd39f562975a50c3f8", "verified": true},
+    {"name": "hand_landmarker", "sha256": "fbc2a30080c3c557093b5ddfc334698132eb341044ccee322ccf8bcf3607cde1", "verified": true},
+    {"name": "pose_landmarker_full", "sha256": "5134a3aad27a58b93da0088d431f366da362b44e3ccfbe3462b3827a839011b1", "verified": true}
+  ],
+  "results": [
+    {"id": "holistic-gpu", "ok": true, "initMs": 943.7000000029802, "processedFrames": 111, "sourceFrames": 446, "seconds": 15.02739999999851, "processedFps": 7.386507313308424, "sourceFps": 29.67911947509511, "msP50": 133.90000000596046, "msP95": 191.75, "msMean": 134.45585585580216, "headroomFps": 5.215123859191656, "handRate": 0.5675675675675675, "sustainsTarget": false},
+    {"id": "handpose-gpu", "ok": true, "initMs": 249.80000000447035, "processedFrames": 413, "sourceFrames": 451, "seconds": 15.02639999999851, "processedFps": 27.48495980408088, "sourceFps": 30.01384230421423, "msP50": 26.200000002980232, "msP95": 55.299999998509875, "msMean": 29.41476997576167, "headroomFps": 18.08318264063194, "handRate": 0.08958837772397095, "sustainsTarget": false},
+    {"id": "holistic-cpu", "ok": true, "initMs": 250.89999999850988, "processedFrames": 298, "sourceFrames": 451, "seconds": 15.04670000000298, "processedFps": 19.805007077960017, "sourceFps": 29.973349638120695, "msP50": 53.44999999925494, "msP95": 64, "msMean": 49.14966442978522, "headroomFps": 15.625, "handRate": 0.697986577181208, "sustainsTarget": false},
+    {"id": "handpose-cpu", "ok": true, "initMs": 442, "processedFrames": 247, "sourceFrames": 451, "seconds": 15.0635, "processedFps": 16.39725163474624, "sourceFps": 29.939921001095364, "msP50": 62.5, "msP95": 73.10000000149012, "msMean": 60.70323886665014, "headroomFps": 13.679890560596654, "handRate": 0, "sustainsTarget": false}
+  ]
+}

@@ -7,7 +7,8 @@ ML   := cd ml &&
 WEB  := cd web &&
 
 .PHONY: help setup models inventory lint typecheck test test-ml test-web smoke e2e build ci clean \
-        samples check-video-metadata check-extractor bench-page extract upload
+        samples check-video-metadata check-extractor bench-page extract upload \
+        parity-fixture check-fps
 
 help:  ## list targets
 	@grep -hE '^[a-zA-Z_-]+:.*## ' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "  %-22s %s\n", $$1, $$2}'
@@ -39,11 +40,11 @@ test-ml:
 test-web:
 	$(WEB) $(PNPM) test
 
-smoke: models build  ## Phase 0 gate: pinned MediaPipe models run in Python AND in Chromium
+smoke: models parity-fixture build  ## Phase 0 gate: pinned MediaPipe models run in Python AND in Chromium
 	$(ML) $(UV) run pytest -m network
 	$(WEB) $(PNPM) test:e2e
 
-e2e: models build  ## Playwright suite (against the production build)
+e2e: models parity-fixture build  ## Playwright suite (against the production build)
 	$(WEB) $(PNPM) test:e2e
 
 build:  ## production build of the web app
@@ -61,6 +62,12 @@ check-video-metadata: samples  ## OpenCV vs ffprobe on 30 .MOV + the .MP4 files 
 
 check-extractor: samples models  ## ADR 002 measure (a): Holistic vs Hand+Pose on 50 videos
 	$(ML) $(UV) run python -m sanket.checks.extractor_compare
+
+parity-fixture: models  ## decode an INCLUDE-50 test video + Python reference for the browser parity tests
+	$(ML) $(UV) run python -m sanket.checks.browser_parity_fixture
+
+check-fps: models  ## evidence for ADR 002's fps rule (needs: make samples)
+	$(ML) $(UV) run python -m sanket.checks.fps_sensitivity --extractor holistic
 
 bench-page: models  ## ADR 002 measure (b): serve the browser benchmark at /dev/extractor-bench
 	$(WEB) $(PNPM) build

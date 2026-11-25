@@ -55,7 +55,7 @@ for pnpm 12. Installing `npm i -g pnpm@12.23.0` also works.
 6. ADR 004: TensorBoard.
 7. Kaggle setup (Python version, API token) needs your account.
 
-## Phase 1: Data pipeline and keypoint extraction ⏳ pipeline ready, waiting on ADR 002 (b) JSON
+## Phase 1: Data pipeline and keypoint extraction ⏳ pipeline ready; ADR 002 (b) rerun pending
 
 Phase 0 decisions applied: CC BY 4.0 credit (CLAUDE.md section 6, ADR 003), "session-independent"
 wording everywhere, leakage and 262/263 reporting rules (ADR 003), TensorBoard (ADR 004),
@@ -117,3 +117,21 @@ make samples check-video-metadata check-extractor   # ~1.1 GB of sampled videos,
 - Ours, created today: sample videos 1.1 GB and scratch 0.56 GB (both **deleted**), tool caches
   (uv 0.8, pnpm 1.1, Playwright 0.6, npm 0.4 GB; kept, needed or shared). No stray `.part` files.
 - Free space after cleanup: 21–24 GB (it moves with swap).
+
+**ADR 002 measure (b), run 1 (2026-11-24): invalid** (Mukund: hand rate < 80% everywhere).
+Investigation (2026-11-25, details and evidence in ADR 002):
+
+- Hand+Pose's 9% / 0% is **not a code bug**. On identical frames, browser and Python MediaPipe
+  give identical hand rates (88.0 / 68.7%), and the real bench page in the new file mode matches
+  Python (89.4 vs 88.0%, 67.2 vs 68.7%). Cause: HandLandmarker needs its palm detector to find
+  small hands in the whole frame (0 hands on a full 1080p INCLUDE frame, 1 on a crop, in both
+  runtimes). Holistic finds hands from the pose. Run 1's live scene defeated the palm detector.
+- New tests: `extractor-parity.spec.ts` (frame-by-frame Python vs browser on an INCLUDE-50
+  video) and `extractor-bench-file.spec.ts` (real page, file mode). The fixture is built by
+  `make parity-fixture`; INCLUDE frames stay in the gitignored cache.
+- Bench: COOP/COEP (cross-origin isolated, asserted in e2e), INCLUDE-file and "both" modes,
+  warm-up ≥ 8 s and ≥ 60 frames, first-frame times recorded, seeded random order over rounds,
+  on-screen hand overlay.
+- fps evidence (`make check-fps`): hand tracking holds down to 10 fps, and lost motion is flat
+  (median 0.008 shoulder widths) from 20 to 12.5 fps. **Proposal: 15 fps rule** instead of 30
+  (ADR 002), to be confirmed with accuracy in Phase 2.
