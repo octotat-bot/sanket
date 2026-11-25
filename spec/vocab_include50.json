@@ -1,0 +1,305 @@
+{
+ "dataset": "include50",
+ "words": [
+  {
+   "id": 0,
+   "label": "bank",
+   "display": "Bank",
+   "category": "Places"
+  },
+  {
+   "id": 1,
+   "label": "biglarge",
+   "display": "Big large",
+   "category": "Adjectives"
+  },
+  {
+   "id": 2,
+   "label": "bird",
+   "display": "Bird",
+   "category": "Animals"
+  },
+  {
+   "id": 3,
+   "label": "black",
+   "display": "Black",
+   "category": "Colours"
+  },
+  {
+   "id": 4,
+   "label": "boy",
+   "display": "Boy",
+   "category": "People"
+  },
+  {
+   "id": 5,
+   "label": "brother",
+   "display": "Brother",
+   "category": "People"
+  },
+  {
+   "id": 6,
+   "label": "car",
+   "display": "Car",
+   "category": "Means of Transportation"
+  },
+  {
+   "id": 7,
+   "label": "cellphone",
+   "display": "Cell phone",
+   "category": "Electronics"
+  },
+  {
+   "id": 8,
+   "label": "court",
+   "display": "Court",
+   "category": "Places"
+  },
+  {
+   "id": 9,
+   "label": "cow",
+   "display": "Cow",
+   "category": "Animals"
+  },
+  {
+   "id": 10,
+   "label": "death",
+   "display": "Death",
+   "category": "Society"
+  },
+  {
+   "id": 11,
+   "label": "dog",
+   "display": "Dog",
+   "category": "Animals"
+  },
+  {
+   "id": 12,
+   "label": "dry",
+   "display": "Dry",
+   "category": "Adjectives"
+  },
+  {
+   "id": 13,
+   "label": "election",
+   "display": "Election",
+   "category": "Society"
+  },
+  {
+   "id": 14,
+   "label": "fall",
+   "display": "Fall",
+   "category": "Seasons"
+  },
+  {
+   "id": 15,
+   "label": "fan",
+   "display": "Fan",
+   "category": "Electronics"
+  },
+  {
+   "id": 16,
+   "label": "father",
+   "display": "Father",
+   "category": "People"
+  },
+  {
+   "id": 17,
+   "label": "girl",
+   "display": "Girl",
+   "category": "People"
+  },
+  {
+   "id": 18,
+   "label": "good",
+   "display": "Good",
+   "category": "Adjectives"
+  },
+  {
+   "id": 19,
+   "label": "goodmorning",
+   "display": "Good Morning",
+   "category": "Greetings"
+  },
+  {
+   "id": 20,
+   "label": "happy",
+   "display": "Happy",
+   "category": "Adjectives"
+  },
+  {
+   "id": 21,
+   "label": "hat",
+   "display": "Hat",
+   "category": "Clothes"
+  },
+  {
+   "id": 22,
+   "label": "hello",
+   "display": "Hello",
+   "category": "Greetings"
+  },
+  {
+   "id": 23,
+   "label": "hot",
+   "display": "Hot",
+   "category": "Adjectives"
+  },
+  {
+   "id": 24,
+   "label": "house",
+   "display": "House",
+   "category": "Places"
+  },
+  {
+   "id": 25,
+   "label": "i",
+   "display": "I",
+   "category": "Pronouns"
+  },
+  {
+   "id": 26,
+   "label": "it",
+   "display": "It",
+   "category": "Pronouns"
+  },
+  {
+   "id": 27,
+   "label": "long",
+   "display": "Long",
+   "category": "Adjectives"
+  },
+  {
+   "id": 28,
+   "label": "loud",
+   "display": "Loud",
+   "category": "Adjectives"
+  },
+  {
+   "id": 29,
+   "label": "monday",
+   "display": "Monday",
+   "category": "Days and Time"
+  },
+  {
+   "id": 30,
+   "label": "new",
+   "display": "New",
+   "category": "Adjectives"
+  },
+  {
+   "id": 31,
+   "label": "paint",
+   "display": "Paint",
+   "category": "Home"
+  },
+  {
+   "id": 32,
+   "label": "pen",
+   "display": "Pen",
+   "category": "Home"
+  },
+  {
+   "id": 33,
+   "label": "priest",
+   "display": "Priest",
+   "category": "Jobs"
+  },
+  {
+   "id": 34,
+   "label": "quiet",
+   "display": "Quiet",
+   "category": "Adjectives"
+  },
+  {
+   "id": 35,
+   "label": "red",
+   "display": "Red",
+   "category": "Colours"
+  },
+  {
+   "id": 36,
+   "label": "shoes",
+   "display": "Shoes",
+   "category": "Clothes"
+  },
+  {
+   "id": 37,
+   "label": "short",
+   "display": "Short",
+   "category": "Adjectives"
+  },
+  {
+   "id": 38,
+   "label": "smalllittle",
+   "display": "Small little",
+   "category": "Adjectives"
+  },
+  {
+   "id": 39,
+   "label": "storeorshop",
+   "display": "Store or Shop",
+   "category": "Places"
+  },
+  {
+   "id": 40,
+   "label": "summer",
+   "display": "Summer",
+   "category": "Seasons"
+  },
+  {
+   "id": 41,
+   "label": "teacher",
+   "display": "Teacher",
+   "category": "Jobs"
+  },
+  {
+   "id": 42,
+   "label": "thankyou",
+   "display": "Thank you",
+   "category": "Greetings"
+  },
+  {
+   "id": 43,
+   "label": "time",
+   "display": "Time",
+   "category": "Days and Time"
+  },
+  {
+   "id": 44,
+   "label": "trainticket",
+   "display": "Train ticket",
+   "category": "Means of Transportation"
+  },
+  {
+   "id": 45,
+   "label": "tshirt",
+   "display": "T-Shirt",
+   "category": "Clothes"
+  },
+  {
+   "id": 46,
+   "label": "white",
+   "display": "White",
+   "category": "Colours"
+  },
+  {
+   "id": 47,
+   "label": "window",
+   "display": "Window",
+   "category": "Home"
+  },
+  {
+   "id": 48,
+   "label": "year",
+   "display": "Year",
+   "category": "Days and Time"
+  },
+  {
+   "id": 49,
+   "label": "youplural",
+   "display": "You (plural)",
+   "category": "Pronouns"
+  }
+ ]
+}
