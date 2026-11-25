@@ -1,0 +1,134 @@
+{
+  "playwright-chromium": {
+    "bitmap-pixelated": {
+      "pixelMAE": 0.92,
+      "handRate": 0.867,
+      "pyHandRate480": "0.867",
+      "presenceAgree": 0.964,
+      "lmMedian": 0.0015,
+      "lmP95": 0.01277
+    },
+    "bitmap-low": {
+      "pixelMAE": 0.445,
+      "handRate": 0.88,
+      "pyHandRate480": "0.867",
+      "presenceAgree": 0.97,
+      "lmMedian": 0.00091,
+      "lmP95": 0.00944
+    },
+    "bitmap-medium": {
+      "pixelMAE": 0.29,
+      "handRate": 0.88,
+      "pyHandRate480": "0.867",
+      "presenceAgree": 0.964,
+      "lmMedian": 0.00098,
+      "lmP95": 0.00697
+    },
+    "bitmap-high": {
+      "pixelMAE": 0.29,
+      "handRate": 0.88,
+      "pyHandRate480": "0.867",
+      "presenceAgree": 0.964,
+      "lmMedian": 0.00098,
+      "lmP95": 0.00697
+    },
+    "canvas-off": {
+      "pixelMAE": 0.92,
+      "handRate": 0.867,
+      "pyHandRate480": "0.867",
+      "presenceAgree": 0.964,
+      "lmMedian": 0.0015,
+      "lmP95": 0.01277
+    },
+    "canvas-low": {
+      "pixelMAE": 0.543,
+      "handRate": 0.88,
+      "pyHandRate480": "0.867",
+      "presenceAgree": 0.97,
+      "lmMedian": 0.00114,
+      "lmP95": 0.01108
+    },
+    "canvas-medium": {
+      "pixelMAE": 0.29,
+      "handRate": 0.88,
+      "pyHandRate480": "0.867",
+      "presenceAgree": 0.964,
+      "lmMedian": 0.00098,
+      "lmP95": 0.00697
+    },
+    "canvas-high": {
+      "pixelMAE": 0.29,
+      "handRate": 0.88,
+      "pyHandRate480": "0.867",
+      "presenceAgree": 0.964,
+      "lmMedian": 0.00098,
+      "lmP95": 0.00697
+    }
+  },
+  "chrome": {
+    "bitmap-pixelated": {
+      "pixelMAE": 0.92,
+      "handRate": 0.867,
+      "pyHandRate480": "0.867",
+      "presenceAgree": 0.964,
+      "lmMedian": 0.0015,
+      "lmP95": 0.01277
+    },
+    "bitmap-low": {
+      "pixelMAE": 0.445,
+      "handRate": 0.88,
+      "pyHandRate480": "0.867",
+      "presenceAgree": 0.97,
+      "lmMedian": 0.00091,
+      "lmP95": 0.00944
+    },
+    "bitmap-medium": {
+      "pixelMAE": 0.29,
+      "handRate": 0.88,
+      "pyHandRate480": "0.867",
+      "presenceAgree": 0.964,
+      "lmMedian": 0.00098,
+      "lmP95": 0.00697
+    },
+    "bitmap-high": {
+      "pixelMAE": 0.29,
+      "handRate": 0.88,
+      "pyHandRate480": "0.867",
+      "presenceAgree": 0.964,
+      "lmMedian": 0.00098,
+      "lmP95": 0.00697
+    },
+    "canvas-off": {
+      "pixelMAE": 1.481,
+      "handRate": 0.867,
+      "pyHandRate480": "0.867",
+      "presenceAgree": 0.94,
+      "lmMedian": 0.00221,
+      "lmP95": 0.00869
+    },
+    "canvas-low": {
+      "pixelMAE": 0.366,
+      "handRate": 0.867,
+      "pyHandRate480": "0.867",
+      "presenceAgree": 0.976,
+      "lmMedian": 0.00089,
+      "lmP95": 0.00596
+    },
+    "canvas-medium": {
+      "pixelMAE": 0.407,
+      "handRate": 0.88,
+      "pyHandRate480": "0.867",
+      "presenceAgree": 0.982,
+      "lmMedian": 0.0011,
+      "lmP95": 0.01116
+    },
+    "canvas-high": {
+      "pixelMAE": 0.407,
+      "handRate": 0.88,
+      "pyHandRate480": "0.867",
+      "presenceAgree": 0.982,
+      "lmMedian": 0.0011,
+      "lmP95": 0.01116
+    }
+  }
+}

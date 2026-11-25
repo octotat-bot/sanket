@@ -8,7 +8,7 @@ WEB  := cd web &&
 
 .PHONY: help setup models inventory lint typecheck test test-ml test-web smoke e2e build ci clean \
         samples check-video-metadata check-extractor bench-page extract upload \
-        parity-fixture check-fps
+        parity-fixture check-fps check-downscale
 
 help:  ## list targets
 	@grep -hE '^[a-zA-Z0-9_-]+:.*## ' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "  %-22s %s\n", $$1, $$2}'
@@ -68,6 +68,9 @@ parity-fixture: models  ## decode an INCLUDE-50 test video + Python reference fo
 
 check-fps: models  ## evidence for ADR 002's fps rule (needs: make samples)
 	$(ML) $(UV) run python -m sanket.checks.fps_sensitivity --extractor holistic
+
+check-downscale: parity-fixture  ## ADR 007: browser downscale methods vs OpenCV INTER_AREA (Chromium + Chrome)
+	$(WEB) node scripts/downscale-probe.mjs
 
 bench-page: models  ## ADR 002 measure (b): serve the browser benchmark at /dev/extractor-bench
 	$(WEB) $(PNPM) build
