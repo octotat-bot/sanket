@@ -1,8 +1,8 @@
 # ADR 002: Holistic Landmarker vs separate Hand + Pose Landmarkers
 
-- Status: **Speed rule revised and approved by Mukund (2026-11-25): ≥ 15 fps floor, ≥ 20 fps / p95 ≤ 50 ms
-  on the M3 Pro, judged on the faster delegate.** Measure (a) done. Run 1 invalid. Waiting on
-  Mukund's rerun (file + camera). No extraction until then.
+- Status: Speed rule approved (2026-11-25). Run 2 (valid) gives **case 3: neither extractor
+  clears the M3 Pro bar in both modes.** Waiting on Mukund's choice among the options at the end. No
+  extraction until then.
 - Date: 2026-11-24
 
 ## Context
@@ -219,7 +219,68 @@ results for the bench page.) The **structural** reason (no palm-detector depende
 most for waist-up webcam use, and run 1's 9% / 0% for B is consistent with it. Unless A fails the
 speed check, A is the choice.
 
+## Run 2 (2026-11-25, Mukund's M3 Pro): valid. Rule result: neither clears
+
+Raw JSON: `reports/bench/2026-11-25T09-00-00Z-run2.json`. Apple M3 Pro, Chrome 158,
+cross-origin isolated. "Both" mode: file `MVI_2988.MOV` (delivered to MediaPipe at 1920×1088),
+then the camera at 640×480. 2 rounds, seed 31800210, warm-up 8 s / ≥ 60 frames. The page's
+pass/fail flags match an independent recomputation.
+
+**Validity:** camera hand rate ≥ 96% in every row. File-mode hand rates are within 0.15 of
+Python in every row (A 0.878–0.907 vs 0.880; B 0.642–0.794 vs 0.687). The run is valid.
+
+GPU is the faster delegate for both extractors in every pairing, so the rule judges GPU:
+
+| Extractor (GPU) | Camera R1 | Camera R2 | File R1 | File R2 |
+|---|---|---|---|---|
+| A · Holistic | ✅ 30.0 fps, p95 34.3 ms | ✅ 29.2 fps, p95 36.1 ms | ❌ 17.0 fps, p95 44.9 ms | ❌ 16.5 fps, p95 66.1 ms |
+| B · Hand+Pose | ✅ 30.0 fps, p95 31.6 ms | ✅ 29.9 fps, p95 31.7 ms | ✅ 22.3 fps, p95 37.7 ms | ❌ 21.3 fps, p95 51.6 ms |
+
+(CPU, camera: A 20.4 / 20.3 fps, p95 49.4 / 49.6, passes. B 19.8 / 19.6 fps, fails. CPU, file:
+both fail.)
+
+**Applying the approved rule:** A does not clear the M3 Pro bar in file mode. B misses it in file
+round 2 (p95 51.6 ms). **Neither clears in both modes, which is case 3: report to Mukund, don't
+decide alone.** No extractor is chosen, and extraction has not started.
+
+What the file mode measured, as distinct from the app:
+
+- **Input size.** The file reaches MediaPipe at 1920×1088, about 6.8× the pixels of the 640×480
+  camera the app will use. Per-frame cost grows with input size (Holistic GPU p50 39 ms on the
+  file vs 30 ms on the camera).
+- **Cadence.** A 25 fps file presents a frame every 40 ms. Holistic GPU's ~39 ms p50 often
+  finishes just after the next frame, so it waits for the one after. That gives 17 processed fps,
+  although 1000 / p50 ≈ 25.
+- `sourceFps` reports about 33.8 for a 25 fps file. rVFC's presentedFrames counter is not a
+  reliable source-rate measure for files. The rule doesn't use it.
+- **For Phase 4:** Chrome reported the file as **1920×1088**, while ffprobe reports 1920×1080
+  (coded and displayed). Chrome on macOS seems to expose 8 rows of decoder padding. That is
+  irrelevant for the camera-based app, but parity test 4 on video files must crop or account for it.
+
+### Investigation 2 answered: Holistic GPU is faster than CPU
+
+In every same-source pairing GPU beats CPU (camera p50 30.1 / 29.4 vs 48.6 / 49.0 ms; file
+39.3 / 39.4 vs 49.5 / 51.0 ms). The **first GPU frame of the session took 9.4 s** (shader
+compilation). Later GPU configs' first frames took 0.33–1.5 s, and all of these are now excluded
+from the timings. Run 1 measured Holistic GPU first, with only a 3 s warm-up, so that start-up
+cost overlapped its timed window. That is *consistent with* its 134 ms p50, though not proven.
+**Implication for Phase 5:** warm MediaPipe's GPU path up at page load, before the user signs,
+and show a "preparing" state.
+
+### Options for Mukund (the rule is unchanged until he decides)
+
+1. **Re-run file mode at the app's input size, with the rule unchanged.** A 640×360 H.264 copy of
+   the same INCLUDE video is prepared (`ml/.cache/videos/bench/MVI_2988_640.mp4`, gitignored;
+   made with `ffmpeg -vf scale=640:-2 -c:v libx264 -crf 16`). The rule is fixed *before* that run,
+   so nothing is decided after seeing its result. *Recommended.*
+2. **Amend the rule so speed is judged in camera mode, with file mode as the same-input validity
+   check.** A would pass with margin. But that is a change made *after* seeing these numbers, and
+   would have to be recorded as such, with its own justification (file mode was added for
+   identical input and hands in view, not for the app's resolution).
+3. **Apply case 3 literally:** the faster extractor (B), plus adaptive frame skipping. *Not
+   recommended:* A is preferred on quality, and B also failed a file round.
+
 ## Decision
 
-_Pending Mukund's rerun (file + camera) under the rule above._ A is preferred on quality. The
-rerun decides only whether A passes the speed check.
+_Pending Mukund's choice among the options above._ A is preferred on quality. Under the approved
+rule, run 2 gives case 3 (neither clears in both modes).

@@ -153,3 +153,10 @@ an Android phone) and report fps with the device name.
 
 **Next:** Mukund's benchmark rerun (file + camera). If A clears the M3 Pro bar, set
 `extractor: holistic` in `ml/configs/extract.yaml`, commit, and start `make extract` (≈ 8 h).
+
+**ADR 002 run 2 (2026-11-25, M3 Pro, valid):** camera mode, both extractors' GPU configs clear the
+M3 Pro bar (A 30.0 / 29.2 fps, p95 34–36 ms). File mode (1920×1088 input): A fails both rounds
+(17.0 / 16.5 fps), B fails round 2 (p95 51.6 ms). **Case 3 under the approved rule: neither clears
+in both modes → Mukund decides** (options in ADR 002; recommended: re-run file mode at 640 px,
+rule unchanged). Also found: first GPU frame of a session takes 9.4 s (warm up at load in Phase
+5), and Chrome reports the file as 1920×1088 vs 1080 (Phase 4 parity must handle it).
