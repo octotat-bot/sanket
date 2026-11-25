@@ -204,3 +204,29 @@ A GPU kept up with the 30 fps camera in all 4 camera rounds (450/450, 438/439, 4
 p95 33.6–36.1 ms), and its per-frame p95 on the 854×480 file was 40.8 / 40.9 ms (< 50 ms). Config:
 `extractor: holistic`, `extract_height: 480`. A back-to-back file-mode throughput test is noted as
 a possible later improvement.
+
+## Phase 2: Normalization, augmentation, baseline ⏳ started early (Mukund, 2026-11-25), in parallel with extraction
+
+Built without the full data (synthetic inputs only). Nothing touches the running extraction:
+separate `ml/.venv-train`, `uv run --no-sync`, `nice -n 19`, torch at 2 threads, and the
+extraction config and pipeline modules are unchanged.
+
+- **Features v1** (ADR 008, *proposed*): 193 features per frame (11 pose points, both hands
+  body-relative and hand-local, presence flags). Short-gap fill (≤ 3 frames) on raw landmarks,
+  fixed T = 64 by timestamp, optional velocities. Python reference `sanket.keypoints.features`;
+  TypeScript mirror `web/src/lib/inference/features.ts`.
+- **Golden file** `spec/golden/features_v1.json` (synthetic): Python has no drift
+  (`test_golden.py`), and **TypeScript equals Python to < 1e-9** with and without velocities
+  (`features.test.ts`). Aspect and padding invariance are tested in both languages.
+- **Augmentations** `sanket.augment.transforms`: rotation, anisotropic scale, time warp, temporal
+  crop, frame drop, hand dropout, jitter, mirror (ablation, off). Tests **prove** that isotropic scale,
+  translation and uniform time stretch are exact no-ops under our normalization (they're
+  implemented as CLAUDE.md lists them, but they change nothing). Time transforms keep float
+  timestamps (integer rounding broke the no-op).
+- **BiGRU baseline + training loop** (`sanket.train`): AdamW, warmup + cosine, label smoothing,
+  early stopping on val (never test), a checkpoint every epoch with atomic writes, TensorBoard,
+  config and git SHA in the run dir. Tested on synthetic signs (`make test-train`, 4.7 s): learns
+  (val ≥ 90%), same seed gives the same history, **an interrupted and resumed run gives
+  bit-identical weights**, early stopping, val never augmented.
+- Not done yet: swap correction (safety net), the real INCLUDE-50 run (needs extraction),
+  CI job for the training env.
