@@ -45,7 +45,7 @@ def well_formed(c: dict[str, np.ndarray]) -> None:
         assert not c[key][~c[flag].astype(bool)].any()  # missing parts stay zeros
 
 
-# ---- exact no-ops under our normalization (and why the replacements exist) ----
+# ---- exact no-ops under our normalization: why they are NOT in AugmentConfig/augment() ----
 
 
 @pytest.mark.parametrize(
@@ -166,3 +166,15 @@ def test_augment_never_modifies_its_input() -> None:
     augment(c, np.random.default_rng(0), AugmentConfig(mirror=True))
     for k in c:
         np.testing.assert_array_equal(c[k], before[k])
+
+
+def test_no_op_augmentations_are_not_in_the_default_pipeline() -> None:
+    import inspect
+
+    from sanket.augment import transforms
+
+    src = inspect.getsource(transforms.augment)
+    for name in ("scale(", "translate(", "time_stretch("):
+        assert f" {name}" not in src and f"={name}" not in src, name
+    fields = AugmentConfig.__dataclass_fields__
+    assert not any(k.startswith(("p_scale_iso", "p_translate", "p_time_stretch")) for k in fields)

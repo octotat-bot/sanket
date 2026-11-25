@@ -5,11 +5,11 @@ inputs are never modified. Time transforms return float millisecond timestamps (
 Geometry is done in aspect-correct units (x * W/H, like normalization) around the clip's mean
 shoulder midpoint, then converted back to MediaPipe's normalized coordinates.
 
-Two facts that matter for choosing augmentations (tested in tests/test_augment.py):
-* isotropic `scale` and `translate` are exact no-ops for the model input, because features are
-  shoulder-centred and shoulder-scaled. `scale_xy` (different x and y factors) is not.
-* uniform `time_stretch` is an exact no-op, because resampling maps the first..last timestamp onto
-  T frames. `time_warp` (speed varying within the sign) and `temporal_crop` are not.
+Not used in training (removed from the defaults and from CLAUDE.md, Mukund 2026-11-25):
+isotropic `scale`, `translate` and uniform `time_stretch`. They are exact no-ops for the model
+input (shoulder normalization cancels scale and translation; resampling first..last timestamp onto
+T frames cancels a uniform stretch). They remain here only so tests/test_augment.py can document
+*why* they are excluded. The effective replacements are `scale_xy`, `time_warp` and `temporal_crop`.
 
 `mirror` swaps the signer's hands and flips x. It is an ablation, never a default (CLAUDE.md
 section 7: swapping hands can change meaning).
@@ -86,7 +86,7 @@ def rotate(clip: Clip, degrees: float) -> Clip:
 
 
 def scale(clip: Clip, factor: float) -> Clip:
-    """Isotropic scale about the body centre. A no-op for features (CLAUDE.md lists it)."""
+    """NOT USED IN TRAINING: exact no-op for features (kept to document it). Use scale_xy."""
     return scale_xy(clip, factor, factor)
 
 
@@ -97,7 +97,7 @@ def scale_xy(clip: Clip, sx: float, sy: float) -> Clip:
 
 
 def translate(clip: Clip, dx: float, dy: float) -> Clip:
-    """Shift in frame-height units. A no-op for features (kept because CLAUDE.md lists it)."""
+    """NOT USED IN TRAINING: exact no-op for features (kept to document it)."""
     return _map_xy(clip, lambda xy: xy + np.array([dx, dy]))
 
 
@@ -114,7 +114,7 @@ def jitter(clip: Clip, rng: np.random.Generator, sigma: float) -> Clip:
 
 
 def time_stretch(clip: Clip, factor: float) -> Clip:
-    """Uniform speed change. A no-op for features (resampling to T removes it)."""
+    """NOT USED IN TRAINING: exact no-op for features (kept to document it). Use time_warp."""
     out = _copy(clip)
     t = out["t_ms"].astype(np.float64)
     out["t_ms"] = t[0] + (t - t[0]) * factor  # float ms: rounding would make it not quite a no-op
