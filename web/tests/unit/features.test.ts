@@ -3,7 +3,7 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
-import { type Clip, clipToModelInput, featureSpecFrom, layout } from "@/lib/inference/features";
+import { type Clip, clipToModelInput, featureSpecFrom, fillShortGaps, layout } from "@/lib/inference/features";
 
 const root = resolve(__dirname, "../../..");
 const spec = JSON.parse(readFileSync(resolve(root, "spec/keypoints.json"), "utf8"));
@@ -51,6 +51,37 @@ describe("aspect ratio and padding (same body, different frames)", () => {
     it(`${W}x${H} gives the same features`, () => {
       const got = clipToModelInput(reframe(W, H), fs, true, 12);
       expect(maxAbsDiff(got, ref.map((r) => Array.from(r)))).toBeLessThan(1e-9);
+    });
+  }
+});
+
+describe("gap rule is in milliseconds (same meaning at any frame rate)", () => {
+  const base = golden.clips[0].input as Clip;
+  // 120 ms fills 1 missing frame at 15 fps, 3 at 25 fps and 3 (not 4) at 30 fps.
+  for (const [fps, maxFilled] of [
+    [15, 1],
+    [25, 3],
+    [30, 3],
+  ]) {
+    it(`${fps} fps fills runs of up to ${maxFilled} frames`, () => {
+      for (let k = 1; k <= 5; k++) {
+        const n = k + 2;
+        const c: Clip = {
+          ...base,
+          t_ms: Array.from({ length: n }, (_, i) => (i * 1000) / fps),
+          pose: base.pose.slice(0, n),
+          left: base.left.slice(0, n).map((f) => f.map((p) => [...p])),
+          right: base.right.slice(0, n),
+          pose_present: Array(n).fill(true),
+          left_present: Array.from({ length: n }, (_, i) => i === 0 || i === n - 1),
+          right_present: Array(n).fill(true),
+        };
+        c.left[0] = c.left[0].map(() => [0.3, 0.5, 0]);
+        c.left[n - 1] = c.left[n - 1].map(() => [0.5, 0.5, 0]);
+        const out = fillShortGaps(c, fs.maxGapMs);
+        const filled = out.left_present.slice(1, n - 1).every(Boolean);
+        expect(filled, `fps ${fps}, k ${k}`).toBe(k <= maxFilled);
+      }
     });
   }
 });

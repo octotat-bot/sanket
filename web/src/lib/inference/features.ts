@@ -19,7 +19,8 @@ export interface FeatureSpec {
   visMin: number;
   wrist: number;
   mcp: number;
-  maxGap: number;
+  /** Gap rule (spec max_gap_ms): fill k missing frames iff (t_b - t_a) * k / (k + 1) <= maxGapMs. */
+  maxGapMs: number;
   T: number;
 }
 
@@ -32,7 +33,7 @@ interface SpecJson {
       pose_feature_indices: number[];
       pose_visibility_min: number;
       palm: { wrist: number; middle_mcp: number };
-      max_gap_frames: number;
+      max_gap_ms: number;
       resample: { T: number };
     };
   };
@@ -45,7 +46,7 @@ export function featureSpecFrom(spec: SpecJson): FeatureSpec {
     visMin: f.pose_visibility_min,
     wrist: f.palm.wrist,
     mcp: f.palm.middle_mcp,
-    maxGap: f.max_gap_frames,
+    maxGapMs: f.max_gap_ms,
     T: f.resample.T,
   };
 }
@@ -126,8 +127,11 @@ export function frameFeatures(
 
 const clone3 = (a: number[][][]) => a.map((f) => f.map((p) => [...p]));
 
-/** Raw landmarks: fill runs of ≤ maxGap missing frames bounded by present frames, per part. */
-export function fillShortGaps(clip: Clip, maxGap: number): Clip {
+/**
+ * Raw landmarks: per part, fill each run of k missing frames bounded by present frames a, b
+ * iff (t_b - t_a) * k / (k + 1) <= maxGapMs (time unseen, so the rule is frame-rate independent).
+ */
+export function fillShortGaps(clip: Clip, maxGapMs: number): Clip {
   const out: Clip = {
     ...clip,
     pose: clone3(clip.pose),
@@ -153,7 +157,8 @@ export function fillShortGaps(clip: Clip, maxGap: number): Clip {
       }
       let j = i;
       while (j < n && !present[j]) j++;
-      if (i > 0 && j < n && j - i <= maxGap) {
+      const k = j - i;
+      if (i > 0 && j < n && ((t[j] - t[i - 1]) * k) / (k + 1) <= maxGapMs + 1e-9) {
         const a = i - 1;
         const b = j;
         for (let g = i; g < j; g++) {
@@ -248,7 +253,7 @@ export function velocities(seq: Float64Array[], fs: FeatureSpec): Float64Array[]
 
 /** The full shared transform (float64 here; the model input is cast to float32 by the caller). */
 export function clipToModelInput(clip: Clip, fs: FeatureSpec, useVelocity = false, T = fs.T): Float64Array[] {
-  const filled = fillShortGaps(clip, fs.maxGap);
+  const filled = fillShortGaps(clip, fs.maxGapMs);
   const seq = resample(clipFeatures(filled, fs), filled.t_ms, fs, T);
   if (!useVelocity) return seq;
   const vel = velocities(seq, fs);
