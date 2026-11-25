@@ -25,6 +25,7 @@ dev = [
 # environments don't download a multi-GB CUDA torch wheel.
 train = [
     "torch==2.15.0",
+    "tensorboard==2.21.0",  # ADR 004
 ]
 # Only for uploading the processed keypoints as a private Kaggle dataset (approved
 # 2026-11-24). Token lives in ~/.kaggle/access_token or $KAGGLE_API_TOKEN, never in the repo.

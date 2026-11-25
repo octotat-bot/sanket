@@ -8,7 +8,7 @@ WEB  := cd web &&
 
 .PHONY: help setup models inventory lint typecheck test test-ml test-web smoke e2e build ci clean \
         samples check-video-metadata check-extractor bench-page extract upload \
-        parity-fixture check-fps check-downscale
+        parity-fixture check-fps check-downscale setup-train typecheck-train test-train
 
 help:  ## list targets
 	@grep -hE '^[a-zA-Z0-9_-]+:.*## ' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "  %-22s %s\n", $$1, $$2}'
@@ -28,9 +28,22 @@ lint:  ## ruff + eslint
 	$(ML) $(UV) run ruff format --check src tests
 	$(WEB) $(PNPM) lint
 
-typecheck:  ## mypy (strict) + tsc
-	$(ML) $(UV) run mypy
+# Torch code is type-checked in the training env (typecheck-train); the main env has no torch.
+TORCH_EXCLUDE := --exclude 'src/sanket/(train\.py|models/)' --exclude 'tests/test_train\.py'
+TRAIN_ENV := UV_PROJECT_ENVIRONMENT=.venv-train
+
+typecheck:  ## mypy (strict) + tsc (torch modules: see typecheck-train)
+	$(ML) $(UV) run mypy $(TORCH_EXCLUDE)
 	$(WEB) $(PNPM) typecheck
+
+setup-train:  ## separate training env (torch, tensorboard) in ml/.venv-train
+	$(ML) $(TRAIN_ENV) $(UV) sync --locked --group train
+
+typecheck-train:  ## mypy (strict) over everything, in the training env
+	$(ML) $(TRAIN_ENV) $(UV) run --no-sync mypy
+
+test-train:  ## GRU + training-loop tests on synthetic data (training env, low priority)
+	$(ML) $(TRAIN_ENV) nice -n 19 $(UV) run --no-sync pytest -q tests/test_train.py
 
 test: test-ml test-web  ## offline unit tests (Python + web)
 

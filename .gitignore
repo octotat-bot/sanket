@@ -39,3 +39,6 @@ ml/.cache/frames/
 
 # Long-running job logs (extraction etc.)
 logs/
+
+# Separate training environment (keeps torch out of the extraction env)
+ml/.venv-train/
