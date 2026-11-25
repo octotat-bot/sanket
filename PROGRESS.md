@@ -190,3 +190,10 @@ moving-block bootstrap CI (shoulder widths). Holistic at 480 rows: x +0.00076 [+
 y −0.00171 [−0.00323, −0.00060]. **The CIs exclude zero, so this is flagged in ADR 007.** Size ≤ 0.0017
 (≈ 0.6 mm), below tracking jitter. Partly a runtime effect (an x offset also appears on identical
 pixels). One video only, so Phase 4 repeats it on several. Hand+Pose: no offset measured.
+
+**ADR 002 run 3 (2026-11-25, M3 Pro, file at 854×480): case 3 again.** Holistic GPU: camera
+30.0 fps (p95 34 ms) in both rounds. File 19.2 / 17.8 fps (p95 41 ms passes), failing on processed
+fps only. Hand+Pose fails file mode too. Holistic CPU file rows are invalid (hand rate 0.71 vs
+0.88 ± 0.15). The playback-based file mode couples processed fps to the 25 fps cadence (a step
+over 40 ms skips a frame) and can stall. Options are in ADR 002 (recommended: pre-decoded,
+back-to-back frames with the rule unchanged). Waiting on Mukund.

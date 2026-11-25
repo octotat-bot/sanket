@@ -1,8 +1,8 @@
 # ADR 002: Holistic Landmarker vs separate Hand + Pose Landmarkers
 
-- Status: Speed rule approved (2026-11-25). Run 2 (valid) gives **case 3: neither extractor
-  clears the M3 Pro bar in both modes.** Waiting on Mukund's choice among the options at the end. No
-  extraction until then.
+- Status: Speed rule approved (2026-11-25). Runs 2 and 3 valid for the judged configurations, and
+  both give **case 3: neither extractor clears the M3 Pro bar in both modes.** Waiting on Mukund's
+  choice among the run 3 options. No extraction until then.
 - Date: 2026-11-24
 
 ## Context
@@ -301,7 +301,56 @@ fixed here, before the run:
   1080p Python rate** (A 0.880, B 0.687), so downscaling that changed detection would show up
   as a validity failure.
 
+## Run 3 (2026-11-25, Mukund's M3 Pro, file at 854×480): rule result: neither clears again
+
+Raw JSON: `reports/bench/2026-11-25T09-44-05Z-run3.json` (Chrome 158, cross-origin isolated, seed
+31800210, 2 rounds). The file was delivered at 854×480 as intended (no decoder padding this time).
+The page's flags match an independent recomputation.
+
+| GPU (the faster delegate for both) | Camera R1 / R2 | File (854×480) R1 / R2 |
+|---|---|---|
+| A · Holistic | ✅ 30.0 fps, p95 34.3 / ✅ 30.0 fps, p95 33.6 | ❌ **19.2 fps**, p95 40.8 / ❌ **17.8 fps**, p95 40.9 |
+| B · Hand+Pose | ✅ 29.9 fps, p95 31.3 / ✅ 29.9 fps, p95 30.2 | ❌ 9.7 fps (playback stalled, see below) / ❌ p95 63.3 |
+
+**Validity.** All camera rows: hand rate ≥ 87.7%. File rows against the pre-registered reference
+(Python on the 1080p original: A 0.880, B 0.687, ± 0.15): **A-CPU file rows are invalid**
+(0.716 and 0.705). All rows the rule actually judges (GPU) are valid: A 0.802 / 0.754, B 0.678 / 0.814.
+
+**Applying the rule:** A on GPU clears the M3 Pro bar in camera mode in both rounds, and fails it in
+file mode in both rounds, **on processed fps only** (its p95 of about 41 ms passes the 50 ms limit).
+B fails file mode in both rounds. This is case 3 again: reported to Mukund, no extractor chosen.
+
+What the playback-based file mode measures (observations, not excuses):
+
+- **Cadence, not throughput.** The file plays at 25 fps, so a frame arrives every 40 ms. Holistic
+  GPU averages 37 ms per frame (that would be about 27 fps if frames were fed on demand). Any frame
+  that runs over 40 ms misses the next one and waits for the frame after, which gives 17.8–19.2
+  processed fps. So with a 25 fps source, "≥ 20 processed fps" effectively demands that most frames
+  finish within 40 ms. That is stricter than the stated p95 ≤ 50 ms, and it was not intended.
+- **Playback can stall.** For B GPU round 1 the source presented only 14.1 fps (212 frames in 15 s)
+  for a 25 fps file. That is a playback hiccup, not the extractor.
+- **File-mode hand rate falls with processed fps** (A: 0.71 at 12.6 fps, 0.75–0.80 at 18–19 fps,
+  vs 0.88 Python). One untested explanation: the 3.3 s clip loops, every restart starts with hands
+  down and the tracker must re-acquire, and fewer frames per loop make that cost a larger share. The
+  fps ablation (no looping) showed no hand-rate loss down to 10 fps.
+- **The app's actual input** (30 fps camera, 640×480, 480 rows): A GPU processed every frame
+  (30.0 fps, p95 33.6–36.1 ms) in all four camera rounds of runs 2 and 3.
+
+### Options for Mukund (rule unchanged until he decides)
+
+1. **Fix the file-mode measurement so it measures throughput, and keep the rule.** Pre-decode the
+   854×480 clip into in-memory frames once and feed them back-to-back to every configuration: no
+   playback clock, no loop-restart cut, no stalls. Processed fps = frames ÷ wall time, the same bar
+   (≥ 20 fps, p95 ≤ 50 ms), fixed before run 4. *Honest caveat:* this change is motivated by run 3's
+   result. A's mean of 37 ms predicts about 27 fps, so it would probably pass. Mukund should weigh
+   whether that counts as moving the goalposts. The argument that it doesn't: the rule's numbers stay
+   the same, and only an unintended artifact (cadence coupling) is removed.
+2. **Judge speed on camera mode only** (the app's real input), with file mode as the same-input
+   quality check. A passes. This is a rule change after seeing data, recorded as such.
+3. **Apply case 3 literally** (the faster extractor, B). *Not recommended:* A wins on quality, and B
+   also failed file mode.
+
 ## Decision
 
-_Mukund chose option 1 (run 3, setup above). Pending run 3._ A is preferred on quality. Under the approved
+_Run 3 gives case 3 again. Pending Mukund's choice among the run 3 options._ A is preferred on quality. Under the approved
 rule, run 2 gives case 3 (neither clears in both modes).
