@@ -280,7 +280,28 @@ and show a "preparing" state.
 3. **Apply case 3 literally:** the faster extractor (B), plus adaptive frame skipping. *Not
    recommended:* A is preferred on quality, and B also failed a file round.
 
+## Run 3 setup: fixed before the run (Mukund chose option 1, 2026-11-25)
+
+**Rule unchanged** (M3 Pro bar ≥ 20 fps and p95 ≤ 50 ms, faster delegate, both modes, both
+rounds; same validity conditions). Only the file-mode **input resolution** changes, and it is
+fixed here, before the run:
+
+- **File copy: 854×480** (`ml/.cache/videos/bench/MVI_2988_854x480.mp4`, gitignored). Made with
+  `ffmpeg -vf scale=854:480:flags=area -c:v libx264 -crf 16 -pix_fmt yuv420p -an` from
+  `Animals/4. Bird/MVI_2988.MOV`: 25 fps, all 83 frames.
+- **Why 854×480 and not 640×360:** it has the camera's height (480) at INCLUDE's 16:9 aspect, so
+  410k pixels per frame vs the camera's 307k (1.33×). The file test is **at least as hard as
+  the real camera**, never easier. (640×360 would have been 230k, easier than the camera.)
+- Expected effect: 854 is not a multiple of 16, so a hardware decoder may expose padded width
+  (for example 864), like the 1088 rows seen in run 2. The JSON records the size Chrome actually
+  delivered. Padding only adds pixels, so it can only make the test harder.
+- Run settings: "Both" mode with this file, defaults (15 s, warm-up 8 s / ≥ 60 frames, 2 rounds,
+  random seed).
+- File-mode validity: hand rate within 0.15 of the Python reference. **The reference stays the
+  1080p Python rate** (A 0.880, B 0.687), so downscaling that changed detection would show up
+  as a validity failure.
+
 ## Decision
 
-_Pending Mukund's choice among the options above._ A is preferred on quality. Under the approved
+_Mukund chose option 1 (run 3, setup above). Pending run 3._ A is preferred on quality. Under the approved
 rule, run 2 gives case 3 (neither clears in both modes).
