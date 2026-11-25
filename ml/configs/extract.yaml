@@ -1,12 +1,11 @@
 # Phase 1 keypoint extraction (python -m sanket.pipeline.extract). Paths are relative to the repo root.
 
-# ADR 002: "holistic" or "hand_pose". Deliberately unset until Mukund's browser benchmark
-# (measure b) decides it. The pipeline refuses to run while this is null.
-extractor: null
+# ADR 002 (accepted 2026-11-25): Holistic.
+extractor: holistic
 
 raw_dir: data/raw                       # one zip + one video at a time; deleted as we go
 out_dir: data/keypoints/v1              # .npz per video, plus _log.jsonl / _review.jsonl / _runs.jsonl
 frame_cache_dir: ml/.cache/frames       # ADR 005: one small frame per video, local only, deleted after review
 min_free_gb: 10                         # Mukund's floor: abort before free space drops below this
 review_below_hand_rate: 0.05            # videos where < 5% of frames have a hand go to _review.jsonl
-extract_height: 480                     # ADR 007 (proposed): 480 rows = what MediaPipe sees from the 640x480 camera
+extract_height: 480                     # ADR 007 (accepted): 480 rows = what MediaPipe sees from the 640x480 camera
