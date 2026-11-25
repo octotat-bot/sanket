@@ -12,7 +12,8 @@ import {
   loadVerifiedModels,
   planRuns,
   runConfig,
-  TARGET_FPS,
+  BENCH_MACHINE_BAR,
+  MID_RANGE_FLOOR,
 } from "@/lib/bench/extractor-bench";
 
 type SourceMode = "file" | "camera" | "both";
@@ -275,6 +276,11 @@ export default function BenchClient() {
             ))}
           </div>
           <p className="text-sm text-zinc-500">
+            Speed rule (ADR 002): on the M3 Pro benchmark machine ≥ {BENCH_MACHINE_BAR.minFps} fps with
+            p95 ≤ {BENCH_MACHINE_BAR.maxP95Ms} ms; any mid-range device ≥ {MID_RANGE_FLOOR.minFps} fps with p95 ≤{" "}
+            {MID_RANGE_FLOOR.maxP95Ms} ms. Judged on the faster delegate.
+          </p>
+          <p className="text-sm text-zinc-500">
             Each round runs every configuration once, in an order shuffled from the seed. Warm-up
             lasts at least {MIN_WARMUP_FRAMES} frames and is excluded from the timings.
           </p>
@@ -328,7 +334,12 @@ export default function BenchClient() {
                   <th className="pr-3">processed / source fps</th>
                   <th className="pr-3">frames w/ hand</th>
                   <th className="pr-3">init ms</th>
-                  <th>≥ {TARGET_FPS} fps?</th>
+                  <th className="pr-3">
+                    ≥ {BENCH_MACHINE_BAR.minFps} fps, p95 ≤ {BENCH_MACHINE_BAR.maxP95Ms} ms?
+                  </th>
+                  <th>
+                    ≥ {MID_RANGE_FLOOR.minFps} fps, p95 ≤ {MID_RANGE_FLOOR.maxP95Ms} ms?
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -347,10 +358,11 @@ export default function BenchClient() {
                         </td>
                         <td className="pr-3">{fmt((r.handRate ?? 0) * 100, 0)}%</td>
                         <td className="pr-3">{fmt(r.initMs, 0)}</td>
-                        <td>{r.sustainsTarget ? "yes" : "no"}</td>
+                        <td className="pr-3">{r.meetsBenchBar ? "yes" : "no"}</td>
+                        <td>{r.meetsFloor ? "yes" : "no"}</td>
                       </>
                     ) : (
-                      <td colSpan={7} className="text-red-600">
+                      <td colSpan={8} className="text-red-600">
                         failed: {r.error}
                       </td>
                     )}

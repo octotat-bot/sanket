@@ -17,8 +17,23 @@ type WasmFileset = Awaited<ReturnType<typeof FilesetResolver.forVisionTasks>>;
 export const CONFIG_IDS = ["holistic-gpu", "handpose-gpu", "holistic-cpu", "handpose-cpu"] as const;
 export type ConfigId = (typeof CONFIG_IDS)[number];
 
-/** Decision rule from ADR 002: the extractor alone must sustain at least 30 fps. */
-export const TARGET_FPS = 30;
+/**
+ * Speed rule from ADR 002 (revised 2026-11-25; justified by the frame-rate ablation, not by a
+ * benchmark result). Speed is only pass/fail: A vs B is decided on detection quality.
+ */
+export interface SpeedBar {
+  label: string;
+  minFps: number;
+  maxP95Ms: number;
+}
+/** What a mid-range device must sustain: the app's real requirement. */
+export const MID_RANGE_FLOOR: SpeedBar = { label: "mid-range floor", minFps: 15, maxP95Ms: 66.7 };
+/** Stricter bar on the high-end benchmark machine (M3 Pro), leaving headroom for mid-range. */
+export const BENCH_MACHINE_BAR: SpeedBar = { label: "M3 Pro bar", minFps: 20, maxP95Ms: 50 };
+
+export function meetsBar(processedFps: number, msP95: number, bar: SpeedBar): boolean {
+  return processedFps >= bar.minFps && msP95 <= bar.maxP95Ms;
+}
 
 export interface VerifiedModel {
   name: string;
@@ -52,8 +67,9 @@ export interface ConfigResult {
   /** 1000 / p95 ms: the frame rate the extractor could hold if frames arrived faster. */
   headroomFps?: number;
   handRate?: number;
-  /** p95 ms <= 1000/30 and processed fps >= 95% of source fps. */
-  sustainsTarget?: boolean;
+  /** ADR 002 speed rule: processed fps and p95 against each bar. */
+  meetsBenchBar?: boolean;
+  meetsFloor?: boolean;
 }
 
 interface Spec {
@@ -304,8 +320,8 @@ export async function runConfig(
       msMean: mean(times),
       headroomFps: 1000 / msP95,
       handRate: times.length ? hands / times.length : 0,
-      sustainsTarget:
-        msP95 <= 1000 / TARGET_FPS && (sourceFps === null || processedFps >= 0.95 * sourceFps),
+      meetsBenchBar: meetsBar(processedFps, msP95, BENCH_MACHINE_BAR),
+      meetsFloor: meetsBar(processedFps, msP95, MID_RANGE_FLOOR),
     };
   } catch (e) {
     return { ...tag, ok: false, initMs, error: e instanceof Error ? e.message : String(e) };
