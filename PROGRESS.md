@@ -135,3 +135,21 @@ Investigation (2026-11-25, details and evidence in ADR 002):
 - fps evidence (`make check-fps`): hand tracking holds down to 10 fps, and lost motion is flat
   (median 0.008 shoulder widths) from 20 to 12.5 fps. **Proposal: 15 fps rule** instead of 30
   (ADR 002), to be confirmed with accuracy in Phase 2.
+
+**Approved 2026-11-25:**
+
+- ADR 002 speed rule: ≥ 15 fps floor on mid-range devices, ≥ 20 fps with p95 ≤ 50 ms on the M3 Pro,
+  judged on the faster delegate. The rule changed after run 1, justified by the frame-rate ablation
+  (not by any benchmark result). The bench page now shows both bars (`meetsBar`, unit-tested).
+- Speed is pass/fail only. A vs B is decided on quality (ADR 002, with scopes stated: swaps
+  0 vs 1.08 per 100 over 50 videos; hand rate 89 vs 67% on one video but 85.8 vs 84.4%, not
+  significant, over 50).
+- CLAUDE.md section 3: "≥ 15 fps end-to-end on a mid-range laptop (25 stretch); report measured
+  fps and device name". Phase 5 acceptance and the Definition of Done follow it. The README must
+  name the device next to every fps number.
+
+**Open before Phase 5:** test the live app on at least one cheaper device (a friend's laptop or
+an Android phone) and report fps with the device name.
+
+**Next:** Mukund's benchmark rerun (file + camera). If A clears the M3 Pro bar, set
+`extractor: holistic` in `ml/configs/extract.yaml`, commit, and start `make extract` (≈ 8 h).
