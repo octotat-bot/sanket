@@ -58,7 +58,7 @@ Measured by `make report` and written into `reports/latest.md`:
 | **Real-webcam accuracy** on a self-recorded test set | reported honestly. This is the most important number |
 | Model size after quantization | < 10 MB |
 | In-browser inference latency per window (mid-range laptop) | p95 < 20 ms on WebGPU, < 60 ms on WASM |
-| End-to-end frame rate (camera → keypoints → prediction) | ≥ 25 fps on a mid-range laptop |
+| End-to-end frame rate (camera → keypoints → prediction) | ≥ 15 fps end-to-end on a mid-range laptop (25 stretch); report measured fps and device name (ADR 002) |
 | PyTorch vs ONNX (quantized) prediction agreement | ≥ 99% top-1 agreement on the test set |
 
 ---
@@ -181,7 +181,8 @@ sanket/
 - **Rejection:** if the top probability is below a threshold, or the top-1/top-2 margin is too small, show "not sure" instead of a wrong word. Train with an extra **"no sign / idle" class** built from non-sign clips (people talking, scratching, resting hands) recorded in Phase 6, or calibrate a threshold on the validation set. Decide in an ADR.
 - Temporal smoothing and debounce so the label doesn't flicker.
 - Runtime selection: WebGPU if available, otherwise WASM (SIMD + threads where possible), and show which one is active in a small debug panel (fps, inference ms, backend).
-- **Acceptance:** ≥ 25 fps end-to-end on a mid-range laptop, latency numbers measured by an in-app benchmark page, and a Playwright test that runs the pipeline on a pre-recorded video and checks the predicted word.
+- **Before starting Phase 5:** test the live app on at least one cheaper device (a friend's laptop or an Android phone) and report the measured fps with the device name.
+- **Acceptance:** ≥ 15 fps end-to-end on a mid-range laptop (25 stretch), measured fps reported with the device name, latency numbers measured by an in-app benchmark page, and a Playwright test that runs the pipeline on a pre-recorded video and checks the predicted word.
 
 ### Phase 6: Real-world test set
 
@@ -267,7 +268,7 @@ Visual direction: dark, cinematic, smooth motion, but readable and accessible (k
 
 The README must contain, in order:
 1. One-line pitch, live demo link, a GIF of live recognition.
-2. Results table generated from `reports/latest.md`: official split, session-independent, inferred signer-independent, real-world, size, latency, and the paper's numbers for comparison. Full INCLUDE is reported as 262 of 263 classes (816 test videos) with a note beside the paper's 85.6% (ADR 003).
+2. Results table generated from `reports/latest.md`. Every fps number names the device it was measured on. Columns: official split, session-independent, inferred signer-independent, real-world, size, latency, and the paper's numbers for comparison. Full INCLUDE is reported as 262 of 263 classes (816 test videos) with a note beside the paper's 85.6% (ADR 003).
 3. Architecture diagram (video → keypoints → normalization → model → spotting → UI).
 4. Key design decisions with links to ADRs (keypoints vs pixels, same extractor in train and browser, sign spotting, rejection, quantization).
 5. Limitations stated plainly (isolated words only, vocabulary size, real-world accuracy gap, lab-recorded dataset).
@@ -287,7 +288,7 @@ The README must contain, in order:
 - [ ] Results table reproduces from configs and seeds
 - [ ] All parity tests pass in CI
 - [ ] Live demo deployed on Vercel, works on Chrome, Edge, and at least one mobile browser
-- [ ] ≥ 25 fps on a mid-range laptop, measured on the Benchmark page
+- [ ] ≥ 15 fps end-to-end on a mid-range laptop (25 stretch), measured on the Benchmark page, with the device named
 - [ ] Real-world test set recorded, evaluated, and reported honestly
 - [ ] Model card, ADRs, write-up, demo video done
 - [ ] Mukund can explain every component and every ADR without notes
