@@ -30,7 +30,14 @@ export interface VerifiedModel {
 
 export interface ConfigResult {
   id: ConfigId;
+  /** "camera" or "file:<name>" */
+  source: string;
+  round: number;
   ok: boolean;
+  /** Frames processed during warm-up (excluded from the timings below). */
+  warmupFrames?: number;
+  /** ms of the first (up to) 10 frames after init: shows shader-compile / start-up cost. */
+  firstFramesMs?: number[];
   error?: string;
   initMs?: number;
   processedFrames?: number;
@@ -87,8 +94,16 @@ export function loadFileset(): Promise<WasmFileset> {
 
 type Delegate = "GPU" | "CPU";
 
-/** One frame step: returns whether any hand was detected. */
-type Step = (video: HTMLVideoElement, tsMs: number) => boolean;
+/** One frame step: whether any hand was detected, plus hand points (normalized) for the overlay. */
+type Point = [number, number];
+interface StepResult {
+  hand: boolean;
+  points: Point[];
+}
+type Step = (video: HTMLVideoElement, tsMs: number) => StepResult;
+
+const toPoints = (hands: { x: number; y: number }[][]): Point[] =>
+  hands.flatMap((h) => h.map((p): Point => [p.x, p.y]));
 
 async function createStep(
   id: ConfigId,
@@ -107,11 +122,12 @@ async function createStep(
     });
     return {
       step: (video, ts) => {
-        let hand = false;
+        let out: StepResult = { hand: false, points: [] };
         lm.detectForVideo(video, ts, (r) => {
-          hand = r.leftHandLandmarks.length > 0 || r.rightHandLandmarks.length > 0;
+          const hands = [...r.leftHandLandmarks, ...r.rightHandLandmarks];
+          out = { hand: hands.length > 0, points: toPoints(hands) };
         });
-        return hand;
+        return out;
       },
       close: () => lm.close(),
     };
@@ -130,7 +146,7 @@ async function createStep(
     step: (video, ts) => {
       const h = hand.detectForVideo(video, ts);
       pose.detectForVideo(video, ts, () => {});
-      return h.landmarks.length > 0;
+      return { hand: h.landmarks.length > 0, points: toPoints(h.landmarks) };
     },
     close: () => {
       hand.close();
@@ -162,10 +178,51 @@ function nextFrame(video: HTMLVideoElement): Promise<FrameInfo> {
   });
 }
 
+// ---- run plan: randomized config order, recorded so a run can be reproduced ----
+
+/** Small seeded PRNG (mulberry32): same seed → same order. */
+export function mulberry32(seed: number): () => number {
+  let a = seed >>> 0;
+  return () => {
+    a = (a + 0x6d2b79f5) >>> 0;
+    let t = a;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+export interface PlannedRun {
+  id: ConfigId;
+  round: number;
+}
+
+/** Each round runs every selected config once, in a freshly shuffled order (Fisher-Yates). */
+export function planRuns(configs: readonly ConfigId[], rounds: number, seed: number): PlannedRun[] {
+  const rand = mulberry32(seed);
+  const plan: PlannedRun[] = [];
+  for (let round = 1; round <= rounds; round++) {
+    const order = [...configs];
+    for (let i = order.length - 1; i > 0; i--) {
+      const j = Math.floor(rand() * (i + 1));
+      [order[i], order[j]] = [order[j], order[i]];
+    }
+    plan.push(...order.map((id) => ({ id, round })));
+  }
+  return plan;
+}
+
 export interface RunOptions {
+  source: string;
+  round: number;
   warmupSeconds: number;
+  /** Warm-up lasts at least this many frames too (slow configs see few frames per second). */
+  minWarmupFrames: number;
   seconds: number;
+  /** Called before each config: e.g. rewind a video file so every config sees the same input. */
+  restart?: () => Promise<void>;
   onProgress?: (msg: string) => void;
+  onFrame?: (points: Point[]) => void;
 }
 
 export async function runConfig(
@@ -175,26 +232,43 @@ export async function runConfig(
   models: Record<string, VerifiedModel>,
   opts: RunOptions,
 ): Promise<ConfigResult> {
+  const tag = { id, source: opts.source, round: opts.round };
   let created: { step: Step; close: () => void };
   const t0 = performance.now();
   try {
     created = await createStep(id, fileset, models);
   } catch (e) {
-    return { id, ok: false, error: e instanceof Error ? e.message : String(e) };
+    return { ...tag, ok: false, error: e instanceof Error ? e.message : String(e) };
   }
   const initMs = performance.now() - t0;
   let lastTs = 0;
   const ts = () => (lastTs = Math.max(lastTs + 1, performance.now())); // strictly increasing
+  const timed = (): number => {
+    const s = performance.now();
+    const r = created.step(video, ts());
+    const ms = performance.now() - s;
+    opts.onFrame?.(r.points);
+    lastHand = r.hand;
+    return ms;
+  };
+  let lastHand = false;
 
   try {
-    opts.onProgress?.(`${id}: warming up`);
+    await opts.restart?.();
+    // Warm-up: shader compilation and graph start-up happen on the first frames. They are
+    // recorded (firstFramesMs) but kept out of the measured window.
+    opts.onProgress?.(`${id} (${opts.source}, round ${opts.round}): warming up`);
+    const firstFramesMs: number[] = [];
+    let warmupFrames = 0;
     const warmEnd = performance.now() + opts.warmupSeconds * 1000;
-    while (performance.now() < warmEnd) {
+    while (performance.now() < warmEnd || warmupFrames < opts.minWarmupFrames) {
       await nextFrame(video);
-      created.step(video, ts());
+      const ms = timed();
+      if (firstFramesMs.length < 10) firstFramesMs.push(ms);
+      warmupFrames++;
     }
 
-    opts.onProgress?.(`${id}: measuring for ${opts.seconds} s`);
+    opts.onProgress?.(`${id} (${opts.source}, round ${opts.round}): measuring for ${opts.seconds} s`);
     const times: number[] = [];
     let hands = 0;
     let firstPresented: number | null = null;
@@ -205,9 +279,8 @@ export async function runConfig(
       const info = await nextFrame(video);
       if (firstPresented === null) firstPresented = info.presentedFrames;
       lastPresented = info.presentedFrames;
-      const s = performance.now();
-      hands += created.step(video, ts()) ? 1 : 0;
-      times.push(performance.now() - s);
+      times.push(timed());
+      hands += lastHand ? 1 : 0;
     }
     const seconds = (performance.now() - start) / 1000;
     const sourceFrames =
@@ -216,9 +289,11 @@ export async function runConfig(
     const sourceFps = sourceFrames !== null ? sourceFrames / seconds : null;
     const msP95 = percentile(times, 95);
     return {
-      id,
+      ...tag,
       ok: true,
       initMs,
+      warmupFrames,
+      firstFramesMs,
       processedFrames: times.length,
       sourceFrames,
       seconds,
@@ -233,9 +308,10 @@ export async function runConfig(
         msP95 <= 1000 / TARGET_FPS && (sourceFps === null || processedFps >= 0.95 * sourceFps),
     };
   } catch (e) {
-    return { id, ok: false, initMs, error: e instanceof Error ? e.message : String(e) };
+    return { ...tag, ok: false, initMs, error: e instanceof Error ? e.message : String(e) };
   } finally {
     created.close();
+    opts.onFrame?.([]);
   }
 }
 
