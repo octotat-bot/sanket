@@ -24,7 +24,8 @@ jobs:
         working-directory: ml
       - run: uv run ruff check src tests && uv run ruff format --check src tests
         working-directory: ml
-      - run: uv run mypy
+      # torch modules are type-checked in the `train` job (this env has no torch)
+      - run: uv run mypy --exclude 'src/sanket/(train\.py|models/)' --exclude 'tests/test_train\.py'
         working-directory: ml
       - run: uv run pytest -m "not network"
         working-directory: ml
@@ -40,6 +41,29 @@ jobs:
           key: include-test-video-${{ hashFiles('ml/data/splits/include50_test.txt') }}
       - name: Python MediaPipe smoke + real-extractor determinism
         run: uv run python -m sanket.spec && uv run pytest -m network
+        working-directory: ml
+
+  train:
+    name: training env (mypy incl. torch code, GRU + training-loop tests on synthetic data)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: astral-sh/setup-uv@v10.4.0
+        with:
+          working-directory: ml
+      - run: uv sync --locked
+        working-directory: ml
+      # Same pinned versions as the `train` group, but the CPU-only torch build: the default
+      # Linux wheel pulls gigabytes of CUDA libraries a CPU runner can't use. torch's own
+      # dependencies are resolved at install time for this job (not from uv.lock).
+      - name: install torch (CPU build) and tensorboard
+        run: |
+          uv pip install "torch==2.15.0" --index-url https://download.pytorch.org/whl/cpu
+          uv pip install "tensorboard==2.21.0"
+        working-directory: ml
+      - run: uv run --no-sync mypy
+        working-directory: ml
+      - run: uv run --no-sync pytest -q tests/test_train.py
         working-directory: ml
 
   web:
