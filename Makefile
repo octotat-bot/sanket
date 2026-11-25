@@ -8,7 +8,8 @@ WEB  := cd web &&
 
 .PHONY: help setup models inventory lint typecheck test test-ml test-web smoke e2e build ci clean \
         samples check-video-metadata check-extractor bench-page extract upload \
-        parity-fixture check-fps check-downscale setup-train typecheck-train test-train
+        parity-fixture check-fps check-downscale setup-train typecheck-train test-train \
+        record-page import-recordings
 
 help:  ## list targets
 	@grep -hE '^[a-zA-Z0-9_-]+:.*## ' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "  %-22s %s\n", $$1, $$2}'
@@ -84,6 +85,15 @@ check-fps: models  ## evidence for ADR 002's fps rule (needs: make samples)
 
 check-downscale: parity-fixture  ## ADR 007: browser downscale methods vs OpenCV INTER_AREA (Chromium + Chrome)
 	$(WEB) node scripts/downscale-probe.mjs
+
+record-page: models  ## Phase 6: serve the keypoints-only recorder at /dev/record (see tools/record/)
+	$(WEB) $(PNPM) build
+	@echo "Open http://localhost:3000/dev/record in Chrome"
+	$(WEB) $(PNPM) exec next start -p 3000
+
+import-recordings:  ## validate + convert recorder session files: make import-recordings FILES="a.json b.json"
+	@test -n "$(FILES)" || (echo 'set FILES="path/to/sanket-rec-*.json"'; exit 1)
+	$(ML) $(UV) run python -m sanket.data.recorded $(FILES)
 
 bench-page: models  ## ADR 002 measure (b): serve the browser benchmark at /dev/extractor-bench
 	$(WEB) $(PNPM) build

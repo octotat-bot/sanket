@@ -42,3 +42,7 @@ logs/
 
 # Separate training environment (keeps torch out of the extraction env)
 ml/.venv-train/
+
+# Phase 6 participant data: never committed
+data/realworld/
+sanket-rec-*.json
