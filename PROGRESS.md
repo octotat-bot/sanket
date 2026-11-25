@@ -177,3 +177,10 @@ rule unchanged). Also found: first GPU frame of a session takes 9.4 s (warm up a
 - CLAUDE.md: GPU warm-up at page load (Phase 5), true-frame-size/aspect rule (section 8).
 - Fix: network retries with backoff for Zenodo Range fetches (a TLS handshake timeout killed
   one run).
+
+**ADR 007 accepted (2026-11-25), plus matching downscales:** offline uses `cv2.INTER_AREA`. The
+browser uses `createImageBitmap(..., resizeQuality: "high")`, the closest match (pixel MAE 0.29 in
+both Chromium and Chrome; canvas paths differ between browsers). Shared size rule in the spec
+(0.4.0; even width, halves round up), tested in both languages. Parity test 4 now has a 480-row
+mode (each side downscales its own way): Holistic presence 96.4%, landmark median 0.00098 / p95
+0.0070. The app must always feed MediaPipe 480-row frames (CLAUDE.md Phase 5).

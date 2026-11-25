@@ -1,6 +1,7 @@
 # ADR 007: Offline extraction at 480 rows, matching what the browser sees
 
-- Status: **Proposed** (Mukund asked for the measurement, 2026-11-25; awaiting approval)
+- Status: Accepted (Mukund, 2026-11-25): extract at 480 rows, and the app always resizes camera
+  frames to 480 rows before MediaPipe, downscaling the same way as Python (below).
 - Date: 2026-11-25
 
 ## Context
@@ -50,7 +51,7 @@ Reading:
 3. **480 rows, the same height as the live camera:** closest to what the browser sees (zero
    resolution gap by construction), no loss in detection, and less work per frame.
 
-## Decision (proposed)
+## Decision
 
 **Option 3: extract at 480 rows** (`extract_height: 480` in `ml/configs/extract.yaml`). INCLUDE's
 1920×1080 frames become **854×480**, the same size as the ADR 002 run 3 benchmark copy. The
@@ -59,9 +60,8 @@ processed size is stored per video as `frame_size` and used by normalization.
 ## Tradeoff and dependencies
 
 - **This couples training to the app's camera height.** If Phase 5 changes the camera request
-  (for example to 1280×720), either the app resizes frames to 480 rows before MediaPipe, or this
-  ADR is revisited and the data re-extracted. Recommended: the app always feeds MediaPipe
-  480-row frames, whatever the camera gives, so serving stays matched by construction.
+  (for example to 1280×720), the app still resizes frames to 480 rows before MediaPipe. **Decided: the app always feeds
+  MediaPipe 480-row frames, whatever the camera gives**, so serving stays matched by construction.
 - `INTER_AREA` downscaling of studio 1080p is not the same as a webcam's own sensor and ISP
   (noise, sharpening, compression). The resolution gap is closed. The *camera* gap isn't, and only
   the Phase 6 real-webcam test set measures it.
@@ -69,3 +69,44 @@ processed size is stored per video as `frame_size` and used by normalization.
   unchanged and differences at the jitter level.
 - Aspect ratio differs (854×480 is 16:9, the camera is 4:3). Normalization handles that
   (`ml/tests/test_normalize.py`).
+
+## Python and the browser downscale the same way (added 2026-11-25, Mukund)
+
+**Offline:** `cv2.resize(..., interpolation=cv2.INTER_AREA)` (`resize_to_height` in
+`sanket.pipeline.extract`). It averages all source pixels covering each output pixel.
+
+**Browser candidates**, measured by `node web/scripts/downscale-probe.mjs` →
+`reports/phase1_browser_downscale.json`. Each downscales the parity fixture's 83 native INCLUDE
+frames to 854×480. We compare pixels with OpenCV's INTER_AREA frames, then run Holistic (CPU) and
+compare hand landmarks with the Python 480-row reference:
+
+| Method | Pixel MAE (0–255), Chromium / Chrome | Hand presence agreement | Landmark dist. median / p95 |
+|---|---|---|---|
+| **`createImageBitmap`, `resizeQuality: "high"`** (= "medium") | **0.29 / 0.29** | 96.4% | 0.00098 / 0.0070 |
+| `createImageBitmap`, "low" | 0.445 / 0.445 | 97.0% | 0.00091 / 0.0094 |
+| canvas `drawImage`, smoothing "high" | 0.29 / **0.407** | 96.4% / 98.2% | browser-dependent |
+| canvas, smoothing "low" | 0.543 / 0.366 | 97.0% / 97.6% | browser-dependent |
+| no smoothing / "pixelated" | 0.92–1.48 | 94.0–96.4% | ≈ 0.0015–0.0022 / 0.009–0.013 |
+
+**Decision: `createImageBitmap(source, {resizeWidth, resizeHeight, resizeQuality: "high"})`**
+(`web/src/lib/frames/downscale.ts`). It is closest to INTER_AREA in pixels, and identical in
+Playwright's Chromium and Google Chrome. The canvas path gave different pixels in the two browsers
+(likely GPU vs CPU canvas), which is a skew we would not control.
+
+**Same output size on both sides:** spec `downscale.width_rule`: even width, halves round up.
+Python's `round()` rounds halves to even, so `target_size` uses `floor(x + 0.5)` instead. Shared
+cases in `spec/keypoints.json` are tested in both `ml/tests/test_extract_pipeline.py` and
+`web/tests/unit/downscale.test.ts` (1282×960 → 642×480 is the half-way case).
+
+**In parity test 4** (`web/tests/e2e/extractor-parity.spec.ts`, mode `480`): the same native frames
+are downscaled in Python (INTER_AREA) and in the browser (createImageBitmap "high"), then run through
+both extractors. Measured: Holistic hand rate 0.880 vs 0.867, presence agreement 96.4%, landmark
+distance median 0.00098 / p95 0.0070 (normalized). Hand+Pose: presence 94.0%, median 0.00044 /
+p95 0.0060. Tolerances: Holistic keeps the 95% presence bar. Hand+Pose's is 92%, because its palm
+detector flips on marginal frames (the same weakness as in ADR 002). Landmarks: median < 0.002,
+p95 < 0.01 for both.
+
+Residual: the two resizers are close but not identical (MAE 0.29 / 255). That adds a small
+amount of noise (presence 96.4% vs 99.4% at native, Holistic). Whether it also adds a systematic
+offset (mean signed landmark difference) has not been measured yet. The test above bounds the
+total difference.
