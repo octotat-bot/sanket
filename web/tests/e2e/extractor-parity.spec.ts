@@ -5,9 +5,10 @@
 // lossless frames + Python results into ml/.cache/parity/ (gitignored; INCLUDE frames are
 // never committed). The browser runs both extractors on those exact pixels with the same
 // timestamps, and we compare hand rates, per-frame presence and hand landmark positions.
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { extname, resolve } from "node:path";
 import { expect, test } from "@playwright/test";
+import { blockBootstrapMeanCI } from "../../src/lib/bench/stats";
 
 const root = resolve(__dirname, "../../..");
 const parity = resolve(root, "ml/.cache/parity");
@@ -26,6 +27,8 @@ const MIME: Record<string, string> = {
 type Pt = [number, number];
 interface Side {
   hand_rate: number;
+  frame_size: [number, number];
+  shoulders: (Pt[] | null)[];
   left_present: boolean[];
   right_present: boolean[];
   left: Pt[][];
@@ -132,6 +135,41 @@ const TOL: Record<string, Record<"native" | "480", { rate: number; presence: num
   },
 };
 
+/**
+ * Mean signed offset browser − Python, per frame, in shoulder widths (x and y separately).
+ * x is made aspect-correct with the processed frame size (× W/H) before dividing by the Python
+ * run's shoulder width on that frame. Per-frame value = mean over the 21 landmarks of every hand
+ * present in both runs. CI: moving-block bootstrap (blocks of 10 frames, 2000 resamples, seed 0).
+ */
+function signedOffsets(py: Side, br: Omit<Side, "hand_rate" | "frame_size" | "shoulders">) {
+  const [w, h] = py.frame_size;
+  const ax = w / h;
+  const fx: number[] = [];
+  const fy: number[] = [];
+  for (let i = 0; i < py.left_present.length; i++) {
+    const sh = py.shoulders[i];
+    if (!sh) continue;
+    const sw = Math.hypot((sh[0][0] - sh[1][0]) * ax, sh[0][1] - sh[1][1]);
+    if (sw < 1e-6) continue;
+    let sx = 0;
+    let sy = 0;
+    let k = 0;
+    for (const s of ["left", "right"] as const) {
+      if (!(py[`${s}_present`][i] && br[`${s}_present`][i])) continue;
+      py[s][i].forEach((p, j) => {
+        sx += ((br[s][i][j][0] - p[0]) * ax) / sw;
+        sy += (br[s][i][j][1] - p[1]) / sw;
+        k++;
+      });
+    }
+    if (k) {
+      fx.push(sx / k);
+      fy.push(sy / k);
+    }
+  }
+  return { x: blockBootstrapMeanCI(fx), y: blockBootstrapMeanCI(fy), unit: "shoulder widths", frames: fx.length };
+}
+
 for (const [name, mode] of [
   ["holistic", "native"],
   ["hand_pose", "native"],
@@ -169,6 +207,13 @@ for (const [name, mode] of [
     const r = compare(expected[mode === "native" ? name : `${name}_480`] as Side, br);
     console.log(name, mode, JSON.stringify(r));
     test.info().annotations.push({ type: "parity", description: JSON.stringify(r) });
+
+    const off = signedOffsets(expected[mode === "native" ? name : `${name}_480`] as Side, br);
+    console.log(name, mode, "signed offset", JSON.stringify(off));
+    const outDir = resolve(root, "reports/parity_offsets");
+    mkdirSync(outDir, { recursive: true });
+    writeFileSync(resolve(outDir, `${name}-${mode}.json`), JSON.stringify({ ...r, signedOffset: off }, null, 2) + "\n");
+    expect(Number.isFinite(off.x.mean) && Number.isFinite(off.y.mean)).toBe(true); // reported, not gated
 
     const t = TOL[name][mode];
     expect(Math.abs(r.brRate - r.pyRate)).toBeLessThanOrEqual(t.rate);

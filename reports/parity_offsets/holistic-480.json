@@ -1,0 +1,26 @@
+{
+  "pyRate": 0.8674698795180723,
+  "brRate": 0.8795180722891566,
+  "presenceAgreement": 0.963855421686747,
+  "landmarkDistMedian": 0.000978006817476369,
+  "landmarkDistP95": 0.006971735161101613,
+  "comparedHands": 115,
+  "signedOffset": {
+    "x": {
+      "mean": 0.0007645368414117205,
+      "lo": 0.00007238049241113316,
+      "hi": 0.00140802229140166,
+      "n": 71,
+      "excludesZero": true
+    },
+    "y": {
+      "mean": -0.0017071963450402035,
+      "lo": -0.003234721641080269,
+      "hi": -0.0006031949888692563,
+      "n": 71,
+      "excludesZero": true
+    },
+    "unit": "shoulder widths",
+    "frames": 71
+  }
+}

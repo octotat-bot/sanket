@@ -85,7 +85,14 @@ def main() -> None:
             a = seq.arrays()
             any_hand = a["left_present"] | a["right_present"]
             key = name + suffix
+            w, h = (int(v) for v in rgb.shape[1::-1])  # processed size of the last frame
+            shoulders = [
+                np.round(a["pose"][i][[11, 12], :2], 6).tolist() if a["pose_present"][i] else None
+                for i in range(len(stamps))
+            ]
             expected[key] = {
+                "frame_size": [w, h],
+                "shoulders": shoulders,  # pose 11 (left) and 12 (right), normalized x,y
                 "hand_rate": float(any_hand.mean()),
                 "left_present": a["left_present"].tolist(),
                 "right_present": a["right_present"].tolist(),
