@@ -135,3 +135,24 @@ def test_val_features_are_never_augmented(tmp_path: Path) -> None:
     )
     assert a["history"][0]["val_acc"] == b["history"][0]["val_acc"]
     assert np.isclose(a["history"][0]["val_loss"], b["history"][0]["val_loss"])
+
+
+def test_topk_metrics_by_hand() -> None:
+    from sanket.evaluate import topk_metrics
+
+    logits = np.array([[0.9, 0.1, 0.0], [0.2, 0.3, 0.5], [0.6, 0.3, 0.1]])
+    m = topk_metrics(logits, np.array([0, 1, 1]), 3)
+    assert m["top1"] == pytest.approx(1 / 3) and m["top5"] == 1.0  # top-5 capped at n_classes
+    assert m["per_class"][1] == {"n": 2, "acc": 0.0}
+
+
+def test_evaluate_run_uses_best_checkpoint_and_never_augments(tmp_path: Path) -> None:
+    from sanket.evaluate import evaluate_run
+
+    r = train(tiny(), items(0, 24), items(1, 8), N_CLASSES, tmp_path / "run", log=lambda m: None)
+    test_items = items(2, 8)
+    a = evaluate_run(tmp_path / "run", test_items, N_CLASSES)
+    b = evaluate_run(tmp_path / "run", test_items, N_CLASSES)
+    assert a["top1"] == b["top1"]  # deterministic: no augmentation at evaluation
+    assert a["n"] == 32 and a["top1"] >= 0.85 and a["top5"] >= a["top1"]
+    assert a["best_val"]["acc"] == pytest.approx(r["best_val_acc"])

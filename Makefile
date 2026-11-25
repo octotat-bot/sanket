@@ -29,7 +29,7 @@ lint:  ## ruff + eslint
 	$(WEB) $(PNPM) lint
 
 # Torch code is type-checked in the training env (typecheck-train); the main env has no torch.
-TORCH_EXCLUDE := --exclude 'src/sanket/(train\.py|models/)' --exclude 'tests/test_train\.py'
+TORCH_EXCLUDE := --exclude 'src/sanket/(train\.py|evaluate\.py|models/)' --exclude 'tests/test_train\.py'
 TRAIN_ENV := UV_PROJECT_ENVIRONMENT=.venv-train
 
 typecheck:  ## mypy (strict) + tsc (torch modules: see typecheck-train)

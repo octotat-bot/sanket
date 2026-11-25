@@ -25,7 +25,7 @@ jobs:
       - run: uv run ruff check src tests && uv run ruff format --check src tests
         working-directory: ml
       # torch modules are type-checked in the `train` job (this env has no torch)
-      - run: uv run mypy --exclude 'src/sanket/(train\.py|models/)' --exclude 'tests/test_train\.py'
+      - run: uv run mypy --exclude 'src/sanket/(train\.py|evaluate\.py|models/)' --exclude 'tests/test_train\.py'
         working-directory: ml
       - run: uv run pytest -m "not network"
         working-directory: ml
