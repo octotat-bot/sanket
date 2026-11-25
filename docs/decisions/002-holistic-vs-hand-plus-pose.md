@@ -1,8 +1,8 @@
 # ADR 002: Holistic Landmarker vs separate Hand + Pose Landmarkers
 
-- Status: **Decision rule approved by Mukund (2026-11-24).** Measure (a) done. Measure (b) run 1 was
-  invalid (hand rate < 80%). Investigation done (2026-11-25). Waiting on Mukund's rerun (file +
-  camera) and on his decision about the proposed 15 fps rule below. No extraction until then.
+- Status: **Speed rule revised and approved by Mukund (2026-11-25): ≥ 15 fps floor, ≥ 20 fps / p95 ≤ 50 ms
+  on the M3 Pro, judged on the faster delegate.** Measure (a) done. Run 1 invalid. Waiting on
+  Mukund's rerun (file + camera). No extraction until then.
 - Date: 2026-11-24
 
 ## Context
@@ -138,7 +138,7 @@ Apple Metal, not of the measurement, and the app would use the faster delegate.
   frame before each, so hands are always in view. **"Both"** runs the file and then the
   camera in one go, and every result row is tagged with its source.
 
-## How many fps does the app need? (proposal, for Mukund's decision)
+## How many fps does the app need? (frame-rate ablation)
 
 Evidence: `python -m sanket.checks.fps_sensitivity` → `reports/phase1_fps_sensitivity_holistic.md`.
 On the 50 `extractor_bench` videos, Holistic was run on only the frames a slower camera would
@@ -163,22 +163,63 @@ Reading:
 - Limits: this measures keypoint fidelity, not accuracy. A 25 fps source can't give perfectly
   even 20 fps spacing.
 
-**Proposal:** replace "sustains 30 fps" with **"sustains 15 fps"**: p95 ≤ 66.7 ms and processed
-fps ≥ 15. It keeps the hand-rate condition (> 80% in camera mode, within 0.15 of Python in file
-mode) and judges each extractor on **its faster delegate** (GPU or CPU), since the app would use
-whichever is faster. 15 rather than 10 leaves margin before the error starts to grow.
+## Speed rule (changed 2026-11-25, after run 1)
 
-- The rule would be: (1) if A sustains 15 fps in both file and camera mode → A. (2) If only B
-  does → bring both to Mukund. (3) If neither → the faster one, with adaptive frame skipping in
-  Phase 5.
-- **Confirmed in Phase 2 with accuracy:** the baseline is evaluated on INCLUDE-50 test re-extracted
-  at 25 / 20 / 15 / 10 fps, and trained with frame-drop and time-stretch augmentation. If
-  accuracy at 15 fps is more than 1 point below 25 fps, the floor goes back up.
-- Related, not changed: CLAUDE.md section 3's end-to-end target of ≥ 25 fps is a résumé metric.
-  If 15 fps is accepted here, that target should be revisited at the same time (for example
-  ≥ 15 fps sustained, with 25 as the stretch goal). That is Mukund's call.
+**The rule changed after the first benchmark run, and that needs saying plainly.** The original
+rule ("sustains 30 fps", approved 2026-11-24) was set before any data. It was replaced on
+2026-11-25, after run 1 was declared invalid and before any valid run existed. **The
+justification is the frame-rate ablation above, not the benchmark result.** Run 1 can't justify
+anything: it was invalid, and no configuration in it passed either rule. 30 fps was simply never
+derived from what recognition needs. INCLUDE itself is 25 fps, and tracking and motion fidelity
+hold down to about 12.5–15 fps.
+
+Approved by Mukund (2026-11-25):
+
+- **Floor for a mid-range device: ≥ 15 processed fps with p95 ≤ 66.7 ms.** This is what the app
+  needs. 15 rather than 10 leaves margin before the ablation's error starts to grow.
+- **Bar on Mukund's M3 Pro, the benchmark machine: ≥ 20 processed fps with p95 ≤ 50 ms.** It is a
+  high-end laptop, so it must clear the floor with headroom for a mid-range device to keep ≥ 15.
+- Each extractor is judged on **its faster delegate** (GPU or CPU). The app will use whichever is
+  faster on the device.
+- Validity conditions stay: hands in view in > 80% of frames in camera mode, and file-mode hand
+  rate within 0.15 of the Python reference.
+
+Applying it to the rerun:
+
+1. If **A** clears the M3 Pro bar in both file and camera mode → **A**.
+2. If only **B** does → bring both sets of numbers to Mukund. Don't decide alone.
+3. If neither does → report it. The faster one, plus adaptive frame skipping on timestamps in
+   Phase 5.
+
+Follow-ups that keep the rule honest:
+
+- **Phase 2 accuracy check (kept):** the baseline is evaluated on INCLUDE-50 test re-extracted at
+  25 / 20 / 15 / 10 fps, and trained with frame-drop and time-stretch augmentation. If accuracy at
+  15 fps is more than 1 point below 25 fps, the floor goes back up.
+- **Cheaper-device check before Phase 5:** the live app is tested on at least one cheaper device
+  (a friend's laptop or an Android phone) and reported, to confirm the ≥ 15 fps floor where it
+  actually binds.
+- CLAUDE.md section 3 now reads "≥ 15 fps end-to-end on a mid-range laptop (25 stretch); report
+  measured fps and device name", and every fps number in the README names its device.
+
+## Detection quality favours A, regardless of speed
+
+Speed is only a **pass/fail check**. The choice between A and B rests on quality, where A wins:
+
+| Evidence | A: Holistic | B: Hand+Pose | Scope |
+|---|---|---|---|
+| Left/right label swaps per 100 judged frame transitions | **0.00** (0 of 2,420) | **1.08** (26 of 2,411; 95% CI 0.54–1.76) | 50 INCLUDE videos, Python (measure a) |
+| Hand rate, one INCLUDE-50 test video (`MVI_2988`) | 89.4% (Python 88.0%) | 67.2% (Python 68.7%) | Real bench page, file mode, and Python |
+| Hand rate, 50 INCLUDE videos | 85.8% | 84.4% | Measure (a). **The difference is not significant** (95% CI −1.7 to +4.4 points) |
+| Robustness | Hands located from the body pose | Needs its palm detector to find small hands in the whole frame (0 hands on a full 1080p INCLUDE frame, in both runtimes) | Investigation 1 |
+
+So: A's advantage on **swaps** is clear across 50 videos. Its advantage on **hand rate** is
+large on some videos (89 vs 67 on `MVI_2988`) but small and not statistically significant on the
+50-video average. The **structural** reason (no palm-detector dependency) is the one that matters
+most for waist-up webcam use, and run 1's 9% / 0% for B is consistent with it. Unless A fails the
+speed check, A is the choice.
 
 ## Decision
 
-_Pending Mukund's rerun (file + camera) and his decision on the fps proposal._ On measure (a),
-and on the palm-detector finding above, A is preferred.
+_Pending Mukund's rerun (file + camera) under the rule above._ A is preferred on quality. The
+rerun decides only whether A passes the speed check.
