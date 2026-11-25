@@ -11,7 +11,7 @@ WEB  := cd web &&
         parity-fixture check-fps
 
 help:  ## list targets
-	@grep -hE '^[a-zA-Z_-]+:.*## ' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "  %-22s %s\n", $$1, $$2}'
+	@grep -hE '^[a-zA-Z0-9_-]+:.*## ' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "  %-22s %s\n", $$1, $$2}'
 
 setup:  ## install pinned Python (uv) and web (pnpm) environments
 	$(ML) $(UV) sync --locked
