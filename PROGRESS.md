@@ -237,3 +237,22 @@ extraction config and pipeline modules are unchanged.
 from `reports/data.md` (≈ p90 of lengths), resampling by timestamp. z is a Phase 3 ablation. The no-op
 augmentations (isotropic scale, translation, uniform stretch) are removed from defaults and CLAUDE.md;
 their tests remain as documentation. Golden file regenerated (4 clips incl. 15 fps); TS == Python to < 1e-9.
+
+**2026-11-25 (later), while extraction runs:**
+
+- **Hips dropped** from features (seated desk users vs standing INCLUDE signers). 11 pose points,
+  **193 features**, shoulders are the body reference (ADR 008). Golden regenerated; TS == Python.
+- **Phase 6 recorder** at `/dev/record` (docs and consent form in `tools/record/`). It is in the web app so it
+  uses the app's exact path: 480-row downscale → Holistic (GPU, CPU fallback) → the stored layout.
+  Keypoints only, consent screen before the camera starts, anonymous `P-XXXXXX` participant code,
+  "no sign" clips, per-clip quality checks, local JSON file (`spec/recording_v1.json`). Python
+  `sanket.data.recorded` validates the same rules and converts to `.npz` (gitignored). e2e: full
+  consent → record → accept → save cycle, no foreign requests, and **frames reach MediaPipe
+  unmirrored** (CLAUDE.md section 8). Vocabulary with display names: `spec/vocab_include50.json`.
+- **CI `train` job**: CPU build of the pinned torch, mypy over torch code, training tests. The `ml`
+  job type-checks everything else.
+- **Evaluation** `sanket.evaluate` (top-1/top-5/per-class from the best-val checkpoint) and the
+  **Kaggle notebook** `ml/notebooks/kaggle_include50_gru.ipynb` (thin, pinned commit, split-count
+  checks, train → evaluate). Structure-tested.
+- Open: how participants learn the signs without showing dataset videos (tools/record/README.md);
+  the repo needs a GitHub remote for the notebook to clone.
