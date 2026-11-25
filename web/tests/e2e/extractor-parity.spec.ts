@@ -35,7 +35,9 @@ interface Side {
 const PAGE = `<!doctype html><html><body><script type="module">
 import { FilesetResolver, HolisticLandmarker, HandLandmarker, PoseLandmarker } from "/tv/vision_bundle.mjs";
 const xy = (lms) => lms.map((p) => [p.x, p.y]);
-window.runParity = async (name, delegate) => {
+// mode "480": downscale in the browser exactly as the app will (spec "downscale": even width,
+// halves round up; createImageBitmap resizeQuality "high"), vs Python's INTER_AREA reference.
+window.runParity = async (name, delegate, mode) => {
   const fs = await FilesetResolver.forVisionTasks("/tv/wasm");
   const stamps = await (await fetch("/parity/stamps.json")).json();
   const base = (m) => ({ modelAssetPath: "/models/" + m + ".task", delegate });
@@ -65,7 +67,13 @@ window.runParity = async (name, delegate) => {
   }
   for (let i = 0; i < stamps.length; i++) {
     const blob = await (await fetch("/parity/frames/" + String(i).padStart(4, "0") + ".png")).blob();
-    const bmp = await createImageBitmap(blob);
+    const full = await createImageBitmap(blob);
+    let bmp = full;
+    if (mode === "480" && full.height > 480) {
+      const w = 2 * Math.floor((full.width * 480) / full.height / 2 + 0.5);
+      bmp = await createImageBitmap(full, { resizeWidth: w, resizeHeight: 480, resizeQuality: "high" });
+      full.close();
+    }
     step(bmp, stamps[i]);
     bmp.close();
   }
@@ -104,8 +112,37 @@ function compare(py: Side, br: Omit<Side, "hand_rate">) {
   };
 }
 
-for (const name of ["holistic", "hand_pose"] as const) {
-  test(`browser ${name} matches Python on identical INCLUDE frames`, async ({ page }) => {
+// native: identical pixels on both sides. 480: each side downscales the same native frames its
+// own way (Python INTER_AREA, browser createImageBitmap "high"), as offline extraction and the
+// live app will (ADR 007).
+// Tolerances, from the first measurements (2026-11-25, recorded in ADR 007):
+// * native: identical pixels → near-identical results (measured presence 99.4% / 100%).
+// * 480: the two resizers differ slightly (pixel MAE 0.29 / 255). Holistic measured presence
+//   96.4%, so it keeps the 95% bar. Hand+Pose measured 94.0%: its palm detector flips on
+//   marginal frames and tracking carries the flip, so its bar is 92%. Landmark positions agree
+//   closely for both where both detect (median ≤ 0.001, p95 ≤ 0.007).
+const TOL: Record<string, Record<"native" | "480", { rate: number; presence: number; median: number; p95: number }>> = {
+  holistic: {
+    native: { rate: 0.03, presence: 0.95, median: 0.002, p95: 0.01 },
+    "480": { rate: 0.03, presence: 0.95, median: 0.002, p95: 0.01 },
+  },
+  hand_pose: {
+    native: { rate: 0.03, presence: 0.95, median: 0.002, p95: 0.01 },
+    "480": { rate: 0.03, presence: 0.92, median: 0.002, p95: 0.01 },
+  },
+};
+
+for (const [name, mode] of [
+  ["holistic", "native"],
+  ["hand_pose", "native"],
+  ["holistic", "480"],
+  ["hand_pose", "480"],
+] as const) {
+  const title =
+    mode === "native"
+      ? `browser ${name} matches Python on identical INCLUDE frames`
+      : `browser ${name}: browser-downscaled 480 rows matches Python INTER_AREA 480 rows`;
+  test(title, async ({ page }) => {
     test.skip(!existsSync(resolve(parity, "expected.json")), "run sanket.checks.browser_parity_fixture first");
     const expected = JSON.parse(readFileSync(resolve(parity, "expected.json"), "utf8"));
 
@@ -125,18 +162,19 @@ for (const name of ["holistic", "hand_pose"] as const) {
     await page.goto(`${ORIGIN}/`);
     await page.waitForFunction(() => (window as unknown as { ready?: boolean }).ready === true);
     const br = await page.evaluate(
-      (n) => (window as unknown as { runParity: (n: string, d: string) => Promise<Omit<Side, "hand_rate">> }).runParity(n === "hand_pose" ? "handpose" : n, "CPU"),
-      name,
+      ([n, m]) =>
+        (window as unknown as { runParity: (n: string, d: string, m: string) => Promise<Omit<Side, "hand_rate">> }).runParity(n === "hand_pose" ? "handpose" : n, "CPU", m),
+      [name, mode] as const,
     );
-    const r = compare(expected[name] as Side, br);
-    console.log(name, JSON.stringify(r));
+    const r = compare(expected[mode === "native" ? name : `${name}_480`] as Side, br);
+    console.log(name, mode, JSON.stringify(r));
     test.info().annotations.push({ type: "parity", description: JSON.stringify(r) });
 
-    // Tolerances: identical pixels and timestamps, so CPU results should be (near) identical.
-    expect(Math.abs(r.brRate - r.pyRate)).toBeLessThanOrEqual(0.03);
-    expect(r.presenceAgreement).toBeGreaterThanOrEqual(0.95);
+    const t = TOL[name][mode];
+    expect(Math.abs(r.brRate - r.pyRate)).toBeLessThanOrEqual(t.rate);
+    expect(r.presenceAgreement).toBeGreaterThanOrEqual(t.presence);
     expect(r.comparedHands).toBeGreaterThan(20);
-    expect(r.landmarkDistMedian).toBeLessThan(0.002); // normalized image units (0.002 ≈ 4 px at 1080p)
-    expect(r.landmarkDistP95).toBeLessThan(0.01);
+    expect(r.landmarkDistMedian).toBeLessThan(t.median); // normalized image units
+    expect(r.landmarkDistP95).toBeLessThan(t.p95);
   });
 }

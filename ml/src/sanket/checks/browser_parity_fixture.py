@@ -7,8 +7,10 @@ and writes into ml/.cache/parity/ (gitignored: INCLUDE frames are never committe
 
 * frames/NNNN.png   lossless frames, so Python and the browser see identical pixels
 * stamps.json       per-frame timestamps (ms) from the decoder
-* expected.json     per extractor: hand rate and per-frame hand landmarks, computed in
-                    Python on those same PNG frames
+* frames480/NNNN.png the same frames downscaled to 480 rows exactly as offline extraction does
+                    (cv2.INTER_AREA, ADR 007)
+* expected.json     per extractor, native and `_480`: hand rate and per-frame hand landmarks,
+                    computed in Python on those same frames
 
 This is an early, narrow form of Phase 4 parity test 4 (same video → close keypoints).
 """
@@ -26,9 +28,11 @@ from sanket.data.splits import load_split, video_key
 from sanket.keypoints.extractor import EXTRACTORS, Sequence
 from sanket.keypoints.video import iter_frames, open_video
 from sanket.paths import CACHE_DIR
+from sanket.pipeline.extract import resize_to_height
 from sanket.spec import fetch_model, load_spec, model_pins
 
 OUT = CACHE_DIR / "parity"
+EXTRACT_HEIGHT = 480  # ADR 007
 
 
 def pick_video() -> Path:
@@ -58,24 +62,37 @@ def main() -> None:
         "video": str(video.relative_to(VIDEO_CACHE)),
         "n_frames": len(stamps),
     }
-    for name, cls in EXTRACTORS.items():
-        seq = Sequence()
-        with cls(models) as ex:
-            for i, t in enumerate(stamps):
-                bgr = cv2.imread(str(frames_dir / f"{i:04d}.png"))
-                if bgr is None:
-                    raise RuntimeError(f"could not read frame {i}")
-                ex.add(cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB), t, seq)
-        a = seq.arrays()
-        any_hand = a["left_present"] | a["right_present"]
-        expected[name] = {
-            "hand_rate": float(any_hand.mean()),
-            "left_present": a["left_present"].tolist(),
-            "right_present": a["right_present"].tolist(),
-            "left": np.round(a["left"][:, :, :2], 5).tolist(),
-            "right": np.round(a["right"][:, :, :2], 5).tolist(),
-        }
-        print(f"{name}: hand rate {expected[name]['hand_rate']:.3f} over {len(stamps)} frames")
+    # Native frames, and the same frames downscaled exactly as offline extraction does it
+    # (ADR 007: 480 rows with cv2.INTER_AREA via the pipeline's own resize_to_height).
+    frames480 = OUT / "frames480"
+    frames480.mkdir(exist_ok=True)
+    for i in range(len(stamps)):
+        bgr = cv2.imread(str(frames_dir / f"{i:04d}.png"))
+        if bgr is None:
+            raise RuntimeError(f"could not read frame {i}")
+        cv2.imwrite(str(frames480 / f"{i:04d}.png"), resize_to_height(bgr, EXTRACT_HEIGHT))
+
+    for suffix, height in (("", None), ("_480", EXTRACT_HEIGHT)):
+        for name, cls in EXTRACTORS.items():
+            seq = Sequence()
+            with cls(models) as ex:
+                for i, t in enumerate(stamps):
+                    bgr = cv2.imread(str(frames_dir / f"{i:04d}.png"))
+                    if bgr is None:
+                        raise RuntimeError(f"could not read frame {i}")
+                    rgb = resize_to_height(cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB), height)
+                    ex.add(rgb, t, seq)
+            a = seq.arrays()
+            any_hand = a["left_present"] | a["right_present"]
+            key = name + suffix
+            expected[key] = {
+                "hand_rate": float(any_hand.mean()),
+                "left_present": a["left_present"].tolist(),
+                "right_present": a["right_present"].tolist(),
+                "left": np.round(a["left"][:, :, :2], 5).tolist(),
+                "right": np.round(a["right"][:, :, :2], 5).tolist(),
+            }
+            print(f"{key}: hand rate {expected[key]['hand_rate']:.3f} over {len(stamps)} frames")
     (OUT / "expected.json").write_text(json.dumps(expected))
     print(f"wrote {OUT}")
 
