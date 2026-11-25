@@ -68,7 +68,8 @@ def list_members(size: int, fetch: RangeFetcher) -> list[ZipMember]:
 
 
 def list_remote_zip(url: str) -> list[ZipMember]:
-    return list_members(net.content_length(url), lambda a, b: net.get_range(url, a, b))
+    size = net.with_retries(lambda: net.content_length(url))
+    return list_members(size, lambda a, b: net.with_retries(lambda: net.get_range(url, a, b)))
 
 
 def extract_members(
@@ -95,9 +96,10 @@ def extract_members(
 
 
 def extract_remote_members(url: str, names: list[str], dest_root: Path) -> list[Path]:
+    size = net.with_retries(lambda: net.content_length(url))
     return extract_members(
-        net.content_length(url),
-        lambda a, b: net.get_range(url, a, b, timeout=600),
+        size,
+        lambda a, b: net.with_retries(lambda: net.get_range(url, a, b, timeout=600)),
         names,
         dest_root,
     )

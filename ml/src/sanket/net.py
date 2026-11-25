@@ -4,7 +4,10 @@ Kept tiny on purpose: GET a whole small resource, GET a byte range, and HEAD for
 """
 
 import ssl
+import time
+import urllib.error
 import urllib.request
+from collections.abc import Callable
 from pathlib import Path
 
 DEFAULT_TIMEOUT_S = 60
@@ -51,3 +54,26 @@ def content_length(url: str, timeout: float = DEFAULT_TIMEOUT_S) -> int:
     req.add_header("User-Agent", USER_AGENT)
     with urllib.request.urlopen(req, timeout=timeout, context=_ssl_context()) as resp:
         return int(resp.headers["Content-Length"])
+
+
+RETRYABLE: tuple[type[BaseException], ...] = (urllib.error.URLError, TimeoutError, ConnectionError)
+
+
+def with_retries[T](
+    fn: Callable[[], T],
+    attempts: int = 5,
+    sleep: Callable[[float], None] = time.sleep,
+    log: Callable[[str], None] = print,
+) -> T:
+    """Call fn(), retrying transient network errors (e.g. a TLS handshake timeout from Zenodo)
+    with exponential backoff: 2, 4, 8, 16 s. The last error is re-raised."""
+    for attempt in range(1, attempts + 1):
+        try:
+            return fn()
+        except RETRYABLE as e:
+            if attempt == attempts:
+                raise
+            wait = float(2**attempt)
+            log(f"network error ({e!r}); retry {attempt}/{attempts - 1} in {wait:.0f}s")
+            sleep(wait)
+    raise AssertionError("unreachable")
