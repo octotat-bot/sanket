@@ -243,3 +243,12 @@ def test_resize_to_height_keeps_aspect_and_even_width() -> None:
     img = np.zeros((1080, 1920, 3), np.uint8)
     assert resize_to_height(img, 480).shape == (480, 854, 3)  # 1920*480/1080 = 853.3 -> even 854
     assert resize_to_height(img, None) is img
+
+
+def test_target_size_matches_the_shared_spec_cases() -> None:
+    """The same cases are checked in web/tests/unit/downscale.test.ts (Python == browser)."""
+    from sanket.pipeline.extract import target_size
+
+    spec = load_spec()["downscale"]
+    for w, h, ew, eh in spec["shared_test_cases"]:
+        assert target_size(w, h, spec["height"]) == (ew, eh), (w, h)

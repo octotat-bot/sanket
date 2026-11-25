@@ -1,5 +1,5 @@
 {
-  "spec_version": "0.3.0",
+  "spec_version": "0.4.0",
   "status": "Phase 1: extractor pins, stored per-frame keypoints, and normalization step 1 (aspect + shoulders). Phase 2 adds the rest of normalization.",
   "extractor": {
     "mediapipe_version": "1.2.3",
@@ -120,5 +120,51 @@
         "same body at 16:9, 4:3, 854x480 and padded 1920x1088 gives identical features"
       ]
     }
+  },
+  "downscale": {
+    "description": "Frames are downscaled to `height` rows before MediaPipe, offline and live (ADR 007). Never upscaled.",
+    "height": 480,
+    "width_rule": "keep aspect; width = 2 * floor(W * height / H / 2 + 0.5) (even, halves round UP in both Python and TypeScript)",
+    "python": "cv2.resize(..., interpolation=cv2.INTER_AREA)",
+    "browser": "createImageBitmap(source, {resizeWidth, resizeHeight, resizeQuality: 'high'})",
+    "browser_choice_evidence": "reports/phase1_browser_downscale.json: pixel MAE 0.29 vs INTER_AREA in Chromium and Chrome; canvas paths differ between browsers",
+    "shared_test_cases": [
+      [
+        1920,
+        1080,
+        854,
+        480
+      ],
+      [
+        1280,
+        720,
+        854,
+        480
+      ],
+      [
+        640,
+        480,
+        640,
+        480
+      ],
+      [
+        1440,
+        1080,
+        640,
+        480
+      ],
+      [
+        1282,
+        960,
+        642,
+        480
+      ],
+      [
+        854,
+        480,
+        854,
+        480
+      ]
+    ]
   }
 }

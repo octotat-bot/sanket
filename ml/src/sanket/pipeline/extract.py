@@ -19,6 +19,7 @@ Edge cases (CLAUDE.md section 8):
 import argparse
 import hashlib
 import json
+import math
 import platform
 import subprocess
 import tempfile
@@ -86,8 +87,15 @@ def resize_to_height(rgb: np.ndarray, target_height: int | None) -> np.ndarray:
     h, w = rgb.shape[:2]
     if target_height is None or h <= target_height:
         return rgb
-    new_w = round(w * target_height / h / 2) * 2
-    return cv2.resize(rgb, (new_w, target_height), interpolation=cv2.INTER_AREA)
+    return cv2.resize(rgb, target_size(w, h, target_height), interpolation=cv2.INTER_AREA)
+
+
+def target_size(width: int, height: int, target_height: int) -> tuple[int, int]:
+    """Spec "downscale.width_rule": even width, halves round UP (Python's round() would round
+    halves to even and disagree with JavaScript's Math.round). Never upscales."""
+    if height <= target_height:
+        return width, height
+    return 2 * math.floor(width * target_height / height / 2 + 0.5), target_height
 
 
 def extract_video(
