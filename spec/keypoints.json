@@ -1,5 +1,5 @@
 {
-  "spec_version": "0.4.0",
+  "spec_version": "0.5.0",
   "status": "Phase 1: extractor pins, stored per-frame keypoints, and normalization step 1 (aspect + shoulders). Phase 2 adds the rest of normalization.",
   "extractor": {
     "mediapipe_version": "1.2.3",
@@ -119,6 +119,56 @@
       "invariants_tested": [
         "same body at 16:9, 4:3, 854x480 and padded 1920x1088 gives identical features"
       ]
+    },
+    "features_v1": {
+      "status": "proposed (ADR 008)",
+      "order": [
+        "pose_body",
+        "left_body",
+        "right_body",
+        "left_local",
+        "right_local",
+        "presence"
+      ],
+      "pose_feature_indices": [
+        0,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        23,
+        24
+      ],
+      "pose_visibility_min": 0.5,
+      "palm": {
+        "wrist": 0,
+        "middle_mcp": 9
+      },
+      "coords": [
+        "x",
+        "y"
+      ],
+      "presence": [
+        "pose",
+        "left",
+        "right"
+      ],
+      "n_features": 193,
+      "missing": "zeros; presence flag 0",
+      "max_gap_frames": 3,
+      "resample": {
+        "T": 64,
+        "times": "T evenly spaced times from the first to the last timestamp",
+        "interp": "linear if the part is present in both neighbours, else nearest frame"
+      },
+      "velocity": {
+        "default": false,
+        "definition": "difference of the 190 coordinate features between consecutive resampled frames; zero where the part is missing at either end; first frame zero"
+      }
     }
   },
   "downscale": {
