@@ -1,0 +1,62 @@
+[
+  {
+    "fps": 25.0,
+    "frames_kept": 3427,
+    "hand_rate_kept": 0.8584768018675226,
+    "hand_rate_25fps_same_frames": 0.8584768018675226,
+    "err_seen_median": NaN,
+    "err_seen_p90": NaN,
+    "err_skipped_median": NaN,
+    "err_skipped_p90": NaN,
+    "n_seen": 0,
+    "n_skipped": 0
+  },
+  {
+    "fps": 20.0,
+    "frames_kept": 2734,
+    "hand_rate_kept": 0.8551572787125091,
+    "hand_rate_25fps_same_frames": 0.858814923189466,
+    "err_seen_median": 0.002254823599573465,
+    "err_seen_p90": 0.016459299189987436,
+    "err_skipped_median": 0.007831885870986634,
+    "err_skipped_p90": 0.041861816961607325,
+    "n_seen": 3867,
+    "n_skipped": 905
+  },
+  {
+    "fps": 15.0,
+    "frames_kept": 2054,
+    "hand_rate_kept": 0.8466407010710808,
+    "hand_rate_25fps_same_frames": 0.857838364167478,
+    "err_seen_median": 0.0036939116648387347,
+    "err_seen_p90": 0.020149705000765163,
+    "err_skipped_median": 0.008094822573022561,
+    "err_skipped_p90": 0.042727124181119014,
+    "n_seen": 2888,
+    "n_skipped": 1757
+  },
+  {
+    "fps": 12.5,
+    "frames_kept": 1726,
+    "hand_rate_kept": 0.8458864426419467,
+    "hand_rate_25fps_same_frames": 0.858053302433372,
+    "err_seen_median": 0.004375981314634873,
+    "err_seen_p90": 0.021475448310481645,
+    "err_skipped_median": 0.008396373827156512,
+    "err_skipped_p90": 0.04017946757073834,
+    "n_seen": 2391,
+    "n_skipped": 2124
+  },
+  {
+    "fps": 10.0,
+    "frames_kept": 1381,
+    "hand_rate_kept": 0.8515568428674873,
+    "hand_rate_25fps_same_frames": 0.8587979724837075,
+    "err_seen_median": 0.004910719782069675,
+    "err_seen_p90": 0.022265723223821608,
+    "err_skipped_median": 0.00996578073577366,
+    "err_skipped_p90": 0.05343367814603822,
+    "n_seen": 1929,
+    "n_skipped": 2545
+  }
+]

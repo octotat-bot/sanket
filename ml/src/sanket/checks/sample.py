@@ -126,12 +126,21 @@ def main() -> None:
         description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
     )
     parser.add_argument("--fetch", action="store_true", help="download the sampled videos")
+    parser.add_argument(
+        "--only",
+        choices=["session_spotcheck", "extractor_bench", "video_metadata"],
+        help="fetch just this sample set",
+    )
     args = parser.parse_args()
     videos = load_manifest(MANIFEST)
     samples = select(videos)
     SAMPLES_FILE.parent.mkdir(parents=True, exist_ok=True)
     SAMPLES_FILE.write_text(json.dumps(samples, indent=2) + "\n")
     paths = all_paths(samples)
+    if args.only == "session_spotcheck":
+        paths = sorted({s["path"] for s in samples["session_spotcheck"]})
+    elif args.only:
+        paths = sorted(samples[args.only])
     mb = sum(v.bytes for v in videos if v.path in set(paths)) / 1e6
     print(f"wrote {SAMPLES_FILE}: {len(paths)} distinct videos, {mb:.0f} MB")
     if args.fetch:
