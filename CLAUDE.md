@@ -181,6 +181,7 @@ sanket/
 - **Rejection:** if the top probability is below a threshold, or the top-1/top-2 margin is too small, show "not sure" instead of a wrong word. Train with an extra **"no sign / idle" class** built from non-sign clips (people talking, scratching, resting hands) recorded in Phase 6, or calibrate a threshold on the validation set. Decide in an ADR.
 - Temporal smoothing and debounce so the label doesn't flicker.
 - Runtime selection: WebGPU if available, otherwise WASM (SIMD + threads where possible), and show which one is active in a small debug panel (fps, inference ms, backend).
+- **GPU warm-up at page load:** run the MediaPipe (and model) GPU path on a few dummy frames as soon as the page loads, before the camera view goes live, and show a "preparing" state until it's done (first GPU frame took 9.4 s on an M3 Pro).
 - **Before starting Phase 5:** test the live app on at least one cheaper device (a friend's laptop or an Android phone) and report the measured fps with the device name.
 - **Acceptance:** ≥ 15 fps end-to-end on a mid-range laptop (25 stretch), measured fps reported with the device name, latency numbers measured by an in-app benchmark page and reported with the device name, and a Playwright test that runs the pipeline on a pre-recorded video and checks the predicted word.
 
@@ -231,6 +232,8 @@ See Section 9.
 - **Selfie mirroring:** the preview is shown mirrored for the user, but keypoints must come from the **unmirrored** frames, matching the training data. Test it explicitly, because it's an easy bug to miss.
 - Camera permission denied, no camera, or camera already in use → clear UI states with instructions.
 - No WebGPU → WASM fallback, and say so in the debug panel.
+- **GPU first-frame cost:** the first MediaPipe GPU frame of a session took 9.4 s on an M3 Pro (shader compilation; ADR 002 run 2). Warm the GPU model up at page load, before the user signs, behind a visible "preparing" state, and keep it out of any latency measurement.
+- **Aspect ratio and decoder padding:** MediaPipe normalizes x and y by the width and height of the image it was given (16:9 INCLUDE vs 4:3 webcam), and Chrome on macOS can deliver 1920×1088 for a 1080p video (8 padding rows at the bottom). Always convert to aspect-correct coordinates using the size of the image actually passed to MediaPipe (never the container's or the requested size) before shoulder normalization. Tested in `ml/tests/test_normalize.py`; the TypeScript mirror gets the same tests.
 - WASM threads need `SharedArrayBuffer`, which needs cross-origin isolation headers (COOP/COEP) → set them in the Vercel config and verify that MediaPipe and model assets still load under them.
 - Low-end device dropping frames → adaptive processing (skip frames, lower camera resolution) without changing the model input timing semantics (use timestamps).
 - Tab hidden or backgrounded → pause the pipeline and resume cleanly.
