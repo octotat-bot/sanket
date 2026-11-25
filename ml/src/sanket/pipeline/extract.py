@@ -55,6 +55,7 @@ class Config:
     frame_cache_dir: Path | None
     min_free_gb: float
     review_below_hand_rate: float
+    extract_height: int | None = None  # None = native resolution (ADR 007)
 
     @staticmethod
     def load(path: Path) -> "Config":
@@ -75,20 +76,43 @@ class Config:
             frame_cache_dir=p(d["frame_cache_dir"]) if d.get("frame_cache_dir") else None,
             min_free_gb=float(d["min_free_gb"]),
             review_below_hand_rate=float(d["review_below_hand_rate"]),
+            extract_height=int(d["extract_height"]) if d.get("extract_height") else None,
         )
 
 
+def resize_to_height(rgb: np.ndarray, target_height: int | None) -> np.ndarray:
+    """Downscale (never upscale) to `target_height` rows, keeping aspect; width rounded to even.
+    INTER_AREA averages pixels, the closest OpenCV analogue to a camera's own downscaling."""
+    h, w = rgb.shape[:2]
+    if target_height is None or h <= target_height:
+        return rgb
+    new_w = round(w * target_height / h / 2) * 2
+    return cv2.resize(rgb, (new_w, target_height), interpolation=cv2.INTER_AREA)
+
+
 def extract_video(
-    video: Path, make_extractor: Any, frame_out: Path | None
+    video: Path, make_extractor: Any, frame_out: Path | None, target_height: int | None = None
 ) -> tuple[dict[str, np.ndarray], dict[str, Any]]:
-    """Run one video through a fresh extractor. Returns (arrays, stats)."""
+    """Run one video through a fresh extractor. Returns (arrays, stats).
+
+    `frame_size` (stored in the arrays) is the size of the image MediaPipe actually processed:
+    the decoded frame after any downscaling, not the container's claim. Normalization must use
+    it (sanket.keypoints.normalize).
+    """
     cap, info = open_video(video)
     seq = Sequence()
     middle = max(info.frame_count // 2, 0)
+    frame_size: tuple[int, int] | None = None
     try:
         ex: Extractor
         with make_extractor() as ex:
-            for i, (rgb, t_ms) in enumerate(iter_frames(cap)):
+            for i, (decoded, t_ms) in enumerate(iter_frames(cap)):
+                rgb = resize_to_height(decoded, target_height)
+                size = (int(rgb.shape[1]), int(rgb.shape[0]))
+                if frame_size is None:
+                    frame_size = size
+                elif size != frame_size:
+                    raise RuntimeError(f"frame size changed mid-video: {frame_size} -> {size}")
                 ex.add(rgb, t_ms, seq)
                 if frame_out is not None and i == middle:
                     h, w = rgb.shape[:2]
@@ -102,12 +126,17 @@ def extract_video(
     finally:
         cap.release()
     arrays = seq.arrays()
+    arrays["frame_size"] = np.asarray(
+        frame_size or (0, 0), np.int32
+    )  # (width, height) as processed
     n = len(seq.t_ms)
     lp, rp = arrays["left_present"], arrays["right_present"]
     stats = {
         "fps": info.fps,
-        "width": info.width,
-        "height": info.height,
+        "width": frame_size[0] if frame_size else 0,  # as processed by MediaPipe
+        "height": frame_size[1] if frame_size else 0,
+        "container_width": info.width,  # what the container claims (logged, never used)
+        "container_height": info.height,
         "frame_count_container": info.frame_count,
         "n_frames": n,
         "duration_s": (seq.t_ms[-1] - seq.t_ms[0]) / 1000 if n > 1 else 0.0,
@@ -182,7 +211,7 @@ def process_zip(
                     if cfg.frame_cache_dir
                     else None
                 )
-                arrays, stats = extract_video(tmp, make_extractor, frame_out)
+                arrays, stats = extract_video(tmp, make_extractor, frame_out, cfg.extract_height)
                 if stats["n_frames"] == 0:
                     raise RuntimeError("decoded 0 frames")
                 record.update(stats)

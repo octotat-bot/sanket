@@ -219,3 +219,27 @@ def test_run_refuses_a_dirty_working_tree(
     monkeypatch.setattr(extract, "_git_sha", lambda: "abc123-dirty")
     with pytest.raises(SystemExit, match="uncommitted"):
         extract.run(cfg, only_zips=[])
+
+
+def test_frame_size_is_what_mediapipe_processed(tmp_path: Path) -> None:
+    from sanket.pipeline.extract import extract_video
+
+    vid = tmp_path / "v.mp4"
+    make_video(vid)  # 64x48
+    a, s = extract_video(vid, FakeExtractor, None)
+    assert a["frame_size"].tolist() == [64, 48] and (s["width"], s["height"]) == (64, 48)
+    assert (s["container_width"], s["container_height"]) == (64, 48)
+
+    b, s2 = extract_video(vid, FakeExtractor, None, target_height=24)  # downscale before MediaPipe
+    assert b["frame_size"].tolist() == [32, 24] and (s2["width"], s2["height"]) == (32, 24)
+
+    c, _ = extract_video(vid, FakeExtractor, None, target_height=480)  # never upscale
+    assert c["frame_size"].tolist() == [64, 48]
+
+
+def test_resize_to_height_keeps_aspect_and_even_width() -> None:
+    from sanket.pipeline.extract import resize_to_height
+
+    img = np.zeros((1080, 1920, 3), np.uint8)
+    assert resize_to_height(img, 480).shape == (480, 854, 3)  # 1920*480/1080 = 853.3 -> even 854
+    assert resize_to_height(img, None) is img
