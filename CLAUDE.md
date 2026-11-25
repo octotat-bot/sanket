@@ -150,7 +150,7 @@ sanket/
   - Missing hands → zeros plus a presence mask channel. Never NaN.
   - Optional velocity features (frame differences).
   - Resample to a fixed number of frames T, or use variable length with a padding mask. Decide in an ADR.
-- **Augmentations** (training only): small rotation, scale, translation, time stretch/compress, random frame drop, hand dropout (simulate missed detections), Gaussian jitter. **Horizontal mirroring** (left-handed signers) is an ablation, not a default, because swapping hands can change meaning for some signs.
+- **Augmentations** (training only): small rotation, anisotropic scale (x ≠ y), non-uniform time warp, temporal crop (imprecise sign boundaries), random frame drop, hand dropout (simulate missed detections), Gaussian jitter. Isotropic scale, translation and uniform time stretch are deliberately excluded: they are exact no-ops under shoulder normalization and timestamp resampling to fixed T (proved in `ml/tests/test_augment.py`). **Horizontal mirroring** (left-handed signers) is an ablation, not a default, because swapping hands can change meaning for some signs.
 - **Baseline:** a bidirectional GRU. Train on INCLUDE-50 first.
 - **Acceptance:** a baseline number on INCLUDE-50, and unit tests for every normalization step (including a golden-file test shared with the web implementation).
 
@@ -158,7 +158,7 @@ sanket/
 
 - A Transformer encoder over frame tokens: linear embedding of per-frame features, learned positional encoding, CLS token or attention pooling, small (aim for under 5M parameters so it runs in a browser).
 - Training: AdamW, cosine schedule with warmup, label smoothing, early stopping on a validation split carved from **train** (never tune on test), mixed precision on Kaggle GPUs, and checkpointing every epoch (sessions can end at 12 h).
-- **Ablations** (each one a row in the results table): GRU vs Transformer, with/without velocities, with/without hand-local coordinates, with/without mirroring, model size (small/medium).
+- **Ablations** (each one a row in the results table): GRU vs Transformer, with/without velocities, with/without hand-local coordinates, with/without mirroring, with/without depth (z), model size (small/medium).
 - Then scale to the full 263-class INCLUDE.
 - **Evaluation:** top-1, top-5, per-class accuracy, a confusion matrix, the most-confused sign pairs (with a short note on why they're similar), and bootstrap 95% CIs.
 - **Session-independent and inferred signer-independent evaluation:** INCLUDE has no signer ids. (1) Hold out whole recording sittings (camera-number blocks across all classes, boundaries checked by eye, ADR 005) and call it "session-independent". (2) Cluster sittings into inferred people (pose body proportions + cached frames, checked by eye) and hold out whole inferred people: call it "inferred signer-independent", always with the word *inferred*. Never call either one plain "signer-independent". Both numbers will be lower. Report them next to the official split result. If the authors provide signer ids, real ids replace the inferred ones.

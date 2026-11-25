@@ -1,6 +1,8 @@
 # ADR 008: Per-frame features v1 and fixed-length resampling
 
-- Status: **Proposed** (built 2026-11-25 while extraction runs; Mukund to approve or change)
+- Status: **Accepted with changes** (Mukund, 2026-11-25). Gap rule in milliseconds, eyes added (197
+  features), T provisional until set from `reports/data.md`, z as a Phase 3 ablation, no-op
+  augmentations removed.
 - Date: 2026-11-25
 
 ## Context
@@ -11,25 +13,39 @@ mask (never NaN); optional velocities; and fixed length T *or* variable length w
 (decide in an ADR). Python and TypeScript must produce identical tensors, driven by
 `spec/keypoints.json`.
 
-## Decisions (proposed), all as values in `spec.normalization.features_v1`
+## Decisions, all as values in `spec.normalization.features_v1`
 
 | Choice | Value | Why |
 |---|---|---|
-| Coordinates | x, y only (z left out) | MediaPipe's z is relative depth on "roughly x's scale" and noisy. z is an ablation for later |
-| Pose points | nose, mouth corners, shoulders, elbows, wrists, hips (11) | Arm geometry plus a coarse head and mouth anchor. Eyes and ears add little for signs. Legs aren't used |
+| Coordinates | x, y only (z left out for v1) | MediaPipe's z is relative depth on "roughly x's scale" and noisy. **"With z" is a Phase 3 ablation row** (CLAUDE.md) |
+| Pose points (13) | **nose (0), left eye (2), right eye (5), mouth left (9), mouth right (10)**, left/right shoulder (11, 12), left/right elbow (13, 14), left/right wrist (15, 16), left/right hip (23, 24) | Where a sign is made relative to the face distinguishes many ISL signs, so the face reference points (nose, eyes, mouth corners) are required (Mukund). The first draft had 11 points without the eyes. Ears (7, 8) are a possible later ablation. Legs aren't used |
 | Low-visibility pose point | visibility < 0.5 → zeros | CLAUDE.md section 8. If a shoulder is below it, the frame has no body frame |
 | Hand-local frame | origin = wrist (0), scale = wrist→middle-finger MCP (9) | Stable palm length, independent of finger pose |
-| Feature order | pose_body (22), left_body (42), right_body (42), left_local (42), right_local (42), presence [pose, left, right] (3) = **193** | Fixed order shared with TS |
+| Feature order | pose_body (26), left_body (42), right_body (42), left_local (42), right_local (42), presence [pose, left, right] (3) = **197** | Fixed order shared with TS |
 | Part validity | pose: pose flag; hand body: hand **and** pose; hand local: hand | Body-relative hand coordinates need the body frame |
-| Short gaps | ≤ 3 frames (120 ms at 25 fps) between present frames: linear fill of raw landmarks | CLAUDE.md "short-gap interpolation rule (documented max gap)". Filling raw landmarks keeps derived parts consistent |
-| Length | **fixed T = 64**, resampled by timestamp | INCLUDE's median clip is 68 frames, and the frame-rate ablation shows little motion lost at 15–20 fps equivalents. Fixed T makes the ONNX export and browser input static |
+| Short gaps | **`max_gap_ms` = 120**: a run of k missing frames between present frames a and b is filled iff (t_b − t_a)·k/(k+1) ≤ 120 ms, i.e. k frames × the mean frame interval across the gap. Linear in time, on raw landmarks | Live fps varies (15–30), so the rule is in time, not frames (Mukund). It fills ≤ 1 frame at 15 fps, ≤ 3 at 25 fps, ≤ 3 at 30 fps, tested at all three in Python and TS. Filling raw landmarks keeps derived parts consistent |
+| Length | **fixed T, provisionally 64**, resampled by **timestamp** (T evenly spaced times from the first to the last timestamp) | Fixed T keeps the ONNX export and browser input static. **T is set after extraction** from the length distribution in `reports/data.md`, covering about p90 of clip lengths without heavy compression, and the numbers are recorded here |
 | Resampling | linear between neighbours if the part is valid in both, else the nearest frame | No invented motion across missing parts |
-| Velocities | optional (off by default), differences of the 190 coordinates, zero where a part is missing at either end | An ablation row in Phase 3 |
+| Velocities | optional (off by default), differences of the 194 coordinates, zero where a part is missing at either end | An ablation row in Phase 3 |
 
 Fixed T vs variable length with a mask: fixed T is chosen for simplicity of export and the browser
 (a static [1, 64, F] input). The cost is that very long signs get compressed and very short ones
-stretched. Time-stretch augmentation and the Phase 2 accuracy check at 25/20/15/10 fps cover the
+stretched. Time-warp augmentation and the Phase 2 accuracy check at 25/20/15/10 fps cover the
 rate side.
+
+## Augmentation (related, decided with this ADR)
+
+Isotropic scale, translation and uniform time stretch are **removed** from the training defaults
+and from CLAUDE.md's list: they are exact no-ops under this normalization (shoulder centring and
+scaling, and timestamp resampling of first..last onto T). `ml/tests/test_augment.py` keeps tests
+proving this, and a test that they stay out of `augment()`. The effective ones are anisotropic
+scale, non-uniform time warp and temporal crop, plus rotation, frame drop, hand dropout and jitter.
+
+## T from the data (to fill in after extraction)
+
+- Length distribution (frames and ms, at 25 fps): _pending `reports/data.md`_.
+- Chosen T: _pending_. Rule: about p90 of clip lengths in frames, so ≥ 90% of clips are not
+  compressed in time.
 
 ## Shared implementation and tests
 
@@ -37,7 +53,8 @@ rate side.
   `web/src/lib/inference/features.ts`.
 - Golden file: `spec/golden/features_v1.json` (synthetic clips only, generated by
   `python -m sanket.keypoints.golden`), checked by `ml/tests/test_golden.py` (no drift) and
-  `web/tests/unit/features.test.ts` (**TS == Python to < 1e-9**, with and without velocities).
+  `web/tests/unit/features.test.ts` (**TS == Python to < 1e-9**, with and without velocities). 4
+  synthetic clips, including a 15 fps clip that exercises the millisecond gap rule.
 - Aspect ratio and padding invariance are tested in both languages.
 
 ## Not in v1 (later steps)

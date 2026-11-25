@@ -211,7 +211,7 @@ Built without the full data (synthetic inputs only). Nothing touches the running
 separate `ml/.venv-train`, `uv run --no-sync`, `nice -n 19`, torch at 2 threads, and the
 extraction config and pipeline modules are unchanged.
 
-- **Features v1** (ADR 008, *proposed*): 193 features per frame (11 pose points, both hands
+- **Features v1** (ADR 008, accepted with changes 2026-11-25): 197 features per frame (13 pose points incl. nose, eyes, mouth corners; both hands
   body-relative and hand-local, presence flags). Short-gap fill (≤ 3 frames) on raw landmarks,
   fixed T = 64 by timestamp, optional velocities. Python reference `sanket.keypoints.features`;
   TypeScript mirror `web/src/lib/inference/features.ts`.
@@ -230,3 +230,10 @@ extraction config and pipeline modules are unchanged.
   bit-identical weights**, early stopping, val never augmented.
 - Not done yet: swap correction (safety net), the real INCLUDE-50 run (needs extraction),
   CI job for the training env.
+
+**ADR 008 accepted with changes (2026-11-25):** gap rule in milliseconds (`max_gap_ms` = 120,
+(t_b − t_a)·k/(k+1) ≤ 120: 1 frame at 15 fps, 3 at 25/30 fps; tested in Python and TS). Eyes added →
+13 pose points incl. nose, eyes and mouth corners, **197 features**. T = 64 is provisional until set
+from `reports/data.md` (≈ p90 of lengths), resampling by timestamp. z is a Phase 3 ablation. The no-op
+augmentations (isotropic scale, translation, uniform stretch) are removed from defaults and CLAUDE.md;
+their tests remain as documentation. Golden file regenerated (4 clips incl. 15 fps); TS == Python to < 1e-9.
