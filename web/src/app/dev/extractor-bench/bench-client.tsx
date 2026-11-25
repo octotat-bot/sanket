@@ -278,7 +278,8 @@ export default function BenchClient() {
           <p className="text-sm text-zinc-500">
             Speed rule (ADR 002): on the M3 Pro benchmark machine ≥ {BENCH_MACHINE_BAR.minFps} fps with
             p95 ≤ {BENCH_MACHINE_BAR.maxP95Ms} ms; any mid-range device ≥ {MID_RANGE_FLOOR.minFps} fps with p95 ≤{" "}
-            {MID_RANGE_FLOOR.maxP95Ms} ms. Judged on the faster delegate.
+            {MID_RANGE_FLOOR.maxP95Ms} ms. Judged on the faster delegate, in camera mode only (file mode is the
+            same-input quality check).
           </p>
           <p className="text-sm text-zinc-500">
             Each round runs every configuration once, in an order shuffled from the seed. Warm-up

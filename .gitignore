@@ -36,3 +36,6 @@ access_token
 .kaggle/
 # Per-video frame cache for ADR 005 boundary/signer checks: local only, deleted after review
 ml/.cache/frames/
+
+# Long-running job logs (extraction etc.)
+logs/

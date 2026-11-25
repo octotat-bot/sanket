@@ -197,3 +197,10 @@ fps only. Hand+Pose fails file mode too. Holistic CPU file rows are invalid (han
 0.88 ± 0.15). The playback-based file mode couples processed fps to the 25 fps cadence (a step
 over 40 ms skips a frame) and can stall. Options are in ADR 002 (recommended: pre-decoded,
 back-to-back frames with the rule unchanged). Waiting on Mukund.
+
+**ADR 002 decided (2026-11-25): Holistic, GPU in the browser.** The speed rule was revised after run 3
+to judge speed on camera mode only (file-mode fps is limited by the playback clock). Evidence:
+A GPU kept up with the 30 fps camera in all 4 camera rounds (450/450, 438/439, 450/450, 451/451;
+p95 33.6–36.1 ms), and its per-frame p95 on the 854×480 file was 40.8 / 40.9 ms (< 50 ms). Config:
+`extractor: holistic`, `extract_height: 480`. A back-to-back file-mode throughput test is noted as
+a possible later improvement.
