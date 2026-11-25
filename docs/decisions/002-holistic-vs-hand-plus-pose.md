@@ -1,8 +1,7 @@
 # ADR 002: Holistic Landmarker vs separate Hand + Pose Landmarkers
 
-- Status: Speed rule approved (2026-11-25). Runs 2 and 3 valid for the judged configurations, and
-  both give **case 3: neither extractor clears the M3 Pro bar in both modes.** Waiting on Mukund's
-  choice among the run 3 options. No extraction until then.
+- Status: **Accepted (Mukund, 2026-11-25): Holistic.** The speed rule was revised after run 3 to
+  judge speed on camera mode only (see "Rule revised after run 3"), and A clears it.
 - Date: 2026-11-24
 
 ## Context
@@ -350,7 +349,52 @@ What the playback-based file mode measures (observations, not excuses):
 3. **Apply case 3 literally** (the faster extractor, B). *Not recommended:* A wins on quality, and B
    also failed file mode.
 
+## Rule revised after run 3 (2026-11-25, Mukund chose option 2)
+
+**This is a rule change made after seeing run 3's results, and it is recorded as such.**
+
+**New rule:** speed is judged on **camera mode only**, the app's real input (a 30 fps camera,
+640×480 = 480 rows, the size the app feeds MediaPipe per ADR 007). The bar is unchanged: on the
+M3 Pro ≥ 20 processed fps and p95 ≤ 50 ms, on the faster delegate. **File mode stays as the
+same-input quality check** (hand rate within 0.15 of the Python reference), not a speed test.
+
+**Why:** in file mode, processed fps is limited by the **playback clock**, not by processing speed.
+The file plays at 25 fps (a frame every 40 ms), so any step over 40 ms skips the next frame,
+whatever the extractor's capacity. Run 3 also showed playback stalls (B GPU round 1: the source
+presented 14.1 fps). File-mode fps measured the cadence coupling and the player, which neither the
+original rule nor the app intended.
+
+**Evidence for A (Holistic, GPU, the faster delegate):**
+
+| Run, mode | Round 1: processed / source frames, fps, p95 | Round 2 |
+|---|---|---|
+| Run 2, camera 640×480 | 450 / 450, 30.0 fps, 34.3 ms | 438 / 439, 29.2 fps, 36.1 ms |
+| Run 3, camera 640×480 | 450 / 450, 30.0 fps, 34.3 ms | 451 / 451, 30.0 fps, 33.6 ms |
+| Run 3, file 854×480 (per-frame time only) | p95 40.8 ms | p95 40.9 ms |
+
+- In all four camera rounds, A GPU kept up with the 30 fps camera: every frame in three rounds,
+  438 of 439 in the fourth. p95 was 33.6–36.1 ms, comfortably inside the 50 ms limit.
+- On the harder 854×480 file input (1.33× the camera's pixels), A GPU's **per-frame p95 was
+  40.8 / 40.9 ms, under the 50 ms limit**. Its file-mode shortfall (19.2 / 17.8 processed fps) is
+  the playback-clock effect above.
+- Quality check (file mode): A GPU hand rate 0.802 / 0.754 vs the 0.880 reference, within ± 0.15,
+  valid. (A CPU's file rows, 0.716 / 0.705, fail it. The app uses the faster delegate, GPU, and the
+  CPU rows aren't judged. The drop in hand rate at low processed fps in a looping clip is noted
+  above as an untested explanation.)
+- Quality (unchanged): A has 0 left/right swaps vs B's 1.08 per 100 judged transitions over 50
+  videos, and no palm-detector dependency.
+
+**Possible later improvement (not built now):** a file mode that pre-decodes the clip and feeds
+frames back-to-back (no playback clock, loop restarts or stalls) would measure file-mode
+*throughput* properly. If ever built, it is reported alongside camera mode, and the rule above
+stays as it is.
+
+**Still required:** the mid-range floor (≥ 15 fps, p95 ≤ 66.7 ms) is checked on at least one
+cheaper device before Phase 5 (CLAUDE.md), and the Phase 2 accuracy check at 25 / 20 / 15 / 10 fps
+stands.
+
 ## Decision
 
-_Run 3 gives case 3 again. Pending Mukund's choice among the run 3 options._ A is preferred on quality. Under the approved
-rule, run 2 gives case 3 (neither clears in both modes).
+**A: `HolisticLandmarker`, GPU delegate in the browser** (CPU stays the fallback), with offline
+extraction at **480 rows** (ADR 007). `ml/configs/extract.yaml`: `extractor: holistic`,
+`extract_height: 480`. Decided by Mukund, 2026-11-25.
