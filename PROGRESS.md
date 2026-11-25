@@ -184,3 +184,9 @@ both Chromium and Chrome; canvas paths differ between browsers). Shared size rul
 (0.4.0; even width, halves round up), tested in both languages. Parity test 4 now has a 480-row
 mode (each side downscales its own way): Holistic presence 96.4%, landmark median 0.00098 / p95
 0.0070. The app must always feed MediaPipe 480-row frames (CLAUDE.md Phase 5).
+
+**Signed-offset check (parity test 4, 2026-11-25):** mean browser − Python landmark offset, with a
+moving-block bootstrap CI (shoulder widths). Holistic at 480 rows: x +0.00076 [+0.00007, +0.00141],
+y −0.00171 [−0.00323, −0.00060]. **The CIs exclude zero, so this is flagged in ADR 007.** Size ≤ 0.0017
+(≈ 0.6 mm), below tracking jitter. Partly a runtime effect (an x offset also appears on identical
+pixels). One video only, so Phase 4 repeats it on several. Hand+Pose: no offset measured.

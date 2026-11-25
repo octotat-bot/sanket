@@ -107,6 +107,43 @@ detector flips on marginal frames (the same weakness as in ADR 002). Landmarks: 
 p95 < 0.01 for both.
 
 Residual: the two resizers are close but not identical (MAE 0.29 / 255). That adds a small
-amount of noise (presence 96.4% vs 99.4% at native, Holistic). Whether it also adds a systematic
-offset (mean signed landmark difference) has not been measured yet. The test above bounds the
-total difference.
+amount of noise (presence 96.4% vs 99.4% at native, Holistic).
+
+### Systematic offset: ⚠ flagged for Holistic (small)
+
+Parity test 4 also reports the **mean signed offset, browser − Python**, of hand landmarks, x and y
+separately, in **shoulder widths**. x is made aspect-correct with the processed frame size first.
+Per frame, the offset is the mean over the 21 landmarks of each hand present in both runs. The 95% CI
+is a **moving-block bootstrap** (blocks of 10 frames, 2,000 resamples, seed 0), because consecutive
+frames are correlated. Output: `reports/parity_offsets/*.json`, from
+`web/tests/e2e/extractor-parity.spec.ts`. One INCLUDE-50 test video (`MVI_2988`), 83 frames.
+
+| Extractor, mode | frames | x: mean [95% CI] | y: mean [95% CI] |
+|---|---|---|---|
+| **Holistic, 480 rows** (each side downscales) | 71 | **+0.00076 [+0.00007, +0.00141]** ⚠ | **−0.00171 [−0.00323, −0.00060]** ⚠ |
+| Holistic, native (identical pixels) | 73 | **−0.00060 [−0.00146, −0.00011]** ⚠ | −0.00061 [−0.00111, +0.00052] |
+| Hand+Pose, 480 rows | 53 | +0.00017 [−0.00033, +0.00090] | +0.00231 [−0.00073, +0.00802] |
+| Hand+Pose, native | 57 | −0.00002 [−0.00010, +0.00000] | +0.00008 [−0.00005, +0.00030] |
+
+**Flag (per Mukund's rule: the CI excludes zero).** Holistic at 480 rows has a systematic offset in
+both x and y. Hand+Pose has none measured, at native or at 480.
+
+Context, so the flag is read at the right size:
+
+- **Magnitude:** at most 0.0017 shoulder widths, about 0.6 mm for a 35–40 cm adult shoulder width
+  (approximate). That is 6–17% of the native-vs-480 resolution difference (median 0.010) and below
+  MediaPipe's frame-to-frame tracking jitter (median 0.002–0.005). Phase 2's translation and jitter
+  augmentations will be orders of magnitude larger.
+- **Not only the resizer.** Holistic shows an x offset (−0.0006) even on **identical pixels**, so part
+  of it comes from the runtimes (browser WASM vs Python's native build), not from the downscale. The
+  x offset even changes sign between native and 480. These are small numbers that a single video can't
+  pin down.
+- **Weak evidence.** One video, 71–73 frames with hands, and 10-frame blocks, so only about 7
+  independent blocks. Eight CIs were computed, so about 0.4 false "excludes zero" are expected by
+  chance alone. The Holistic pattern is consistent enough to flag, but not to estimate precisely.
+
+Action: no correction is applied (it is far below any augmentation, and the estimate is too
+uncertain to correct with). **Phase 4 parity test 4 repeats this on several videos**, and if the
+offset holds at a meaningful size (for example > 0.005 shoulder widths) it gets investigated.
+Until then, Holistic's browser-vs-Python agreement is "systematic offset measured, ≤ 0.002
+shoulder widths", never "no offset".
