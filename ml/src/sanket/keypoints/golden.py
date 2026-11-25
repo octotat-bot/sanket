@@ -4,8 +4,9 @@
 
 Synthetic clips only (no dataset data), built to hit every rule of features_v1: short and long
 gaps, edge gaps, low-visibility points and shoulders, missing pose, uneven timestamps, padded
-1920x1088, a 4:3 frame and a 1-frame clip. Inputs are rounded to 6 decimals *before* computing
-the expected outputs, so both languages start from exactly the same numbers.
+1920x1088, a 4:3 frame, a 1-frame clip, and a 15 fps clip (millisecond gap rule). Inputs are
+rounded to 6 decimals *before* computing the expected outputs, so both languages start from
+exactly the same numbers.
 
 `ml/tests/test_golden.py` fails if this file drifts from the Python implementation.
 `web/tests/unit/features.test.ts` fails if TypeScript disagrees with it (tolerance 1e-9).
@@ -62,7 +63,11 @@ def build_clips() -> list[dict[str, np.ndarray]]:
     b["left_present"][[0, 1, 2, 3, 4]] = False  # long leading gap (5 > max_gap)
     c = _clip(rng, 1, 640, 480)  # single frame, 4:3, right hand only
     c["left_present"][0] = False
-    clips = [a, b, c]
+    d = _clip(rng, 8, 640, 480)  # 15 fps: the 120 ms gap rule fills 1 frame, not 2
+    d["t_ms"] = np.round(np.arange(8) * 1000 / 15, 3)
+    d["right_present"][2] = False  # 1 missing: filled
+    d["right_present"][[4, 5]] = False  # 2 missing at 15 fps (133 ms): not filled
+    clips = [a, b, c, d]
     for cl in clips:  # round inputs first: both languages then see identical numbers
         for k in ("pose", "left", "right"):
             cl[k] = np.round(cl[k], 6)

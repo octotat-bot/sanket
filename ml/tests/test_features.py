@@ -55,7 +55,16 @@ def clip(width: int, height: int, n: int = 5, **kw: float) -> dict[str, np.ndarr
 
 
 def test_feature_count_matches_spec() -> None:
-    assert FS.n_features == load_spec()["normalization"]["features_v1"]["n_features"] == 193
+    assert FS.n_features == load_spec()["normalization"]["features_v1"]["n_features"] == 197
+
+
+def test_face_reference_points_are_features() -> None:
+    """Sign location relative to the face matters in ISL: nose, eyes, mouth corners are in."""
+    f = load_spec()["normalization"]["features_v1"]
+    for name in ("nose", "left_eye", "right_eye", "mouth_left", "mouth_right"):
+        assert name in f["pose_feature_names"], name
+    names = load_spec()["stored"]["pose"]["names"]
+    assert [names[i] for i in f["pose_feature_indices"]] == f["pose_feature_names"]
 
 
 @pytest.mark.parametrize("size", [(1920, 1088), (640, 480), (854, 480)])
@@ -99,26 +108,32 @@ def test_hand_local_is_wrist_centred_and_palm_scaled() -> None:
     np.testing.assert_allclose(np.linalg.norm(local[9]), 1.0, atol=1e-12)
 
 
-def test_short_gaps_filled_long_gaps_and_edges_kept() -> None:
-    c = clip(1920, 1080, n=12)
-    c["left"][:, :, 0] = np.linspace(0.1, 0.9, 12)[:, None]  # moving hand
-    c["left_present"][[0, 3, 4, 5, 7, 8, 9, 10]] = False  # edge 0, gap 3 (3-5), gap 4 (7-10)
-    out = fill_short_gaps(c, FS.max_gap)
-    assert out["left_present"].tolist() == [
-        False,
-        True,
-        True,
-        True,
-        True,
-        True,
-        True,
-        False,
-        False,
-        False,
-        False,
-        True,
-    ]
-    np.testing.assert_allclose(out["left"][4, 0, 0], c["left"][4, 0, 0])  # linear motion recovered
+@pytest.mark.parametrize(
+    ("fps", "max_filled"),
+    [(15, 1), (25, 3), (30, 3)],  # 120 ms: 1 frame at 15 fps, 3 at 25 fps, 3 (not 4) at 30 fps
+)
+def test_gap_rule_is_in_milliseconds_so_it_means_the_same_at_any_fps(
+    fps: int, max_filled: int
+) -> None:
+    for k in range(1, 6):  # a run of k missing frames, bounded by present frames
+        c = clip(1920, 1080, n=k + 2)
+        c["t_ms"] = np.arange(k + 2) * (1000 / fps)
+        c["left"][:, :, 0] = np.linspace(0.1, 0.9, k + 2)[:, None]  # moving hand
+        c["left_present"][1 : k + 1] = False
+        out = fill_short_gaps(c, FS.max_gap_ms)
+        filled = bool(out["left_present"][1 : k + 1].all())
+        assert filled == (k <= max_filled), (fps, k)
+        if filled:
+            np.testing.assert_allclose(
+                out["left"][1:-1, 0, 0], c["left"][1:-1, 0, 0]
+            )  # linear in time
+
+
+def test_gaps_at_the_edges_are_never_filled() -> None:
+    c = clip(1920, 1080, n=6)
+    c["left_present"][[0, 5]] = False
+    out = fill_short_gaps(c, FS.max_gap_ms)
+    assert out["left_present"].tolist() == [False, True, True, True, True, False]
 
 
 def test_resample_length_linear_motion_and_nearest_for_missing() -> None:
@@ -138,7 +153,7 @@ def test_resample_length_linear_motion_and_nearest_for_missing() -> None:
 
 def test_single_frame_and_empty_clips() -> None:
     c = clip(640, 480, n=1)
-    assert clip_to_model_input(c, FS, T=7).shape == (7, 193)
+    assert clip_to_model_input(c, FS, T=7).shape == (7, FS.n_features)
     with pytest.raises(ValueError):
         resample(np.zeros((0, FS.n_features)), np.zeros(0), FS)
 

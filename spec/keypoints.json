@@ -1,5 +1,5 @@
 {
-  "spec_version": "0.5.0",
+  "spec_version": "0.6.0",
   "status": "Phase 1: extractor pins, stored per-frame keypoints, and normalization step 1 (aspect + shoulders). Phase 2 adds the rest of normalization.",
   "extractor": {
     "mediapipe_version": "1.2.3",
@@ -121,7 +121,7 @@
       ]
     },
     "features_v1": {
-      "status": "proposed (ADR 008)",
+      "status": "approved with changes (ADR 008, 2026-11-25); T provisional until set from reports/data.md",
       "order": [
         "pose_body",
         "left_body",
@@ -132,6 +132,8 @@
       ],
       "pose_feature_indices": [
         0,
+        2,
+        5,
         9,
         10,
         11,
@@ -157,18 +159,35 @@
         "left",
         "right"
       ],
-      "n_features": 193,
+      "n_features": 197,
       "missing": "zeros; presence flag 0",
-      "max_gap_frames": 3,
       "resample": {
         "T": 64,
         "times": "T evenly spaced times from the first to the last timestamp",
-        "interp": "linear if the part is present in both neighbours, else nearest frame"
+        "interp": "linear if the part is present in both neighbours, else nearest frame",
+        "T_status": "provisional: set from the length distribution in reports/data.md after extraction (cover ~p90 without heavy compression)"
       },
       "velocity": {
         "default": false,
-        "definition": "difference of the 190 coordinate features between consecutive resampled frames; zero where the part is missing at either end; first frame zero"
-      }
+        "definition": "difference of the 194 coordinate features between consecutive resampled frames; zero where the part is missing at either end; first frame zero"
+      },
+      "pose_feature_names": [
+        "nose",
+        "left_eye",
+        "right_eye",
+        "mouth_left",
+        "mouth_right",
+        "left_shoulder",
+        "right_shoulder",
+        "left_elbow",
+        "right_elbow",
+        "left_wrist",
+        "right_wrist",
+        "left_hip",
+        "right_hip"
+      ],
+      "max_gap_ms": 120,
+      "gap_rule": "fill a run of k missing frames between present frames a and b iff (t_b - t_a) * k / (k + 1) <= max_gap_ms (k frames x the mean frame interval across the gap); linear in time, on raw landmarks"
     }
   },
   "downscale": {
