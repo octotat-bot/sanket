@@ -1,6 +1,6 @@
 {
-  "spec_version": "0.2.0",
-  "status": "Phase 1: extractor pins and stored per-frame keypoints. Normalization constants are added in Phase 2.",
+  "spec_version": "0.3.0",
+  "status": "Phase 1: extractor pins, stored per-frame keypoints, and normalization step 1 (aspect + shoulders). Phase 2 adds the rest of normalization.",
   "extractor": {
     "mediapipe_version": "1.2.3",
     "packages": {
@@ -102,6 +102,23 @@
       "sides": "left/right = the signer's own hand (measured 99% agreement with pose wrists 15/16 on unmirrored frames, ADR 002)"
     },
     "missing": "A missing pose or hand is stored as zeros with its *_present flag false. Never NaN.",
-    "timestamps": "t_ms: int64 milliseconds from the decoder's presentation timestamps, strictly increasing."
+    "timestamps": "t_ms: int64 milliseconds from the decoder's presentation timestamps, strictly increasing.",
+    "frame_size": "(width, height) of the image MediaPipe actually processed (after any downscaling; never the container's claim). Chrome on macOS may process 1920x1088 for 1080p video."
+  },
+  "normalization": {
+    "step1_aspect": {
+      "description": "Convert MediaPipe normalized coords to frame-height units using frame_size: x' = x*W/H, y' = y, z' = z*W/H (z uses roughly x's scale, per MediaPipe docs).",
+      "use_frame_size": "the size of the image passed to MediaPipe (videoWidth/videoHeight of the actual frame in the browser)"
+    },
+    "step2_body": {
+      "description": "Subtract the shoulder midpoint and divide by shoulder width, both in aspect-correct units.",
+      "shoulders": {
+        "left": 11,
+        "right": 12
+      },
+      "invariants_tested": [
+        "same body at 16:9, 4:3, 854x480 and padded 1920x1088 gives identical features"
+      ]
+    }
   }
 }
