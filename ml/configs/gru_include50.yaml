@@ -1,0 +1,26 @@
+# Phase 2 baseline: bidirectional GRU on INCLUDE-50 (ADR 008 features, fixed T).
+# Hyperparameters are a starting point; tuned only on INCLUDE-50 val (carved from train, ADR 003).
+data:
+  dataset: include50
+  keypoints_dir: data/keypoints/v1
+
+train:
+  seed: 0
+  epochs: 80
+  batch_size: 32
+  lr: 0.001
+  weight_decay: 0.05
+  warmup_epochs: 3
+  label_smoothing: 0.1
+  patience: 15
+  T: 64
+  use_velocity: false
+  augment: true
+  augment_cfg: {}
+  model:
+    hidden: 128
+    layers: 2
+    dropout: 0.3
+    bidirectional: true
+  device: auto
+  amp: true
