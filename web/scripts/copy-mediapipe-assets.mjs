@@ -9,6 +9,7 @@ const web = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const wasmSrc = resolve(web, "node_modules/@mediapipe/tasks-vision/wasm");
 const wasmDst = resolve(web, "public/mediapipe/wasm");
 const specSrc = resolve(web, "../spec/keypoints.json");
+const vocabSrc = resolve(web, "../spec/vocab_include50.json");
 const specDst = resolve(web, "public/spec/keypoints.json");
 
 if (!existsSync(wasmSrc)) {
@@ -19,6 +20,8 @@ mkdirSync(wasmDst, { recursive: true });
 cpSync(wasmSrc, wasmDst, { recursive: true });
 mkdirSync(dirname(specDst), { recursive: true });
 cpSync(specSrc, specDst);
+cpSync(vocabSrc, resolve(dirname(specDst), "vocab_include50.json"));
+cpSync(resolve(web, "../spec/recording_v1.json"), resolve(dirname(specDst), "recording_v1.json"));
 console.log("copied MediaPipe wasm + spec/keypoints.json into public/");
 
 if (!existsSync(resolve(web, "public/models/mediapipe/holistic_landmarker.task"))) {

@@ -4,15 +4,15 @@
 // Everything stays on this device: models, WASM and spec are served from our own origin, and
 // results are only shown on the page or saved as a local file.
 import {
-  FilesetResolver,
   HandLandmarker,
   HolisticLandmarker,
   PoseLandmarker,
 } from "@mediapipe/tasks-vision";
-import { mean, mulberry32, percentile, sha256Hex } from "./stats";
+import { type VerifiedModel, type WasmFileset } from "../mediapipe/assets";
+import { mean, mulberry32, percentile } from "./stats";
 
-// tasks-vision 1.2.3 does not export the WasmFileset type, so derive it.
-type WasmFileset = Awaited<ReturnType<typeof FilesetResolver.forVisionTasks>>;
+// Shared with the recorder and the app (moved to lib/mediapipe/assets.ts).
+export { loadFileset, loadSpec, loadVerifiedModels, type VerifiedModel } from "../mediapipe/assets";
 
 export const CONFIG_IDS = ["holistic-gpu", "handpose-gpu", "holistic-cpu", "handpose-cpu"] as const;
 export type ConfigId = (typeof CONFIG_IDS)[number];
@@ -33,14 +33,6 @@ export const BENCH_MACHINE_BAR: SpeedBar = { label: "M3 Pro bar", minFps: 20, ma
 
 export function meetsBar(processedFps: number, msP95: number, bar: SpeedBar): boolean {
   return processedFps >= bar.minFps && msP95 <= bar.maxP95Ms;
-}
-
-export interface VerifiedModel {
-  name: string;
-  bytes: Uint8Array;
-  expectedSha256: string;
-  actualSha256: string;
-  ok: boolean;
 }
 
 export interface ConfigResult {
@@ -70,42 +62,6 @@ export interface ConfigResult {
   /** ADR 002 speed rule: processed fps and p95 against each bar. */
   meetsBenchBar?: boolean;
   meetsFloor?: boolean;
-}
-
-interface Spec {
-  extractor: {
-    mediapipe_version: string;
-    models: Record<string, { sha256: string; bytes: number }>;
-  };
-}
-
-export async function loadSpec(): Promise<Spec> {
-  const res = await fetch("/spec/keypoints.json");
-  if (!res.ok) throw new Error(`spec/keypoints.json: HTTP ${res.status}`);
-  return (await res.json()) as Spec;
-}
-
-/** Fetch each pinned .task file and check its sha256 against spec/keypoints.json. */
-export async function loadVerifiedModels(spec: Spec): Promise<Record<string, VerifiedModel>> {
-  const out: Record<string, VerifiedModel> = {};
-  for (const [name, pin] of Object.entries(spec.extractor.models)) {
-    const res = await fetch(`/models/mediapipe/${name}.task`);
-    if (!res.ok) throw new Error(`${name}.task: HTTP ${res.status} (run \`make models\`)`);
-    const bytes = new Uint8Array(await res.arrayBuffer());
-    const actual = await sha256Hex(bytes);
-    out[name] = {
-      name,
-      bytes,
-      expectedSha256: pin.sha256,
-      actualSha256: actual,
-      ok: actual === pin.sha256,
-    };
-  }
-  return out;
-}
-
-export function loadFileset(): Promise<WasmFileset> {
-  return FilesetResolver.forVisionTasks("/mediapipe/wasm");
 }
 
 type Delegate = "GPU" | "CPU";

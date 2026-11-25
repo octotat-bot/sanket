@@ -1,0 +1,82 @@
+{
+  "format": "sanket-recording-v1",
+  "description": "Real-webcam test set (Phase 6). Keypoints only: no images, video, audio or names. One JSON file per recording session, saved locally by the participant's browser.",
+  "session_required": [
+    "format",
+    "session_id",
+    "participant_id",
+    "consent",
+    "created_at",
+    "app",
+    "spec_version",
+    "mediapipe_version",
+    "model_sha256",
+    "delegate",
+    "extract_height",
+    "clips"
+  ],
+  "consent_required": [
+    "version",
+    "accepted_at",
+    "text_sha256"
+  ],
+  "clip_required": [
+    "clip_id",
+    "kind",
+    "label",
+    "label_id",
+    "take",
+    "prompt",
+    "started_at",
+    "frame_size",
+    "camera_size",
+    "t_ms",
+    "pose",
+    "left",
+    "right",
+    "pose_present",
+    "left_present",
+    "right_present"
+  ],
+  "kinds": [
+    "sign",
+    "no_sign"
+  ],
+  "no_sign": {
+    "label": "no_sign",
+    "label_id": -1
+  },
+  "shapes": {
+    "pose": [
+      25,
+      4
+    ],
+    "left": [
+      21,
+      3
+    ],
+    "right": [
+      21,
+      3
+    ]
+  },
+  "participant_id_pattern": "^P-[A-Z2-7]{6}$",
+  "forbidden_keys": [
+    "image",
+    "images",
+    "video",
+    "frames_png",
+    "pixels",
+    "dataUrl",
+    "name",
+    "email",
+    "phone"
+  ],
+  "precision_decimals": 5,
+  "notes": {
+    "frame_size": "size of the image MediaPipe processed (always 480 rows, ADR 007)",
+    "camera_size": "size the camera delivered, logged only",
+    "t_ms": "milliseconds from the clip's first frame, strictly increasing",
+    "left/right": "the signer's own hands (unmirrored frames; the preview is mirrored for display only)"
+  }
+}
