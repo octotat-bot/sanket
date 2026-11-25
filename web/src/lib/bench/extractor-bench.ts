@@ -9,7 +9,7 @@ import {
   HolisticLandmarker,
   PoseLandmarker,
 } from "@mediapipe/tasks-vision";
-import { mean, percentile, sha256Hex } from "./stats";
+import { mean, mulberry32, percentile, sha256Hex } from "./stats";
 
 // tasks-vision 1.2.3 does not export the WasmFileset type, so derive it.
 type WasmFileset = Awaited<ReturnType<typeof FilesetResolver.forVisionTasks>>;
@@ -196,17 +196,7 @@ function nextFrame(video: HTMLVideoElement): Promise<FrameInfo> {
 
 // ---- run plan: randomized config order, recorded so a run can be reproduced ----
 
-/** Small seeded PRNG (mulberry32): same seed → same order. */
-export function mulberry32(seed: number): () => number {
-  let a = seed >>> 0;
-  return () => {
-    a = (a + 0x6d2b79f5) >>> 0;
-    let t = a;
-    t = Math.imul(t ^ (t >>> 15), t | 1);
-    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-}
+export { mulberry32 } from "./stats";
 
 export interface PlannedRun {
   id: ConfigId;

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { mean, percentile, sha256Hex } from "@/lib/bench/stats";
+import { blockBootstrapMeanCI, mean, percentile, sha256Hex } from "@/lib/bench/stats";
 
 describe("percentile", () => {
   it("interpolates between ranks", () => {
@@ -20,5 +20,34 @@ describe("sha256Hex", () => {
     expect(await sha256Hex(new TextEncoder().encode("abc"))).toBe(
       "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
     );
+  });
+});
+
+describe("blockBootstrapMeanCI", () => {
+  const noise = Array.from({ length: 200 }, (_, i) => Math.sin(i * 12.9898) * 0.5); // mean ≈ 0
+
+  it("is deterministic for a seed", () => {
+    expect(blockBootstrapMeanCI(noise, { seed: 3 })).toEqual(blockBootstrapMeanCI(noise, { seed: 3 }));
+  });
+
+  it("includes zero for zero-mean noise", () => {
+    const r = blockBootstrapMeanCI(noise);
+    expect(r.lo).toBeLessThan(0);
+    expect(r.hi).toBeGreaterThan(0);
+    expect(r.excludesZero).toBe(false);
+  });
+
+  it("excludes zero for a clear offset", () => {
+    const r = blockBootstrapMeanCI(noise.map((x) => x + 1));
+    expect(r.excludesZero).toBe(true);
+    expect(r.lo).toBeGreaterThan(0.8);
+  });
+
+  it("gives a wider CI for correlated data than independent resampling would", () => {
+    // 20 runs of 10 identical values: effectively 20 samples, not 200.
+    const runs = Array.from({ length: 200 }, (_, i) => Math.sin(Math.floor(i / 10) * 7.1));
+    const blocky = blockBootstrapMeanCI(runs, { block: 10 });
+    const naive = blockBootstrapMeanCI(runs, { block: 1 });
+    expect(blocky.hi - blocky.lo).toBeGreaterThan(naive.hi - naive.lo);
   });
 });
