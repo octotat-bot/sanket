@@ -160,3 +160,20 @@ M3 Pro bar (A 30.0 / 29.2 fps, p95 34–36 ms). File mode (1920×1088 input): A 
 in both modes → Mukund decides** (options in ADR 002; recommended: re-run file mode at 640 px,
 rule unchanged). Also found: first GPU frame of a session takes 9.4 s (warm up at load in Phase
 5), and Chrome reports the file as 1920×1088 vs 1080 (Phase 4 parity must handle it).
+
+**2026-11-25, items from Mukund's review:**
+
+- ADR 002 run 3 setup fixed before the run: file copy at **854×480** (camera height, 16:9,
+  1.33× the camera's pixels), rule unchanged.
+- Aspect ratio: normalization step 1 (`sanket.keypoints.normalize`) converts to aspect-correct
+  units with the **processed** frame size before shoulder-centring and scaling. Tests: the same
+  body at 1920×1080, padded 1920×1088, 640×480 and 854×480 gives identical features; the wrong
+  size is detected. Chrome on macOS delivers 1920×1088 for this 1080p file, with 8 padding rows
+  at the bottom and content unmoved (verified against OpenCV). Each `.npz` now stores
+  `frame_size` (as processed). Spec 0.3.0.
+- ADR 007 (proposed): extract at **480 rows** (854×480). Native 1080p differs from 480-row
+  keypoints by ≈0.010 shoulder widths (median), with detection unchanged. `extract_height: 480`
+  is set in the config.
+- CLAUDE.md: GPU warm-up at page load (Phase 5), true-frame-size/aspect rule (section 8).
+- Fix: network retries with backoff for Zenodo Range fetches (a TLS handshake timeout killed
+  one run).

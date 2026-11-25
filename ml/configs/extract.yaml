@@ -9,4 +9,4 @@ out_dir: data/keypoints/v1              # .npz per video, plus _log.jsonl / _rev
 frame_cache_dir: ml/.cache/frames       # ADR 005: one small frame per video, local only, deleted after review
 min_free_gb: 10                         # Mukund's floor: abort before free space drops below this
 review_below_hand_rate: 0.05            # videos where < 5% of frames have a hand go to _review.jsonl
-extract_height: null                    # ADR 007: null = native 1080p, or e.g. 480 to match the browser
+extract_height: 480                     # ADR 007 (proposed): 480 rows = what MediaPipe sees from the 640x480 camera
