@@ -142,8 +142,8 @@ Investigation (2026-11-25, details and evidence in ADR 002):
   judged on the faster delegate. The rule changed after run 1, justified by the frame-rate ablation
   (not by any benchmark result). The bench page now shows both bars (`meetsBar`, unit-tested).
 - Speed is pass/fail only. A vs B is decided on quality (ADR 002, with scopes stated: swaps
-  0 vs 1.08 per 100 over 50 videos; hand rate 89 vs 67% on one video but 85.8 vs 84.4%, not
-  significant, over 50).
+  0 vs 1.08 per 100 over 50 videos; hand rate 85.8 vs 84.4% over 50, not significant, so not
+  claimed. Single-video rates are not quoted).
 - CLAUDE.md section 3: "≥ 15 fps end-to-end on a mid-range laptop (25 stretch); report measured
   fps and device name". Phase 5 acceptance and the Definition of Done follow it. The README must
   name the device next to every fps number.

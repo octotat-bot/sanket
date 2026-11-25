@@ -200,7 +200,7 @@ Follow-ups that keep the rule honest:
   (a friend's laptop or an Android phone) and reported, to confirm the ≥ 15 fps floor where it
   actually binds.
 - CLAUDE.md section 3 now reads "≥ 15 fps end-to-end on a mid-range laptop (25 stretch); report
-  measured fps and device name", and every fps number in the README names its device.
+  measured fps and device name", and every fps **and latency** number in the README names its device.
 
 ## Detection quality favours A, regardless of speed
 
@@ -209,13 +209,13 @@ Speed is only a **pass/fail check**. The choice between A and B rests on quality
 | Evidence | A: Holistic | B: Hand+Pose | Scope |
 |---|---|---|---|
 | Left/right label swaps per 100 judged frame transitions | **0.00** (0 of 2,420) | **1.08** (26 of 2,411; 95% CI 0.54–1.76) | 50 INCLUDE videos, Python (measure a) |
-| Hand rate, one INCLUDE-50 test video (`MVI_2988`) | 89.4% (Python 88.0%) | 67.2% (Python 68.7%) | Real bench page, file mode, and Python |
 | Hand rate, 50 INCLUDE videos | 85.8% | 84.4% | Measure (a). **The difference is not significant** (95% CI −1.7 to +4.4 points) |
 | Robustness | Hands located from the body pose | Needs its palm detector to find small hands in the whole frame (0 hands on a full 1080p INCLUDE frame, in both runtimes) | Investigation 1 |
 
-So: A's advantage on **swaps** is clear across 50 videos. Its advantage on **hand rate** is
-large on some videos (89 vs 67 on `MVI_2988`) but small and not statistically significant on the
-50-video average. The **structural** reason (no palm-detector dependency) is the one that matters
+So: A's advantage on **swaps** is clear across 50 videos. On **hand rate** the 50-video
+difference is small and not statistically significant, so it is not claimed as an advantage.
+(Single-video rates are not quoted as evidence of quality. They appear above only as test
+results for the bench page.) The **structural** reason (no palm-detector dependency) is the one that matters
 most for waist-up webcam use, and run 1's 9% / 0% for B is consistent with it. Unless A fails the
 speed check, A is the choice.
 

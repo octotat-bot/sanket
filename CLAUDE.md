@@ -57,7 +57,7 @@ Measured by `make report` and written into `reports/latest.md`:
 | Inferred signer-independent accuracy (held-out people inferred by clustering, ADR 005) | reported honestly, labelled *inferred* |
 | **Real-webcam accuracy** on a self-recorded test set | reported honestly. This is the most important number |
 | Model size after quantization | < 10 MB |
-| In-browser inference latency per window (mid-range laptop) | p95 < 20 ms on WebGPU, < 60 ms on WASM |
+| In-browser inference latency per window (mid-range laptop) | p95 < 20 ms on WebGPU, < 60 ms on WASM; report measured latency and device name |
 | End-to-end frame rate (camera → keypoints → prediction) | ≥ 15 fps end-to-end on a mid-range laptop (25 stretch); report measured fps and device name (ADR 002) |
 | PyTorch vs ONNX (quantized) prediction agreement | ≥ 99% top-1 agreement on the test set |
 
@@ -182,7 +182,7 @@ sanket/
 - Temporal smoothing and debounce so the label doesn't flicker.
 - Runtime selection: WebGPU if available, otherwise WASM (SIMD + threads where possible), and show which one is active in a small debug panel (fps, inference ms, backend).
 - **Before starting Phase 5:** test the live app on at least one cheaper device (a friend's laptop or an Android phone) and report the measured fps with the device name.
-- **Acceptance:** ≥ 15 fps end-to-end on a mid-range laptop (25 stretch), measured fps reported with the device name, latency numbers measured by an in-app benchmark page, and a Playwright test that runs the pipeline on a pre-recorded video and checks the predicted word.
+- **Acceptance:** ≥ 15 fps end-to-end on a mid-range laptop (25 stretch), measured fps reported with the device name, latency numbers measured by an in-app benchmark page and reported with the device name, and a Playwright test that runs the pipeline on a pre-recorded video and checks the predicted word.
 
 ### Phase 6: Real-world test set
 
@@ -253,7 +253,7 @@ Visual direction: dark, cinematic, smooth motion, but readable and accessible (k
 2. **Practice:** pick a word, watch a skeleton animation of a reference sign (rendered from dataset keypoints, not raw video), try it, get a score and feedback. Track a streak locally (localStorage).
 3. **Dictionary:** searchable list of supported words by category, each with a skeleton animation.
 4. **How it works / model card:** pipeline diagram, accuracy table (dataset, session-independent, inferred signer-independent, real-world), confusion highlights, limitations, privacy statement, dataset credit.
-5. **Benchmark:** runs the model on the user's device and shows latency and backend.
+5. **Benchmark:** runs the model on the user's device and shows latency and backend, labelled with the device it ran on.
 
 ## 10. Testing
 
@@ -268,7 +268,7 @@ Visual direction: dark, cinematic, smooth motion, but readable and accessible (k
 
 The README must contain, in order:
 1. One-line pitch, live demo link, a GIF of live recognition.
-2. Results table generated from `reports/latest.md`. Every fps number names the device it was measured on. Columns: official split, session-independent, inferred signer-independent, real-world, size, latency, and the paper's numbers for comparison. Full INCLUDE is reported as 262 of 263 classes (816 test videos) with a note beside the paper's 85.6% (ADR 003).
+2. Results table generated from `reports/latest.md`. Every fps and latency number names the device it was measured on. Columns: official split, session-independent, inferred signer-independent, real-world, size, latency, and the paper's numbers for comparison. Full INCLUDE is reported as 262 of 263 classes (816 test videos) with a note beside the paper's 85.6% (ADR 003).
 3. Architecture diagram (video → keypoints → normalization → model → spotting → UI).
 4. Key design decisions with links to ADRs (keypoints vs pixels, same extractor in train and browser, sign spotting, rejection, quantization).
 5. Limitations stated plainly (isolated words only, vocabulary size, real-world accuracy gap, lab-recorded dataset).
