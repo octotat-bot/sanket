@@ -1,5 +1,5 @@
 {
-  "spec_version": "0.6.0",
+  "spec_version": "0.7.0",
   "status": "Phase 1: extractor pins, stored per-frame keypoints, and normalization step 1 (aspect + shoulders). Phase 2 adds the rest of normalization.",
   "extractor": {
     "mediapipe_version": "1.2.3",
@@ -141,9 +141,7 @@
         13,
         14,
         15,
-        16,
-        23,
-        24
+        16
       ],
       "pose_visibility_min": 0.5,
       "palm": {
@@ -159,7 +157,7 @@
         "left",
         "right"
       ],
-      "n_features": 197,
+      "n_features": 193,
       "missing": "zeros; presence flag 0",
       "resample": {
         "T": 64,
@@ -169,7 +167,7 @@
       },
       "velocity": {
         "default": false,
-        "definition": "difference of the 194 coordinate features between consecutive resampled frames; zero where the part is missing at either end; first frame zero"
+        "definition": "difference of the 190 coordinate features between consecutive resampled frames; zero where the part is missing at either end; first frame zero"
       },
       "pose_feature_names": [
         "nose",
@@ -182,12 +180,11 @@
         "left_elbow",
         "right_elbow",
         "left_wrist",
-        "right_wrist",
-        "left_hip",
-        "right_hip"
+        "right_wrist"
       ],
       "max_gap_ms": 120,
-      "gap_rule": "fill a run of k missing frames between present frames a and b iff (t_b - t_a) * k / (k + 1) <= max_gap_ms (k frames x the mean frame interval across the gap); linear in time, on raw landmarks"
+      "gap_rule": "fill a run of k missing frames between present frames a and b iff (t_b - t_a) * k / (k + 1) <= max_gap_ms (k frames x the mean frame interval across the gap); linear in time, on raw landmarks",
+      "excluded_pose_points": "hips (23, 24): a seated user's desk webcam usually doesn't see them, while INCLUDE signers stand (train/live mismatch). Shoulders are the body reference. Legs never used."
     }
   },
   "downscale": {

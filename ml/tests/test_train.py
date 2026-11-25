@@ -47,8 +47,8 @@ def tiny(**kw: object) -> TrainConfig:
 
 
 def test_model_shapes_and_size() -> None:
-    m = GRUClassifier(197, 50)
-    assert m(torch.zeros(3, 64, 197)).shape == (3, 50)
+    m = GRUClassifier(193, 50)
+    assert m(torch.zeros(3, 64, 193)).shape == (3, 50)
     assert n_parameters(m) < 5_000_000  # browser budget (CLAUDE.md)
 
 

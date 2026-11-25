@@ -55,7 +55,7 @@ def clip(width: int, height: int, n: int = 5, **kw: float) -> dict[str, np.ndarr
 
 
 def test_feature_count_matches_spec() -> None:
-    assert FS.n_features == load_spec()["normalization"]["features_v1"]["n_features"] == 197
+    assert FS.n_features == load_spec()["normalization"]["features_v1"]["n_features"] == 193
 
 
 def test_face_reference_points_are_features() -> None:
@@ -65,6 +65,13 @@ def test_face_reference_points_are_features() -> None:
         assert name in f["pose_feature_names"], name
     names = load_spec()["stored"]["pose"]["names"]
     assert [names[i] for i in f["pose_feature_indices"]] == f["pose_feature_names"]
+
+
+def test_hips_are_not_features() -> None:
+    """Seated webcam users rarely show hips; INCLUDE signers stand. Shoulders are the reference."""
+    f = load_spec()["normalization"]["features_v1"]
+    assert not {23, 24} & set(f["pose_feature_indices"])
+    assert {11, 12} <= set(f["pose_feature_indices"])
 
 
 @pytest.mark.parametrize("size", [(1920, 1088), (640, 480), (854, 480)])
