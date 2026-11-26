@@ -15,7 +15,7 @@ from pathlib import Path
 from typing import Any
 
 from sanket.data.keypoint_index import index_npz, load_split_index
-from sanket.data.splits import DATASETS, SPLITS
+from sanket.data.splits import DATASETS, SPLITS, load_split, video_key
 from sanket.paths import REPO_ROOT, REPORTS_DIR
 from sanket.pipeline.extract import Config
 
@@ -76,6 +76,18 @@ def build(out_dir: Path, records: list[dict[str, Any]]) -> tuple[str, dict[str, 
         "duplicates": dups,
         "review": [r["path"] for r in ok if r["rate_any_hand"] < 0.05],
     }
+    # INCLUDE-50 train only: the population T is chosen from (ADR 008), never val or test.
+    train_keys = {video_key(e) for e in load_split("include50", "train")}
+    tr = [r for r in ok if video_key(r["path"]) in train_keys]
+    tr_len = [r["n_frames"] for r in tr]
+    tr_sec = [r["n_frames"] / r["fps"] for r in tr if r.get("fps")]
+    summary["include50_train_length"] = {
+        "n": len(tr),
+        "frames": {q: _q(tr_len, v) for q, v in (("p10", 0.1), ("p50", 0.5), ("p90", 0.9))},
+        "seconds": {
+            q: round(_q(tr_sec, v), 3) for q, v in (("p10", 0.1), ("p50", 0.5), ("p90", 0.9))
+        },
+    }
 
     lines = [
         "# Phase 1 data report (generated)",
@@ -90,6 +102,13 @@ def build(out_dir: Path, records: list[dict[str, Any]]) -> tuple[str, dict[str, 
         + ", ".join(
             f"{k.removeprefix('rate_')} {100 * v:.1f}%" for k, v in summary["rates"].items()
         ),
+        "",
+        "## INCLUDE-50 train lengths (for T, ADR 008)",
+        "",
+        f"- {summary['include50_train_length']['n']} videos. Frames: "
+        + ", ".join(f"{k} {v:g}" for k, v in summary["include50_train_length"]["frames"].items())
+        + ". Seconds: "
+        + ", ".join(f"{k} {v:g}" for k, v in summary["include50_train_length"]["seconds"].items()),
         "",
         "## Splits",
         "",
