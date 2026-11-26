@@ -2,7 +2,7 @@
 // /models/include50.* (ml/src/sanket/export/fixture.py): the pipeline loads, warms up, runs, and
 // refuses a model whose labels don't match the app's vocabulary. Predictions are not checked
 // here (the fixture is untrained); the trained-model check uses a recorded sign video (Phase 5).
-import { readFileSync } from "node:fs";
+import { readdirSync, readFileSync, statSync } from "node:fs";
 import { resolve } from "node:path";
 import { expect, type Page, test } from "@playwright/test";
 
@@ -53,4 +53,30 @@ test("live page refuses a model whose labels don't match the vocabulary", async 
   await page.goto("/");
   await expect(page.getByText(/labels hash mismatch/)).toBeVisible({ timeout: 90_000 });
   await expect(page.getByRole("button", { name: "Start camera" })).toHaveCount(0);
+});
+
+test("the dev-only reference-clip panel is absent from the production build", async ({ page, request }) => {
+  const marker = "sanket-dev-reference-panel"; // REFERENCE_PANEL_MARKER in src/app/reference-panel.tsx
+  const built = resolve(__dirname, "../../.next");
+  const hits: string[] = [];
+  let scanned = 0;
+  const walk = (dir: string) => {
+    for (const name of readdirSync(dir)) {
+      const p = resolve(dir, name);
+      if (name === "cache" || name === "dev") continue; // build caches / dev server output
+      if (statSync(p).isDirectory()) walk(p);
+      else if (/\.(js|mjs|html|json|rsc|body)$/.test(name)) {
+        scanned++;
+        if (readFileSync(p, "utf8").includes(marker)) hits.push(p);
+      }
+    }
+  };
+  walk(built);
+  expect(scanned).toBeGreaterThan(20); // really looked at the build
+  expect(hits).toEqual([]);
+  await serveFixture(page);
+  await page.goto("/");
+  await expect(page.getByRole("heading", { name: /The 50 words it knows/ })).toBeVisible();
+  await expect(page.getByTestId(marker)).toHaveCount(0);
+  expect((await request.get("/dev/reference/hello")).status()).toBe(404);
 });

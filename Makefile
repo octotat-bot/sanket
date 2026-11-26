@@ -9,7 +9,7 @@ WEB  := cd web &&
 .PHONY: help setup models inventory lint typecheck test test-ml test-web smoke e2e build ci clean \
         samples check-video-metadata check-extractor bench-page extract upload \
         parity-fixture check-fps check-downscale setup-train typecheck-train test-train \
-        record-page import-recordings extract-include50 export-onnx collect-run report
+        record-page import-recordings extract-include50 export-onnx collect-run report reference-clips
 
 help:  ## list targets
 	@grep -hE '^[a-zA-Z0-9_-]+:.*## ' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "  %-22s %s\n", $$1, $$2}'
@@ -111,6 +111,9 @@ extract-include50: models  ## only the 958 INCLUDE-50 videos, pulled per video b
 export-onnx:  ## trained run -> web/public/models (fp32 + int8) + parity report: make export-onnx CONFIG=configs/x.yaml RUN=runs/x
 	@test -n "$(CONFIG)" -a -n "$(RUN)" || (echo "set CONFIG=configs/<x>.yaml RUN=runs/<x>"; exit 1)
 	$(ML) $(TRAIN_ENV) $(UV) run --no-sync python -m sanket.export.onnx_export --config $(CONFIG) --run-dir $(RUN)
+
+reference-clips:  ## DEV ONLY: one INCLUDE-50 train clip per word (Range requests, 480-row H.264) into ml/.cache/reference
+	$(ML) $(UV) run --no-sync python -m sanket.data.reference_clips
 
 collect-run:  ## copy a downloaded run's small result files into reports/runs/<name>: make collect-run RUN=path/to/runs/<name>
 	@test -n "$(RUN)" || (echo "set RUN=path/to/runs/<name>"; exit 1)

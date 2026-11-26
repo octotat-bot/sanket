@@ -63,8 +63,10 @@ def transcode(src: Path, dest: Path) -> None:
             "scale=-2:480:flags=area",
             "-c:v",
             "libx264",
+            "-preset",
+            "slow",
             "-crf",
-            "23",
+            "28",  # small files: 50 clips should stay around 10 MB in total
             "-pix_fmt",
             "yuv420p",
             "-movflags",
@@ -83,11 +85,19 @@ def main() -> None:
     prior = json.loads(mpath.read_text())["clips"] if mpath.exists() else {}
     manifest: dict[str, Any] = {"credit": CREDIT, "clips": {}}
     OUT.mkdir(parents=True, exist_ok=True)
+    todo = [
+        v.path
+        for label, v in chosen.items()
+        if not (
+            (OUT / f"{label}.mp4").exists() and prior.get(label, {}).get("source_path") == v.path
+        )
+    ]
+    if todo:  # all missing clips at once: one Range stream per zip, several zips in parallel
+        fetch(todo, videos, dest=SRC, workers=6)
     for label, v in sorted(chosen.items()):
         dest = OUT / f"{label}.mp4"
         entry = prior.get(label)
         if not (dest.exists() and entry and entry["source_path"] == v.path):
-            fetch([v.path], videos, dest=SRC)
             src = SRC / v.path
             entry = {
                 "source_path": v.path,
@@ -102,6 +112,8 @@ def main() -> None:
         mpath.write_text(json.dumps(manifest, indent=1) + "\n")  # after every clip: crash-safe
         print(f"{label}: {v.path}")
     shutil.rmtree(SRC, ignore_errors=True)
+    total = sum(f.stat().st_size for f in OUT.glob("*.mp4"))
+    print(f"{len(manifest['clips'])} clips, {total / 1e6:.1f} MB in {OUT}")
 
 
 if __name__ == "__main__":

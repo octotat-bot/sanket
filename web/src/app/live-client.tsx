@@ -3,6 +3,7 @@
 // features (same code as training, golden-tested) → model worker → rejection → UI.
 // Everything runs on this device; the page can only talk to its own origin (CSP, ADR 006).
 import type { HolisticLandmarker } from "@mediapipe/tasks-vision";
+import dynamic from "next/dynamic";
 import { useEffect, useRef, useState } from "react";
 import { frameForMediaPipe } from "@/lib/frames/downscale";
 import { ModelClient, type ModelReady } from "@/lib/inference/client";
@@ -13,6 +14,10 @@ import { loadFileset, loadSpec, loadVerifiedModels } from "@/lib/mediapipe/asset
 import { createHolistic, toStoredFrame, type Delegate, type StoredFrame } from "@/lib/mediapipe/holistic";
 
 const MODEL_META_URL = "/models/include50.labels.json";
+
+// DEV ONLY reference clips. NODE_ENV is inlined at build time, so production builds contain
+// neither this import nor the panel (checked by tests/e2e/live.spec.ts).
+const ReferencePanel = process.env.NODE_ENV === "development" ? dynamic(() => import("./reference-panel")) : null;
 
 type Boot =
   | { phase: "preparing"; step: string; progress?: number }
@@ -379,6 +384,7 @@ export default function LiveClient({ words }: { words: Word[] }) {
       </div>
 
       <div className="flex flex-col gap-6">
+        {ReferencePanel && <ReferencePanel words={words} />}
         <div aria-live="polite" aria-atomic className="min-h-[9rem]">
           {!d && (
             <p className="text-xl text-muted">
