@@ -1,4 +1,4 @@
-// Copy the MediaPipe WASM runtime (from the pinned npm package) and the shared keypoint spec
+// Copy the MediaPipe and onnxruntime-web WASM runtimes (from the pinned npm packages) and the shared spec
 // into public/, so the browser loads them from our own origin, never a CDN.
 // The .task model files are copied separately by `make models`, which verifies their sha256.
 import { cpSync, existsSync, mkdirSync } from "node:fs";
@@ -22,7 +22,14 @@ mkdirSync(dirname(specDst), { recursive: true });
 cpSync(specSrc, specDst);
 cpSync(vocabSrc, resolve(dirname(specDst), "vocab_include50.json"));
 cpSync(resolve(web, "../spec/recording_v1.json"), resolve(dirname(specDst), "recording_v1.json"));
-console.log("copied MediaPipe wasm + spec/keypoints.json into public/");
+// onnxruntime-web runtime files (WASM build, and the Asyncify build its WebGPU entry point loads).
+const ortSrc = resolve(web, "node_modules/onnxruntime-web/dist");
+const ortDst = resolve(web, "public/ort");
+mkdirSync(ortDst, { recursive: true });
+for (const name of ["ort-wasm-simd-threaded", "ort-wasm-simd-threaded.asyncify"]) {
+  for (const ext of [".mjs", ".wasm"]) cpSync(resolve(ortSrc, name + ext), resolve(ortDst, name + ext));
+}
+console.log("copied MediaPipe wasm, onnxruntime-web runtime and spec files into public/");
 
 if (!existsSync(resolve(web, "public/models/mediapipe/holistic_landmarker.task"))) {
   console.warn("note: public/models/mediapipe/*.task missing; run `make models` from the repo root");
