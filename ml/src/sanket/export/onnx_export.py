@@ -60,6 +60,22 @@ def quantize_int8(fp32: Path, int8: Path) -> None:
     quantize_dynamic(fp32, int8, weight_type=QuantType.QInt8)
 
 
+def fit_temperature(logits: np.ndarray, labels: np.ndarray) -> float:
+    """Temperature minimising the negative log-likelihood (grid over 0.25..8, log-spaced, then a
+    finer grid around the best): deterministic, no optimiser state. Fit on val, never test."""
+
+    def nll(t: float) -> float:
+        z = logits / t
+        z = z - z.max(axis=1, keepdims=True)
+        logp = z - np.log(np.exp(z).sum(axis=1, keepdims=True))
+        return float(-logp[np.arange(len(labels)), labels].mean())
+
+    grid = np.exp(np.linspace(np.log(0.25), np.log(8.0), 61))
+    best = float(min(grid, key=nll))
+    fine = np.linspace(best / 1.06, best * 1.06, 41)
+    return round(float(min(fine, key=nll)), 4)
+
+
 def run_onnx(path: Path, x: np.ndarray, batch: int = 64) -> np.ndarray:
     sess = ort.InferenceSession(str(path), providers=["CPUExecutionProvider"])
     return np.concatenate(
@@ -132,6 +148,15 @@ def main() -> None:
     report = parity(model, fp32, int8, x.astype(np.float32), y)
     report["per_class"] = {labels[c]: v for c, v in report["per_class"].items()}
 
+    # Calibration on val (ADR 009): temperature for the browser's softmax; thresholds as set there.
+    vix = load_split_index(data["dataset"], "val", kp_dir)
+    xv = np.stack([featurize(dict(np.load(it.path)), fs, cfg, None) for it in vix.items])
+    yv = np.array([it.label_id for it in vix.items])
+    with torch.no_grad():
+        val_logits = model(torch.tensor(xv.astype(np.float32))).numpy()
+    temperature = fit_temperature(val_logits, yv)
+    report["calibration"] = {"temperature": temperature, "fit_on": "val", "n": len(yv)}
+
     git_sha = (args.run_dir / "git_sha.txt").read_text().strip()
     spec = load_spec()
     meta = {
@@ -148,6 +173,7 @@ def main() -> None:
         "best_epoch": int(ck["epoch"]),
         "files": {"fp32": fp32.name, "int8": int8.name},
         "sha256": {p.name: hashlib.sha256(p.read_bytes()).hexdigest() for p in (fp32, int8)},
+        "calibration": {"temperature": temperature, "min_prob": 0.45, "min_margin": 0.15},
     }
     (args.out / f"{args.name}.labels.json").write_text(json.dumps(meta, indent=1) + "\n")
     report.update(

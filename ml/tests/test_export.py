@@ -55,3 +55,15 @@ def test_labels_hash_is_order_sensitive() -> None:
         labels_sha256(["hello", "dog"])
         == __import__("hashlib").sha256(b'["hello","dog"]').hexdigest()
     )
+
+
+def test_temperature_fit_recovers_a_known_temperature() -> None:
+    from sanket.export.onnx_export import fit_temperature
+
+    rng = np.random.default_rng(0)
+    true_logits = rng.normal(size=(4000, 10)) * 2
+    p = np.exp(true_logits) / np.exp(true_logits).sum(1, keepdims=True)
+    y = np.array([rng.choice(10, p=row) for row in p])
+    # A model that is 3x overconfident: its logits are 3x the calibrated ones.
+    assert abs(fit_temperature(true_logits * 3, y) - 3) < 0.25
+    assert abs(fit_temperature(true_logits, y) - 1) < 0.1
