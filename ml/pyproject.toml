@@ -64,7 +64,7 @@ strict = true
 files = ["src", "tests"]
 
 [[tool.mypy.overrides]]
-module = ["mediapipe.*", "yaml"]  # pyyaml ships no type hints; no extra stub package
+module = ["mediapipe.*", "yaml", "onnxruntime", "onnxruntime.*"]  # no type hints shipped; no stub packages
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]

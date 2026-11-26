@@ -42,18 +42,28 @@ def topk_metrics(logits: np.ndarray, labels: np.ndarray, n_classes: int) -> dict
     }
 
 
+def load_best(
+    run_dir: Path, n_classes: int, device: str | None = None
+) -> tuple[torch.nn.Module, TrainConfig, dict[str, Any]]:
+    """The run's best-validation checkpoint as an eval-mode model, its config and the checkpoint."""
+    cfg = TrainConfig(**yaml.safe_load((run_dir / "config.yaml").read_text())["train"])
+    dev = pick_device(device or cfg.device)
+    fs = FeatureSpec.from_spec()
+    n_features = fs.n_features + (fs.n_coord if cfg.use_velocity else 0)
+    model = build_model(n_features, n_classes, cfg.T, cfg.model).to(dev)
+    ck = torch.load(run_dir / "best.pt", map_location=dev, weights_only=False)
+    model.load_state_dict(ck["model"])
+    model.eval()
+    return model, cfg, ck
+
+
 @torch.no_grad()
 def evaluate_run(
     run_dir: Path, items: Sequence[tuple[ClipSource, int]], n_classes: int, batch: int = 64
 ) -> dict[str, Any]:
-    cfg = TrainConfig(**yaml.safe_load((run_dir / "config.yaml").read_text())["train"])
-    device = pick_device(cfg.device)
+    model, cfg, ck = load_best(run_dir, n_classes)
+    device = next(model.parameters()).device
     fs = FeatureSpec.from_spec()
-    n_features = fs.n_features + (fs.n_coord if cfg.use_velocity else 0)
-    model = build_model(n_features, n_classes, cfg.T, cfg.model).to(device)
-    ck = torch.load(run_dir / "best.pt", map_location=device, weights_only=False)
-    model.load_state_dict(ck["model"])
-    model.eval()
     x = np.stack([featurize(src(), fs, cfg, None) for src, _ in items])  # never augmented
     logits = np.concatenate(
         [
