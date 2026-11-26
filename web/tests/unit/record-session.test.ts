@@ -8,6 +8,7 @@ import {
   buildSessionFile,
   clipQuality,
   participantId,
+  pickWords,
   type RecordedClip,
   type RecordingSpec,
   type SessionMeta,
@@ -70,6 +71,16 @@ describe("plan and ids", () => {
     expect(plan.filter((p) => p.kind === "no_sign")).toHaveLength(8);
     expect(new Set(plan.filter((p) => p.kind === "sign").map((p) => p.labelId)).size).toBe(50);
     expect(plan.slice(0, 10).map((p) => p.label)).not.toEqual(buildPlan(vocab, 2, 8, 2).slice(0, 10).map((p) => p.label));
+  });
+
+  it("picks a reproducible subset of n words, in id order", () => {
+    const a = pickWords(vocab, 10, 7);
+    expect(a).toHaveLength(10);
+    expect(new Set(a.map((w) => w.label)).size).toBe(10);
+    expect(a).toEqual(pickWords(vocab, 10, 7));
+    expect(a.map((w) => w.id)).toEqual([...a.map((w) => w.id)].sort((x, y) => x - y));
+    expect(pickWords(vocab, 50, 7)).toHaveLength(50);
+    expect(buildPlan(a, 2, 0, 1)).toHaveLength(20);
   });
 
   it("participant ids are anonymous and match the spec pattern", () => {

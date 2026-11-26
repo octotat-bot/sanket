@@ -9,7 +9,7 @@ import { frameForMediaPipe } from "@/lib/frames/downscale";
 import { ModelClient, type ModelReady } from "@/lib/inference/client";
 import { clipToModelInput, featureSpecFrom, type FeatureSpec } from "@/lib/inference/features";
 import { DEFAULT_DECIDE, decide, labelsSha256, type Decision, type DecideConfig } from "@/lib/live/decide";
-import { Spotter, type SpotterState } from "@/lib/live/spotter";
+import { DEFAULT_SPOTTER, Spotter, type SpotterState } from "@/lib/live/spotter";
 import { loadFileset, loadSpec, loadVerifiedModels } from "@/lib/mediapipe/assets";
 import { createHolistic, toStoredFrame, type Delegate, type StoredFrame } from "@/lib/mediapipe/holistic";
 
@@ -43,6 +43,26 @@ interface Stats {
 interface Heard {
   key: number;
   decision: Decision;
+}
+
+/** Live spotter inputs, for the debug panel. */
+interface Diag {
+  state: SpotterState;
+  raised: boolean;
+  speed: number;
+  left: boolean;
+  right: boolean;
+  shoulders: boolean;
+}
+
+/** One spotter segment: why it ended, its length, and (if classified) the model's top-3. */
+interface Segment {
+  n: number;
+  reason: string;
+  frames: number;
+  ms: number;
+  decision?: Decision;
+  skipped?: "busy";
 }
 
 const HAND_EDGES = [
@@ -82,6 +102,8 @@ export default function LiveClient({ words }: { words: Word[] }) {
   const busyRef = useRef(false);
   const statsRef = useRef({ frames: 0, since: 0, mpMs: 0, inferMs: null as number | null, speed: 0 });
   const keyRef = useRef(0);
+  const segNRef = useRef(0);
+  const diagRef = useRef<Diag>({ state: "idle", raised: false, speed: 0, left: false, right: false, shoulders: false });
 
   const [boot, setBoot] = useState<Boot>({ phase: "preparing", step: "Loading the hand and body tracker" });
   const [camera, setCamera] = useState<Camera>("off");
@@ -93,6 +115,8 @@ export default function LiveClient({ words }: { words: Word[] }) {
   const [stats, setStats] = useState<Stats>({ fps: 0, mpMs: 0, inferMs: null, speed: 0 });
   const [runtime, setRuntime] = useState<{ delegate: Delegate; backend: string; file: string } | null>(null);
   const [paused, setPaused] = useState(false);
+  const [diag, setDiag] = useState<Diag>(diagRef.current);
+  const [segments, setSegments] = useState<Segment[]>([]);
 
   // Page load: verify and warm up MediaPipe and the model before the camera goes live
   // (the first GPU frame took 9.4 s on an M3 Pro; CLAUDE.md section 8).
@@ -211,11 +235,15 @@ export default function LiveClient({ words }: { words: Word[] }) {
     if (f.left_present) lines(f.left, HAND_EDGES, "#45bfb4", 2.5);
   }
 
-  async function classify(clip: NonNullable<ReturnType<Spotter["update"]>["clip"]>) {
+  async function classify(clip: NonNullable<ReturnType<Spotter["update"]>["clip"]>, n: number) {
     const model = modelRef.current;
     const ready = readyRef.current;
     const fs = fsRef.current;
-    if (!model || !ready || !fs || busyRef.current) return;
+    if (!model || !ready || !fs) return;
+    if (busyRef.current) {
+      setSegments((ss) => ss.map((x) => (x.n === n ? { ...x, skipped: "busy" } : x)));
+      return;
+    }
     busyRef.current = true;
     setRecognizing(true);
     try {
@@ -226,6 +254,7 @@ export default function LiveClient({ words }: { words: Word[] }) {
       statsRef.current.inferMs = ms;
       const d = decide(logits, ready.meta.labels, decideRef.current);
       const item = { key: ++keyRef.current, decision: d };
+      setSegments((ss) => ss.map((x) => (x.n === n ? { ...x, decision: d } : x)));
       setHeard(item);
       if (d.accepted) setHistory((h) => [item, ...h].slice(0, 8));
     } finally {
@@ -257,8 +286,23 @@ export default function LiveClient({ words }: { words: Word[] }) {
         const u = spotterRef.current.update(ts, f);
         st.speed = u.speed;
         setState((s) => (s === u.state ? s : u.state));
-        if (u.clip) void classify(u.clip);
+        diagRef.current = {
+          state: u.state,
+          raised: u.raised,
+          speed: u.speed,
+          left: f.left_present,
+          right: f.right_present,
+          shoulders: f.pose_present && f.pose[11][3] >= 0.5 && f.pose[12][3] >= 0.5,
+        };
+        if (u.endReason) {
+          const n = ++segNRef.current;
+          const frames = u.clip?.t_ms.length ?? 0;
+          const ms = u.clip ? u.clip.t_ms[u.clip.t_ms.length - 1] : 0;
+          setSegments((ss) => [{ n, reason: u.endReason!, frames, ms }, ...ss].slice(0, 6));
+          if (u.clip) void classify(u.clip, n);
+        }
       }
+      if (st.frames % 3 === 0) setDiag(diagRef.current);
       st.frames++;
       if (now - st.since >= 1000) {
         setStats({ fps: (st.frames * 1000) / (now - st.since), mpMs: st.mpMs, inferMs: st.inferMs, speed: st.speed });
@@ -436,9 +480,41 @@ export default function LiveClient({ words }: { words: Word[] }) {
               <dd>{runtime?.delegate ?? "–"}</dd>
               <dt>Model runs on</dt>
               <dd>{runtime ? `${runtime.backend === "webgpu" ? "WebGPU" : "WebAssembly"} (${runtime.file})` : "–"}</dd>
+              <dt>Spotter</dt>
+              <dd data-testid="spotter-state">{diag.state}</dd>
+              <dt>Hands seen</dt>
+              <dd>
+                {diag.left ? "left" : "–"} / {diag.right ? "right" : "–"} · raised {diag.raised ? "yes" : "no"}
+              </dd>
+              <dt>Shoulders visible</dt>
+              <dd>{diag.shoulders ? "yes" : "no (move back)"}</dd>
               <dt>Hand speed</dt>
-              <dd>{stats.speed.toFixed(2)} shoulder widths/s</dd>
+              <dd>
+                {diag.speed.toFixed(2)} sw/s (start ≥ {DEFAULT_SPOTTER.startSpeed}, still &lt; {DEFAULT_SPOTTER.stillSpeed})
+              </dd>
             </dl>
+          )}
+          {debug && (
+            <div className="mt-4" data-testid="segments">
+              <p className="font-bold">Last segments</p>
+              {segments.length === 0 && <p className="text-muted">None yet. A segment starts when a raised hand moves.</p>}
+              <ol className="mt-1 flex flex-col gap-1 text-sm text-muted tabular-nums">
+                {segments.map((g) => (
+                  <li key={g.n}>
+                    #{g.n} {g.reason === "too_short" ? "too short, dropped" : `ended: ${g.reason}`} · {g.frames} frames ·{" "}
+                    {(g.ms / 1000).toFixed(2)} s
+                    {g.skipped && " · skipped (model busy)"}
+                    {g.decision && (
+                      <>
+                        {" "}
+                        → {g.decision.accepted ? "accepted" : `not sure (${g.decision.reason})`}:{" "}
+                        {g.decision.top.map((r) => `${r.label} ${Math.round(r.p * 100)}%`).join(", ")}
+                      </>
+                    )}
+                  </li>
+                ))}
+              </ol>
+            </div>
           )}
         </div>
       </div>

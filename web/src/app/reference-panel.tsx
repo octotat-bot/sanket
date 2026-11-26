@@ -17,7 +17,9 @@ interface Word {
 
 export default function ReferencePanel({ words }: { words: Word[] }) {
   const [label, setLabel] = useState(words[0]?.label ?? "");
-  const [mirror, setMirror] = useState(false);
+  // On by default: people copy a clip like a mirror, so a mirrored clip makes them use the
+  // same hand as the INCLUDE signer.
+  const [mirror, setMirror] = useState(true);
   const [missing, setMissing] = useState<string | null>(null);
   const categories = [...new Set(words.map((w) => w.category))].sort();
 
@@ -50,7 +52,7 @@ export default function ReferencePanel({ words }: { words: Word[] }) {
         </select>
         <label className="flex items-center gap-2 text-muted">
           <input type="checkbox" checked={mirror} onChange={(e) => setMirror(e.target.checked)} />
-          Mirror
+          Mirror (copy it like a mirror)
         </label>
       </div>
       {missing ? (

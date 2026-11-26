@@ -9,7 +9,7 @@ WEB  := cd web &&
 .PHONY: help setup models inventory lint typecheck test test-ml test-web smoke e2e build ci clean \
         samples check-video-metadata check-extractor bench-page extract upload \
         parity-fixture check-fps check-downscale setup-train typecheck-train test-train \
-        record-page import-recordings extract-include50 export-onnx collect-run report reference-clips
+        record-page import-recordings extract-include50 export-onnx collect-run report reference-clips eval-recorded
 
 help:  ## list targets
 	@grep -hE '^[a-zA-Z0-9_-]+:.*## ' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "  %-22s %s\n", $$1, $$2}'
@@ -93,7 +93,11 @@ record-page: models  ## Phase 6: serve the keypoints-only recorder at /dev/recor
 
 import-recordings:  ## validate + convert recorder session files: make import-recordings FILES="a.json b.json"
 	@test -n "$(FILES)" || (echo 'set FILES="path/to/sanket-rec-*.json"'; exit 1)
-	$(ML) $(UV) run python -m sanket.data.recorded $(FILES)
+	$(ML) $(UV) run python -m sanket.data.recorded $(abspath $(FILES))
+
+eval-recorded:  ## shipped model on recorder clips, no spotter (recorded / mirrored / trimmed): make eval-recorded SESSIONS="S-XXXXXX"
+	@test -n "$(SESSIONS)" || (echo 'set SESSIONS="S-XXXXXX ..."'; exit 1)
+	$(ML) $(UV) run --no-sync python -m sanket.evaluate_recorded --sessions $(SESSIONS)
 
 bench-page: models  ## ADR 002 measure (b): serve the browser benchmark at /dev/extractor-bench
 	$(WEB) $(PNPM) build

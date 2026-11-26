@@ -41,6 +41,21 @@ export function participantId(bytes: Uint8Array): string {
   return "P-" + Array.from(bytes.slice(0, 6), (b) => alphabet[b % 32]).join("");
 }
 
+/** `n` words chosen reproducibly from `words` (all of them when n >= words.length), in id order. */
+export function pickWords(words: Word[], n: number, seed: number): Word[] {
+  if (n >= words.length) return [...words];
+  const rand = mulberry32(seed ^ 0x9e3779b9);
+  const idx = words.map((_, i) => i);
+  for (let i = idx.length - 1; i > 0; i--) {
+    const j = Math.floor(rand() * (i + 1));
+    [idx[i], idx[j]] = [idx[j], idx[i]];
+  }
+  return idx
+    .slice(0, Math.max(1, n))
+    .sort((a, b) => a - b)
+    .map((i) => words[i]);
+}
+
 /** Every word `takes` times plus `noSign` no-sign clips, shuffled (seeded, so a session can be re-planned). */
 export function buildPlan(words: Word[], takes: number, noSign: number, seed: number): Prompt[] {
   const plan: Prompt[] = [];
@@ -126,6 +141,8 @@ export interface SessionMeta {
   participant: { adult_confirmed: true; fluent_isl_signer: Fluency };
   /** "include50_train_local": INCLUDE train clips were shown from the local cache (dev server). */
   reference_clips: "include50_train_local" | "none";
+  /** Whether the reference clip was shown mirrored (participants copy it like a mirror). */
+  reference_mirrored?: boolean;
   consent: { version: string; accepted_at: string; text_sha256: string };
   created_at: string;
   app: { commit: string | null; user_agent: string };

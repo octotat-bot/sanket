@@ -111,6 +111,7 @@ def convert(path: Path, out_root: Path = OUT) -> list[Path]:
             )
         }
         meta["fluent_isl_signer"] = s["participant"]["fluent_isl_signer"]
+        meta["reference_mirrored"] = s.get("reference_mirrored")  # absent in older sessions
         dest = out_dir / f"{c['clip_id']}.npz"
         payload: dict[str, Any] = {
             "meta": np.array(json.dumps(meta, sort_keys=True)),

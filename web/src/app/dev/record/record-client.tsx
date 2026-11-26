@@ -9,6 +9,7 @@ import { createHolistic, type StoredFrame, toStoredFrame } from "@/lib/mediapipe
 import { REFERENCE_CREDIT } from "@/lib/record/reference";
 import {
   appendFrame,
+  pickWords,
   buildPlan,
   buildSessionFile,
   CONSENT_VERSION,
@@ -67,7 +68,9 @@ export default function RecordClient() {
   const [referenceOk, setReferenceOk] = useState<boolean | null>(null);
   const [takes, setTakes] = useState(2);
   const [noSign, setNoSign] = useState(10);
-  const [seconds, setSeconds] = useState(3);
+  const [seconds, setSeconds] = useState(4);
+  const [nWords, setNWords] = useState(50);
+  const [mirrorRef, setMirrorRef] = useState(true);
   const [status, setStatus] = useState("");
   const [live, setLive] = useState<Live>({ processed: 0, shoulders: false, hands: false });
   const [plan, setPlan] = useState<Prompt[]>([]);
@@ -214,7 +217,8 @@ export default function RecordClient() {
     setReferenceOk(available);
     if (metaRef.current) metaRef.current.reference_clips = available ? "include50_train_local" : "none";
     const seed = crypto.getRandomValues(new Uint32Array(1))[0];
-    setPlan(buildPlan(vocab, takes, noSign, seed));
+    if (metaRef.current) metaRef.current.reference_mirrored = mirrorRef;
+    setPlan(buildPlan(pickWords(vocab, nWords, seed), takes, noSign, seed));
     setIndex(0);
     setPhase("session");
   }
@@ -365,6 +369,7 @@ export default function RecordClient() {
           <div className="flex flex-wrap gap-4 text-sm">
             {(
               [
+                ["Words", nWords, setNWords, 1, 50],
                 ["Takes per word", takes, setTakes, 1, 5],
                 ["No-sign clips", noSign, setNoSign, 0, 30],
                 ["Seconds per clip", seconds, setSeconds, 2, 6],
@@ -383,6 +388,10 @@ export default function RecordClient() {
               </label>
             ))}
           </div>
+          <label className="flex items-center gap-2 text-sm">
+            <input type="checkbox" checked={mirrorRef} onChange={(e) => setMirrorRef(e.target.checked)} />
+            Show reference clips mirrored (copy them like a mirror)
+          </label>
           <button
             type="button"
             disabled={!agreed || !adult || fluency === null}
@@ -448,8 +457,8 @@ export default function RecordClient() {
                 loop
                 muted
                 playsInline
-                className="w-full max-w-sm rounded-md bg-black"
-                aria-label={`INCLUDE reference clip for ${prompt.display}`}
+                className={`w-full max-w-sm rounded-md bg-black ${mirrorRef ? "-scale-x-100" : ""}`}
+                aria-label={`INCLUDE reference clip for ${prompt.display}${mirrorRef ? " (mirrored)" : ""}`}
               />
               <figcaption className="text-xs text-zinc-500">{REFERENCE_CREDIT}</figcaption>
             </figure>
