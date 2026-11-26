@@ -57,7 +57,7 @@
   "name": "x",
   "shape": [
    "batch",
-   64,
+   84,
    193
   ],
   "dtype": "float32"
@@ -69,16 +69,16 @@
    50
   ]
  },
- "T": 64,
+ "T": 84,
  "use_velocity": false,
- "spec_version": "0.7.0",
+ "spec_version": "0.8.0",
  "arch": "untrained-test-fixture",
  "files": {
   "fp32": "include50.fp32.onnx",
   "int8": "include50.int8.onnx"
  },
  "sha256": {
-  "include50.fp32.onnx": "18c860551e5d3b7cb237c25ec0162ede48f7d1e8707336ec08107ec989016e6f",
-  "include50.int8.onnx": "d3da8930dfc837b38ff4d8a752b9157341a2c022aa462ebc61ecf2e2700aebe3"
+  "include50.fp32.onnx": "9b2ce1fa51a91ca5517b5cb8bb70d0290aea91937cc959a2e6ad203670eb755a",
+  "include50.int8.onnx": "2337a1ee0a06fe55776c139d894fe99c4fa938c03cfc2c155d5418ecd9ffeb84"
  }
 }

@@ -1,5 +1,5 @@
 {
-  "spec_version": "0.7.0",
+  "spec_version": "0.8.0",
   "status": "Phase 1: extractor pins, stored per-frame keypoints, and normalization step 1 (aspect + shoulders). Phase 2 adds the rest of normalization.",
   "extractor": {
     "mediapipe_version": "1.2.3",
@@ -160,10 +160,10 @@
       "n_features": 193,
       "missing": "zeros; presence flag 0",
       "resample": {
-        "T": 64,
+        "T": 84,
         "times": "T evenly spaced times from the first to the last timestamp",
         "interp": "linear if the part is present in both neighbours, else nearest frame",
-        "T_status": "provisional: set from the length distribution in reports/data.md after extraction (cover ~p90 without heavy compression)"
+        "T_status": "set 2026-11-26: p90 of INCLUDE-50 train lengths (84 frames, 3.36 s at 25 fps; reports/data.md). Val and test were not used"
       },
       "velocity": {
         "default": false,

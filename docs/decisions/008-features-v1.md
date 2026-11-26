@@ -62,3 +62,10 @@ scale, non-uniform time warp and temporal crop, plus rotation, frame drop, hand 
 - Left/right **swap correction** by position continuity (CLAUDE.md section 8). Holistic showed 0 swaps
   in the 50-video check (ADR 002), so it is a safety net, added with crafted tests before Phase 3.
 - Multiple people in frame (Phase 5, live app).
+
+## T set from the data (2026-11-26)
+
+`reports/data.md`, INCLUDE-50 **train** split only (689 videos, all 25 fps): length p10 47, p50 60,
+**p90 84 frames** (1.88 / 2.40 / 3.36 s). T = **84** (spec 0.8.0). 90% of training signs are
+resampled without compression; the longest (max 154 frames over all extracted videos) are
+compressed at most about 1.8×. Val and test lengths were not looked at for this choice.

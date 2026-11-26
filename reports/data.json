@@ -1,0 +1,67 @@
+{
+  "videos_ok": 1265,
+  "videos_error": 0,
+  "classes": 86,
+  "frames": 79938,
+  "length": {
+    "min": 36,
+    "p05": 45,
+    "median": 61,
+    "p95": 92,
+    "max": 154
+  },
+  "rates": {
+    "rate_pose": 1.0,
+    "rate_left": 0.8231379318972204,
+    "rate_right": 0.7277765268082764,
+    "rate_any_hand": 0.897295403938052,
+    "rate_both_hands": 0.6536190547674448
+  },
+  "fps": {
+    "25.0": 1265
+  },
+  "resolution": {
+    "854x480": 1265
+  },
+  "splits": {
+    "include/train": {
+      "loaded": 925,
+      "missing": 2202
+    },
+    "include/val": {
+      "loaded": 105,
+      "missing": 243
+    },
+    "include/test": {
+      "loaded": 235,
+      "missing": 582
+    },
+    "include50/train": {
+      "loaded": 689,
+      "missing": 0
+    },
+    "include50/val": {
+      "loaded": 77,
+      "missing": 0
+    },
+    "include50/test": {
+      "loaded": 192,
+      "missing": 0
+    }
+  },
+  "duplicates": {},
+  "review": [],
+  "include50_train_length": {
+    "n": 689,
+    "frames": {
+      "p10": 47,
+      "p50": 60,
+      "p90": 84
+    },
+    "seconds": {
+      "p10": 1.88,
+      "p50": 2.4,
+      "p90": 3.36
+    }
+  }
+}

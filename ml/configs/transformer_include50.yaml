@@ -14,7 +14,7 @@ train:
   warmup_epochs: 5
   label_smoothing: 0.1
   patience: 25
-  T: 64
+  T: 84  # p90 of INCLUDE-50 train lengths (reports/data.md, ADR 008)
   use_velocity: false
   augment: true
   augment_cfg: {}
