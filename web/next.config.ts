@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { PHASE_DEVELOPMENT_SERVER } from "next/constants";
 
 // Privacy guarantee enforced by the browser, not by trust in libraries: the page may only
 // make network requests (fetch / XHR / WebSocket) to its own origin. @mediapipe/tasks-vision
@@ -14,7 +15,14 @@ const SECURITY_HEADERS = [
   { key: "Cross-Origin-Embedder-Policy", value: "require-corp" },
 ];
 
-const nextConfig: NextConfig = {
+// Dev-only routes (e.g. the INCLUDE reference clips in /dev/record) are files named
+// `*.dev.ts(x)`. Only the dev server recognises that extension, so a production build never
+// contains them; the route modules also throw if ever loaded in production.
+const BASE_EXTENSIONS = ["tsx", "ts", "jsx", "js"];
+const DEV_ONLY_EXTENSIONS = ["dev.tsx", "dev.ts"];
+
+const config = (phase: string): NextConfig => ({
+  pageExtensions: phase === PHASE_DEVELOPMENT_SERVER ? [...DEV_ONLY_EXTENSIONS, ...BASE_EXTENSIONS] : BASE_EXTENSIONS,
   async headers() {
     return [{ source: "/:path*", headers: SECURITY_HEADERS }];
   },
@@ -28,6 +36,6 @@ const nextConfig: NextConfig = {
       },
     },
   },
-};
+});
 
-export default nextConfig;
+export default config;
