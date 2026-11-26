@@ -307,3 +307,28 @@ def test_include50_members_cover_the_official_split() -> None:
     members = dataset_members("include50")
     assert sum(len(v) for v in members.values()) == 689 + 77 + 192
     assert all(k.endswith(".zip") for k in members)
+
+
+def test_remote_mode_network_failure_stops_the_run_and_keeps_finished_videos(
+    setup: tuple[Path, Config], tmp_path: Path
+) -> None:
+    from sanket.pipeline.extract import process_remote
+
+    zp, cfg = setup
+    with zipfile.ZipFile(zp, "a") as zf:  # filler (beyond one 64 KB read), then a second video
+        zf.writestr("Animals/filler.bin", np.random.default_rng(0).bytes(200_000))
+        zf.write(tmp_path / "v.mp4", "Animals/3. Fish/MVI_0003.MP4")
+    blob = zp.read_bytes()
+    second = zipfile.ZipFile(zp).getinfo("Animals/3. Fish/MVI_0003.MP4").header_offset
+
+    def fetch(a: int, b: int) -> bytes:
+        if a <= second <= b:  # the second video's bytes: the network drops
+            raise ConnectionError("wifi dropped")
+        return blob[a : b + 1]
+
+    names = ["Animals/1. Dog/MVI_0001.MP4", "Animals/3. Fish/MVI_0003.MP4"]
+    guard = DiskGuard(cfg.raw_dir, min_free=0)
+    with pytest.raises(ConnectionError):
+        process_remote(zp.name, len(blob), fetch, names, cfg, FakeExtractor, guard, {}, print)
+    assert (cfg.out_dir / "Animals/1. Dog/MVI_0001.npz").exists()
+    assert not (cfg.out_dir / "Animals/3. Fish/MVI_0003.npz").exists()

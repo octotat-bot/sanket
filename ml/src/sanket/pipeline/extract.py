@@ -17,13 +17,16 @@ Edge cases (CLAUDE.md section 8):
 """
 
 import argparse
+import contextlib
 import hashlib
 import io
 import json
 import math
 import platform
+import queue
 import subprocess
 import tempfile
+import threading
 import time
 import zipfile
 from dataclasses import dataclass
@@ -284,22 +287,52 @@ def process_remote(
     base_meta: dict[str, Any],
     log: Any,
 ) -> dict[str, int]:
-    """Only `names` from a remote zip, each pulled by HTTP Range (CRC-checked). Network errors
-    propagate (the run stops and resumes later from the .npz files already written)."""
+    """Only `names` from a remote zip, each pulled by HTTP Range (CRC-checked). The next video
+    downloads in a background thread while the current one is processed; all zip reads happen in
+    that thread, all MediaPipe work in this one. Network errors propagate (the run stops and
+    resumes later from the .npz files already written)."""
     counts = {"ok": 0, "error": 0, "skipped": 0, "review": 0}
-    reader = io.BufferedReader(remote_zip.RangeReader(size, fetch), buffer_size=1 << 16)
-    with zipfile.ZipFile(reader) as zf, tempfile.TemporaryDirectory(dir=cfg.raw_dir) as tmpd:
-        for name in sorted(names):
-            if (cfg.out_dir / Path(name).with_suffix(".npz")).exists():
-                counts["skipped"] += 1
-                continue
-            info = zf.getinfo(name)
-            guard.check(about_to_write=info.file_size)
-            data = zf.read(info)  # network errors propagate on purpose
-            _count(
-                counts,
-                process_video(name, data, zip_key, cfg, make_extractor, base_meta, Path(tmpd), log),
-            )
+    todo = []
+    for name in sorted(names):
+        if (cfg.out_dir / Path(name).with_suffix(".npz")).exists():
+            counts["skipped"] += 1
+        else:
+            todo.append(name)
+    q: queue.Queue[tuple[str, bytes] | BaseException | None] = queue.Queue(maxsize=1)
+    stop = threading.Event()
+
+    def producer() -> None:
+        try:
+            reader = io.BufferedReader(remote_zip.RangeReader(size, fetch), buffer_size=1 << 16)
+            with zipfile.ZipFile(reader) as zf:
+                for name in todo:
+                    if stop.is_set():
+                        return
+                    info = zf.getinfo(name)
+                    guard.check(about_to_write=info.file_size)
+                    q.put((name, zf.read(info)))
+            q.put(None)
+        except BaseException as e:  # handed to the main thread, which re-raises it
+            q.put(e)
+
+    t = threading.Thread(target=producer, name=f"fetch-{zip_key}", daemon=True)
+    t.start()
+    try:
+        with tempfile.TemporaryDirectory(dir=cfg.raw_dir) as tmpd:
+            while (item := q.get()) is not None:
+                if isinstance(item, BaseException):
+                    raise item
+                name, data = item
+                status = process_video(
+                    name, data, zip_key, cfg, make_extractor, base_meta, Path(tmpd), log
+                )
+                _count(counts, status)
+    finally:
+        stop.set()
+        while t.is_alive():  # unblock a producer waiting on a full queue
+            with contextlib.suppress(queue.Empty):
+                q.get_nowait()
+            t.join(timeout=0.1)
     return counts
 
 
