@@ -252,3 +252,44 @@ def test_target_size_matches_the_shared_spec_cases() -> None:
     spec = load_spec()["downscale"]
     for w, h, ew, eh in spec["shared_test_cases"]:
         assert target_size(w, h, spec["height"]) == (ew, eh), (w, h)
+
+
+def test_remote_mode_fetches_only_the_named_members_and_matches_local(
+    setup: tuple[Path, Config], tmp_path: Path
+) -> None:
+    """INCLUDE-50-only mode: Range-fetched members give the same .npz as the local zip."""
+    from sanket.pipeline.extract import process_remote
+
+    zp, cfg = setup
+    blob = zp.read_bytes()
+    asked: list[tuple[int, int]] = []
+
+    def fetch(a: int, b: int) -> bytes:
+        asked.append((a, b))
+        return blob[a : b + 1]
+
+    guard = DiskGuard(cfg.raw_dir, min_free=0)
+    name = "Animals/1. Dog/MVI_0001.MP4"
+    counts = process_remote(zp.name, len(blob), fetch, [name], cfg, FakeExtractor, guard, {}, print)
+    assert counts == {"ok": 1, "error": 0, "skipped": 0, "review": 0}
+    assert not (cfg.out_dir / "Animals/2. Cat/MVI_0002.npz").exists()  # not requested
+    remote = dict(np.load(cfg.out_dir / "Animals/1. Dog/MVI_0001.npz"))
+    assert sum(b - a + 1 for a, b in asked) < 4 * len(blob)  # ranges, not repeated full reads
+
+    local_cfg = Config(**{**cfg.__dict__, "out_dir": tmp_path / "out_local"})
+    local_cfg.out_dir.mkdir()
+    run(zp, local_cfg)
+    local = dict(np.load(local_cfg.out_dir / "Animals/1. Dog/MVI_0001.npz"))
+    for k in ("pose", "left", "right", "t_ms", "left_present"):
+        np.testing.assert_array_equal(remote[k], local[k])
+
+    again = process_remote(zp.name, len(blob), fetch, [name], cfg, FakeExtractor, guard, {}, print)
+    assert again["skipped"] == 1  # resumable: existing .npz is not redone
+
+
+def test_include50_members_cover_the_official_split() -> None:
+    from sanket.pipeline.extract import dataset_members
+
+    members = dataset_members("include50")
+    assert sum(len(v) for v in members.values()) == 689 + 77 + 192
+    assert all(k.endswith(".zip") for k in members)

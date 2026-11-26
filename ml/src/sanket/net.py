@@ -73,7 +73,7 @@ def with_retries[T](
         except RETRYABLE as e:
             if attempt == attempts:
                 raise
-            wait = float(2**attempt)
+            wait = float(min(2**attempt, 120))
             log(f"network error ({e!r}); retry {attempt}/{attempts - 1} in {wait:.0f}s")
             sleep(wait)
     raise AssertionError("unreachable")

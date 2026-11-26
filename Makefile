@@ -9,7 +9,7 @@ WEB  := cd web &&
 .PHONY: help setup models inventory lint typecheck test test-ml test-web smoke e2e build ci clean \
         samples check-video-metadata check-extractor bench-page extract upload \
         parity-fixture check-fps check-downscale setup-train typecheck-train test-train \
-        record-page import-recordings
+        record-page import-recordings extract-include50
 
 help:  ## list targets
 	@grep -hE '^[a-zA-Z0-9_-]+:.*## ' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "  %-22s %s\n", $$1, $$2}'
@@ -104,6 +104,9 @@ bench-page: models  ## ADR 002 measure (b): serve the browser benchmark at /dev/
 
 extract: models  ## download + extract all 44 zips, one at a time (resumable; aborts below 10 GB free)
 	$(ML) $(UV) run python -m sanket.pipeline.extract
+
+extract-include50: models  ## only the 958 INCLUDE-50 videos, pulled per video by HTTP Range (~13 GB, no full zips)
+	$(ML) $(UV) run python -m sanket.pipeline.extract --only include50
 
 upload:  ## upload keypoints as a PRIVATE Kaggle dataset: make upload KAGGLE_DATASET=user/slug
 	@test -n "$(KAGGLE_DATASET)" || (echo "set KAGGLE_DATASET=<kaggle-user>/<slug>"; exit 1)

@@ -18,6 +18,7 @@ Edge cases (CLAUDE.md section 8):
 
 import argparse
 import hashlib
+import io
 import json
 import math
 import platform
@@ -34,7 +35,8 @@ import cv2
 import numpy as np
 import yaml
 
-from sanket.data import zenodo
+from sanket import net
+from sanket.data import remote_zip, zenodo
 from sanket.data.disk import GB, DiskGuard
 from sanket.data.download import download
 from sanket.data.splits import label_of, video_key
@@ -44,6 +46,7 @@ from sanket.paths import CACHE_DIR, REPO_ROOT
 from sanket.spec import fetch_model, load_spec, model_pins
 
 FILES_MANIFEST = REPO_ROOT / "ml" / "data" / "manifests" / "zenodo_4010759_files.json"
+VIDEOS_MANIFEST = REPO_ROOT / "ml" / "data" / "manifests" / "zenodo_4010759_videos.tsv"
 VIDEO_EXTS = (".mov", ".mp4")
 FRAME_CACHE_WIDTH = 320
 
@@ -179,6 +182,63 @@ def _git_sha() -> str:
         return "unknown"
 
 
+def process_video(
+    rel: str,
+    data: bytes,
+    zip_key: str,
+    cfg: Config,
+    make_extractor: Any,
+    base_meta: dict[str, Any],
+    tmpd: Path,
+    log: Any,
+) -> str:
+    """One video's bytes → .npz + log record. Processing errors are recorded, never raised."""
+    out = cfg.out_dir / Path(rel).with_suffix(".npz")
+    record: dict[str, Any] = {
+        "path": rel,
+        "key": video_key(rel),
+        "label": label_of(rel),
+        "zip": zip_key,
+    }
+    tmp = tmpd / f"video{Path(rel).suffix}"
+    t0 = time.perf_counter()
+    try:
+        record["sha256"] = hashlib.sha256(data).hexdigest()
+        tmp.write_bytes(data)
+        frame_out = (
+            cfg.frame_cache_dir / Path(rel).with_suffix(".jpg") if cfg.frame_cache_dir else None
+        )
+        arrays, stats = extract_video(tmp, make_extractor, frame_out, cfg.extract_height)
+        if stats["n_frames"] == 0:
+            raise RuntimeError("decoded 0 frames")
+        record.update(stats)
+        save_npz(out, arrays, {**base_meta, **record})
+        record["status"] = "ok"
+        if stats["rate_any_hand"] < cfg.review_below_hand_rate:
+            record["review"] = True
+            with (cfg.out_dir / "_review.jsonl").open("a") as f:
+                f.write(json.dumps({"path": rel, "rate_any_hand": stats["rate_any_hand"]}) + "\n")
+    except Exception as e:  # one bad video must never stop the batch
+        record["status"] = "error"
+        record["error"] = f"{type(e).__name__}: {e}"
+    finally:
+        tmp.unlink(missing_ok=True)
+    record["seconds"] = round(time.perf_counter() - t0, 3)
+    with (cfg.out_dir / "_log.jsonl").open("a") as f:
+        f.write(json.dumps(record, sort_keys=True) + "\n")
+    log(
+        f"  {record['status']:5s} {rel}"
+        + (f"  ({record.get('error')})" if record["status"] == "error" else "")
+    )
+    return "review" if record.get("review") else str(record["status"])
+
+
+def _count(counts: dict[str, int], status: str) -> None:
+    counts["ok" if status == "review" else status] += 1
+    if status == "review":
+        counts["review"] += 1
+
+
 def process_zip(
     zip_path: Path,
     zip_key: str,
@@ -195,62 +255,75 @@ def process_zip(
             key=lambda i: i.filename,
         )
         for info in members:
-            rel = info.filename
-            out = cfg.out_dir / Path(rel).with_suffix(".npz")
-            if out.exists():
+            if (cfg.out_dir / Path(info.filename).with_suffix(".npz")).exists():
                 counts["skipped"] += 1
                 continue
             guard.check(about_to_write=info.file_size)
-            record: dict[str, Any] = {
-                "path": rel,
-                "key": video_key(rel),
-                "label": label_of(rel),
-                "zip": zip_key,
-            }
-            tmp = Path(tmpd) / f"video{Path(rel).suffix}"
-            t0 = time.perf_counter()
             try:
-                data = zf.read(info)  # CRC-checked by zipfile
-                record["sha256"] = hashlib.sha256(data).hexdigest()
-                tmp.write_bytes(data)
-                del data
-                frame_out = (
-                    cfg.frame_cache_dir / Path(rel).with_suffix(".jpg")
-                    if cfg.frame_cache_dir
-                    else None
-                )
-                arrays, stats = extract_video(tmp, make_extractor, frame_out, cfg.extract_height)
-                if stats["n_frames"] == 0:
-                    raise RuntimeError("decoded 0 frames")
-                record.update(stats)
-                save_npz(out, arrays, {**base_meta, **record})
-                record["status"] = "ok"
-                counts["ok"] += 1
-                if stats["rate_any_hand"] < cfg.review_below_hand_rate:
-                    counts["review"] += 1
-                    with (cfg.out_dir / "_review.jsonl").open("a") as f:
-                        f.write(
-                            json.dumps({"path": rel, "rate_any_hand": stats["rate_any_hand"]})
-                            + "\n"
-                        )
-            except Exception as e:  # one bad video must never stop the batch
-                record["status"] = "error"
-                record["error"] = f"{type(e).__name__}: {e}"
-                counts["error"] += 1
-            finally:
-                tmp.unlink(missing_ok=True)
-            record["seconds"] = round(time.perf_counter() - t0, 3)
-            with (cfg.out_dir / "_log.jsonl").open("a") as f:
-                f.write(json.dumps(record, sort_keys=True) + "\n")
-            log(
-                f"  {record['status']:5s} {rel}"
-                + (f"  ({record.get('error')})" if record["status"] == "error" else "")
+                data = zf.read(info)  # CRC-checked; a corrupt member is a per-video error
+            except Exception as e:
+                data = b""
+                log(f"  read error {info.filename}: {e!r}")
+            _count(
+                counts,
+                process_video(
+                    info.filename, data, zip_key, cfg, make_extractor, base_meta, Path(tmpd), log
+                ),
             )
     return counts
 
 
+def process_remote(
+    zip_key: str,
+    size: int,
+    fetch: remote_zip.RangeFetcher,
+    names: list[str],
+    cfg: Config,
+    make_extractor: Any,
+    guard: DiskGuard,
+    base_meta: dict[str, Any],
+    log: Any,
+) -> dict[str, int]:
+    """Only `names` from a remote zip, each pulled by HTTP Range (CRC-checked). Network errors
+    propagate (the run stops and resumes later from the .npz files already written)."""
+    counts = {"ok": 0, "error": 0, "skipped": 0, "review": 0}
+    reader = io.BufferedReader(remote_zip.RangeReader(size, fetch), buffer_size=1 << 16)
+    with zipfile.ZipFile(reader) as zf, tempfile.TemporaryDirectory(dir=cfg.raw_dir) as tmpd:
+        for name in sorted(names):
+            if (cfg.out_dir / Path(name).with_suffix(".npz")).exists():
+                counts["skipped"] += 1
+                continue
+            info = zf.getinfo(name)
+            guard.check(about_to_write=info.file_size)
+            data = zf.read(info)  # network errors propagate on purpose
+            _count(
+                counts,
+                process_video(name, data, zip_key, cfg, make_extractor, base_meta, Path(tmpd), log),
+            )
+    return counts
+
+
+def dataset_members(dataset: str) -> dict[str, list[str]]:
+    """zip key → member paths of every video in `dataset`'s official splits found on Zenodo."""
+    from sanket.data.sessions import load_manifest
+    from sanket.data.splits import SPLITS, load_split
+
+    videos = {video_key(v.path): v for v in load_manifest(VIDEOS_MANIFEST)}
+    out: dict[str, list[str]] = {}
+    for split in SPLITS:
+        for entry in load_split(dataset, split):  # type: ignore[arg-type]
+            v = videos.get(video_key(entry))
+            if v is not None:
+                out.setdefault(v.zip, []).append(v.path)
+    return {z: sorted(set(ms)) for z, ms in sorted(out.items())}
+
+
 def run(
-    cfg: Config, only_zips: list[str] | None = None, log: Any = print, allow_dirty: bool = False
+    cfg: Config,
+    only_zips: list[str] | None = None,
+    log: Any = print,
+    allow_dirty: bool = False,
+    only_dataset: str | None = None,
 ) -> None:
     sha = _git_sha()
     if sha.endswith("-dirty") and not allow_dirty:
@@ -289,11 +362,29 @@ def run(
         "machine": platform.machine(),
         "python": platform.python_version(),
         "config": {k: str(v) for k, v in cfg.__dict__.items()},
+        "only_dataset": only_dataset,
     }
     with (cfg.out_dir / "_runs.jsonl").open("a") as f:
         f.write(json.dumps(run_header, sort_keys=True) + "\n")
 
     files = [zenodo.RemoteFile(**f) for f in json.loads(FILES_MANIFEST.read_text())]
+    if only_dataset:
+        # Only this dataset's videos, each pulled from its zip by Range requests (no full zips).
+        sizes = {f.key: f.size for f in files}
+        wanted = dataset_members(only_dataset)
+        total = sum(len(v) for v in wanted.values())
+        log(f"{only_dataset}: {total} videos in {len(wanted)} zips (Range requests per video)")
+        for i, (zkey, names) in enumerate(wanted.items(), 1):
+            url = zenodo.file_url(zkey)
+            fetch = lambda a, b, u=url: net.with_retries(  # noqa: E731
+                lambda: net.get_range(u, a, b, timeout=600), attempts=40, log=log
+            )
+            counts = process_remote(
+                zkey, sizes[zkey], fetch, names, cfg, make_extractor, guard, base_meta, log
+            )
+            log(f"[{i}/{len(wanted)}] {zkey}: {counts}")
+        return
+
     zips = [
         f for f in files if f.key.endswith(".zip") and (only_zips is None or f.key in only_zips)
     ]
@@ -320,10 +411,13 @@ def main() -> None:
     ap.add_argument("--config", type=Path, default=REPO_ROOT / "ml" / "configs" / "extract.yaml")
     ap.add_argument("--zips", nargs="*", help="only these zip names (dry runs)")
     ap.add_argument(
+        "--only", choices=["include50"], help="only this dataset's videos (Range requests)"
+    )
+    ap.add_argument(
         "--allow-dirty", action="store_true", help="dry runs only: allow uncommitted changes"
     )
     args = ap.parse_args()
-    run(Config.load(args.config), only_zips=args.zips, allow_dirty=args.allow_dirty)
+    run(Config.load(args.config), args.zips, allow_dirty=args.allow_dirty, only_dataset=args.only)
 
 
 if __name__ == "__main__":

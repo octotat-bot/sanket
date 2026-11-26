@@ -256,3 +256,13 @@ their tests remain as documentation. Golden file regenerated (4 clips incl. 15 f
   checks, train → evaluate). Structure-tested.
 - Open: how participants learn the signs without showing dataset videos (tools/record/README.md);
   the repo needs a GitHub remote for the notebook to clone.
+
+## Demo track (2026-11-26): INCLUDE-50 → GRU → Transformer → ONNX → Live page → Vercel
+
+Scope set by Mukund: INCLUDE-50 only; everything else goes under "Future work". Minor decisions are
+logged here in one line each.
+
+- Extraction switched to INCLUDE-50 only (`make extract-include50`): the 958 split videos pulled one by
+  one from their zips by HTTP Range (CRC-checked), same `process_video` code as the full run, so the
+  .npz files are identical (tested against a local zip). ~13 GB instead of 57 GB. The full 44-zip run
+  (4 zips done) is stopped and marked in `_runs.jsonl`; its .npz files are kept.
