@@ -39,6 +39,8 @@ jobs:
         with:
           path: ml/.cache/videos
           key: include-test-video-${{ hashFiles('ml/data/splits/include50_test.txt') }}
+      # MediaPipe's Linux wheels load libEGL / libGLESv2 even on the CPU delegate
+      - run: sudo apt-get update -q && sudo apt-get install -y -q --no-install-recommends libegl1 libgles2
       - name: Python MediaPipe smoke + real-extractor determinism
         run: uv run python -m sanket.spec && uv run pytest -m network
         working-directory: ml
@@ -98,6 +100,8 @@ jobs:
         with:
           path: ml/.cache/videos
           key: include-test-video-${{ hashFiles('ml/data/splits/include50_test.txt') }}
+      # MediaPipe's Linux wheels load libEGL / libGLESv2 even on the CPU delegate
+      - run: sudo apt-get update -q && sudo apt-get install -y -q --no-install-recommends libegl1 libgles2
       - name: fetch pinned models (sha256-checked) and build the Python-vs-browser parity fixture
         run: uv run --locked python -m sanket.spec && uv run --locked python -m sanket.checks.browser_parity_fixture
         working-directory: ml

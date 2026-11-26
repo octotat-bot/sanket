@@ -273,3 +273,4 @@ logged here in one line each.
 - Paper consent form (`tools/record/CONSENT.md`) now matches the on-screen text: 18+, keypoints only,
   accuracy measurement only (so no fine-tuning on this data), private and never published, withdrawal by code.
 - Repo public at github.com/octotat-bot/sanket; MIT license for code (dataset keeps CC BY 4.0).
+- From 2026-11-26 all work is committed and pushed straight to `main` (Mukund's call); no branches or PRs unless asked.
