@@ -96,6 +96,23 @@ def table(runs: list[dict[str, Any]], exports: dict[str, dict[str, Any]]) -> str
             f"accuracy fp32 {pct(e['fp32_acc'])}, "
             f"int8 {pct(e['int8_acc'])}."
         )
+        val_loss = {r["name"]: r["val"].get("best_val", {}).get("loss") for r in runs}
+        lines.append("")
+        lines.append(
+            "Model choice, fixed before any test number was seen: higher val accuracy, ties "
+            "broken by "
+            "lower val loss at the best checkpoint ("
+            + ", ".join(f"`{n}` {v:.3f}" for n, v in sorted(val_loss.items()) if v is not None)
+            + "). The test split never influenced training or the choice."
+        )
+        cal = e.get("calibration", {})
+        if cal and not cal.get("fitted", True):
+            lines.append("")
+            lines.append(
+                f"Softmax temperature: not fitted ({cal['reason']}); the app uses 1.0. "
+                "It needs a validation set the model makes mistakes on (not the consented "
+                "recordings, which are for accuracy measurement only)."
+            )
     lines.append("")
     lines.append(
         "Session-independent, inferred signer-independent and real-webcam numbers are not measured "

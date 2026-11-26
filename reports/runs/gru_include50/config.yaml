@@ -1,0 +1,20 @@
+train:
+  T: 84
+  amp: true
+  augment: true
+  augment_cfg: {}
+  batch_size: 32
+  device: auto
+  epochs: 80
+  label_smoothing: 0.1
+  lr: 0.001
+  model:
+    bidirectional: true
+    dropout: 0.3
+    hidden: 128
+    layers: 2
+  patience: 15
+  seed: 0
+  use_velocity: false
+  warmup_epochs: 3
+  weight_decay: 0.05

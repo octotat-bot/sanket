@@ -1,0 +1,91 @@
+{
+ "labels": [
+  "bank",
+  "biglarge",
+  "bird",
+  "black",
+  "boy",
+  "brother",
+  "car",
+  "cellphone",
+  "court",
+  "cow",
+  "death",
+  "dog",
+  "dry",
+  "election",
+  "fall",
+  "fan",
+  "father",
+  "girl",
+  "good",
+  "goodmorning",
+  "happy",
+  "hat",
+  "hello",
+  "hot",
+  "house",
+  "i",
+  "it",
+  "long",
+  "loud",
+  "monday",
+  "new",
+  "paint",
+  "pen",
+  "priest",
+  "quiet",
+  "red",
+  "shoes",
+  "short",
+  "smalllittle",
+  "storeorshop",
+  "summer",
+  "teacher",
+  "thankyou",
+  "time",
+  "trainticket",
+  "tshirt",
+  "white",
+  "window",
+  "year",
+  "youplural"
+ ],
+ "labels_sha256": "572dda29ef10ff0061ec2a68338d624bb7b252321bdf1449d5dff030bae6e81e",
+ "dataset": "include50",
+ "input": {
+  "name": "x",
+  "shape": [
+   "batch",
+   84,
+   193
+  ],
+  "dtype": "float32"
+ },
+ "output": {
+  "name": "logits",
+  "shape": [
+   "batch",
+   50
+  ]
+ },
+ "T": 84,
+ "use_velocity": false,
+ "spec_version": "0.8.0",
+ "arch": "transformer",
+ "train_git_sha": "531a45fee0ea6d94f278894c81ba2c18cb399803",
+ "best_epoch": 28,
+ "files": {
+  "fp32": "include50.fp32.onnx",
+  "int8": "include50.int8.onnx"
+ },
+ "sha256": {
+  "include50.fp32.onnx": "845b8301a52ce040dbe6991cf198170c97df9e3ab5344a4dbd642b31f890d875",
+  "include50.int8.onnx": "d6e461c6da7b55cfb6e0f8dbeed3620ffdada42c44b9a8d936975873061ee823"
+ },
+ "calibration": {
+  "temperature": 1.0,
+  "min_prob": 0.45,
+  "min_margin": 0.15
+ }
+}

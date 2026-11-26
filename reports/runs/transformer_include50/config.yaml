@@ -1,0 +1,22 @@
+train:
+  T: 84
+  amp: true
+  augment: true
+  augment_cfg: {}
+  batch_size: 32
+  device: auto
+  epochs: 120
+  label_smoothing: 0.1
+  lr: 0.0005
+  model:
+    arch: transformer
+    d_model: 128
+    dropout: 0.1
+    ff_mult: 2
+    heads: 4
+    layers: 4
+  patience: 25
+  seed: 0
+  use_velocity: false
+  warmup_epochs: 5
+  weight_decay: 0.05

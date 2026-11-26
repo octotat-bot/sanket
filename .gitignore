@@ -21,6 +21,7 @@ data/keypoints/
 
 # Experiment outputs
 runs/
+!reports/runs/
 checkpoints/
 *.onnx
 !web/public/models/**/*.onnx

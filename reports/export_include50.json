@@ -1,0 +1,272 @@
+{
+ "n": 192,
+ "torch_vs_fp32_max_abs_logit_diff": 2.86102294921875e-06,
+ "torch_vs_fp32_top1_agreement": 1.0,
+ "fp32_vs_int8_top1_agreement": 1.0,
+ "torch_acc": 0.9791666666666666,
+ "fp32_acc": 0.9791666666666666,
+ "int8_acc": 0.9791666666666666,
+ "per_class": {
+  "bank": {
+   "n": 6,
+   "fp32_acc": 1.0,
+   "int8_acc": 1.0
+  },
+  "biglarge": {
+   "n": 4,
+   "fp32_acc": 0.75,
+   "int8_acc": 0.75
+  },
+  "bird": {
+   "n": 1,
+   "fp32_acc": 1.0,
+   "int8_acc": 1.0
+  },
+  "black": {
+   "n": 5,
+   "fp32_acc": 1.0,
+   "int8_acc": 1.0
+  },
+  "boy": {
+   "n": 4,
+   "fp32_acc": 0.5,
+   "int8_acc": 0.5
+  },
+  "brother": {
+   "n": 5,
+   "fp32_acc": 1.0,
+   "int8_acc": 1.0
+  },
+  "car": {
+   "n": 4,
+   "fp32_acc": 1.0,
+   "int8_acc": 1.0
+  },
+  "cellphone": {
+   "n": 4,
+   "fp32_acc": 1.0,
+   "int8_acc": 1.0
+  },
+  "court": {
+   "n": 3,
+   "fp32_acc": 1.0,
+   "int8_acc": 1.0
+  },
+  "cow": {
+   "n": 3,
+   "fp32_acc": 1.0,
+   "int8_acc": 1.0
+  },
+  "death": {
+   "n": 5,
+   "fp32_acc": 1.0,
+   "int8_acc": 1.0
+  },
+  "dog": {
+   "n": 7,
+   "fp32_acc": 1.0,
+   "int8_acc": 1.0
+  },
+  "election": {
+   "n": 2,
+   "fp32_acc": 1.0,
+   "int8_acc": 1.0
+  },
+  "fall": {
+   "n": 3,
+   "fp32_acc": 1.0,
+   "int8_acc": 1.0
+  },
+  "fan": {
+   "n": 3,
+   "fp32_acc": 0.6666666666666666,
+   "int8_acc": 0.6666666666666666
+  },
+  "father": {
+   "n": 2,
+   "fp32_acc": 1.0,
+   "int8_acc": 1.0
+  },
+  "girl": {
+   "n": 2,
+   "fp32_acc": 1.0,
+   "int8_acc": 1.0
+  },
+  "good": {
+   "n": 3,
+   "fp32_acc": 1.0,
+   "int8_acc": 1.0
+  },
+  "goodmorning": {
+   "n": 4,
+   "fp32_acc": 1.0,
+   "int8_acc": 1.0
+  },
+  "happy": {
+   "n": 3,
+   "fp32_acc": 1.0,
+   "int8_acc": 1.0
+  },
+  "hat": {
+   "n": 6,
+   "fp32_acc": 1.0,
+   "int8_acc": 1.0
+  },
+  "hello": {
+   "n": 7,
+   "fp32_acc": 1.0,
+   "int8_acc": 1.0
+  },
+  "hot": {
+   "n": 6,
+   "fp32_acc": 1.0,
+   "int8_acc": 1.0
+  },
+  "house": {
+   "n": 1,
+   "fp32_acc": 1.0,
+   "int8_acc": 1.0
+  },
+  "i": {
+   "n": 3,
+   "fp32_acc": 1.0,
+   "int8_acc": 1.0
+  },
+  "it": {
+   "n": 9,
+   "fp32_acc": 1.0,
+   "int8_acc": 1.0
+  },
+  "long": {
+   "n": 6,
+   "fp32_acc": 1.0,
+   "int8_acc": 1.0
+  },
+  "loud": {
+   "n": 6,
+   "fp32_acc": 1.0,
+   "int8_acc": 1.0
+  },
+  "monday": {
+   "n": 2,
+   "fp32_acc": 1.0,
+   "int8_acc": 1.0
+  },
+  "new": {
+   "n": 3,
+   "fp32_acc": 1.0,
+   "int8_acc": 1.0
+  },
+  "paint": {
+   "n": 3,
+   "fp32_acc": 1.0,
+   "int8_acc": 1.0
+  },
+  "pen": {
+   "n": 2,
+   "fp32_acc": 1.0,
+   "int8_acc": 1.0
+  },
+  "priest": {
+   "n": 1,
+   "fp32_acc": 1.0,
+   "int8_acc": 1.0
+  },
+  "quiet": {
+   "n": 3,
+   "fp32_acc": 1.0,
+   "int8_acc": 1.0
+  },
+  "red": {
+   "n": 2,
+   "fp32_acc": 1.0,
+   "int8_acc": 1.0
+  },
+  "shoes": {
+   "n": 4,
+   "fp32_acc": 1.0,
+   "int8_acc": 1.0
+  },
+  "short": {
+   "n": 6,
+   "fp32_acc": 1.0,
+   "int8_acc": 1.0
+  },
+  "smalllittle": {
+   "n": 4,
+   "fp32_acc": 1.0,
+   "int8_acc": 1.0
+  },
+  "storeorshop": {
+   "n": 4,
+   "fp32_acc": 1.0,
+   "int8_acc": 1.0
+  },
+  "summer": {
+   "n": 3,
+   "fp32_acc": 1.0,
+   "int8_acc": 1.0
+  },
+  "teacher": {
+   "n": 3,
+   "fp32_acc": 1.0,
+   "int8_acc": 1.0
+  },
+  "thankyou": {
+   "n": 7,
+   "fp32_acc": 1.0,
+   "int8_acc": 1.0
+  },
+  "time": {
+   "n": 3,
+   "fp32_acc": 1.0,
+   "int8_acc": 1.0
+  },
+  "trainticket": {
+   "n": 8,
+   "fp32_acc": 1.0,
+   "int8_acc": 1.0
+  },
+  "tshirt": {
+   "n": 3,
+   "fp32_acc": 1.0,
+   "int8_acc": 1.0
+  },
+  "white": {
+   "n": 1,
+   "fp32_acc": 1.0,
+   "int8_acc": 1.0
+  },
+  "window": {
+   "n": 3,
+   "fp32_acc": 1.0,
+   "int8_acc": 1.0
+  },
+  "year": {
+   "n": 7,
+   "fp32_acc": 1.0,
+   "int8_acc": 1.0
+  },
+  "youplural": {
+   "n": 3,
+   "fp32_acc": 1.0,
+   "int8_acc": 1.0
+  }
+ },
+ "size_bytes": {
+  "fp32": 2399138,
+  "int8": 796862
+ },
+ "calibration": {
+  "temperature": 1.0,
+  "fitted": false,
+  "reason": "degenerate fit (val errors: 0, optimum 0.2358 at the grid edge)",
+  "val_errors": 0,
+  "fit_on": "val",
+  "n": 77
+ },
+ "name": "include50",
+ "run_dir": "transformer_include50",
+ "train_git_sha": "531a45fee0ea6d94f278894c81ba2c18cb399803",
+ "missing": []
+}
