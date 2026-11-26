@@ -20,7 +20,7 @@ import torch
 import yaml
 
 from sanket.keypoints.features import FeatureSpec
-from sanket.models.gru_baseline import GRUClassifier
+from sanket.models import build_model
 from sanket.paths import REPO_ROOT
 from sanket.train import ClipSource, TrainConfig, featurize, pick_device
 
@@ -50,7 +50,7 @@ def evaluate_run(
     device = pick_device(cfg.device)
     fs = FeatureSpec.from_spec()
     n_features = fs.n_features + (fs.n_coord if cfg.use_velocity else 0)
-    model = GRUClassifier(n_features, n_classes, **cfg.model).to(device)
+    model = build_model(n_features, n_classes, cfg.T, cfg.model).to(device)
     ck = torch.load(run_dir / "best.pt", map_location=device, weights_only=False)
     model.load_state_dict(ck["model"])
     model.eval()

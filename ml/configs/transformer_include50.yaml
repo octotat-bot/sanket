@@ -1,0 +1,29 @@
+# Phase 3 main model: small Transformer encoder on INCLUDE-50 (ADR 008 features, fixed T).
+# Same data, schedule and augmentations as gru_include50.yaml so the two rows compare the model only.
+# Tuned only on INCLUDE-50 val (carved from train, ADR 003).
+data:
+  dataset: include50
+  keypoints_dir: data/keypoints/v1
+
+train:
+  seed: 0
+  epochs: 120
+  batch_size: 32
+  lr: 0.0005
+  weight_decay: 0.05
+  warmup_epochs: 5
+  label_smoothing: 0.1
+  patience: 25
+  T: 64
+  use_velocity: false
+  augment: true
+  augment_cfg: {}
+  model:
+    arch: transformer
+    d_model: 128
+    heads: 4
+    layers: 4
+    ff_mult: 2
+    dropout: 0.1
+  device: auto
+  amp: true

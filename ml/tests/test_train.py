@@ -156,3 +156,25 @@ def test_evaluate_run_uses_best_checkpoint_and_never_augments(tmp_path: Path) ->
     assert a["top1"] == b["top1"]  # deterministic: no augmentation at evaluation
     assert a["n"] == 32 and a["top1"] >= 0.85 and a["top5"] >= a["top1"]
     assert a["best_val"]["acc"] == pytest.approx(r["best_val_acc"])
+
+
+def test_transformer_shapes_size_and_fixed_T() -> None:
+    from sanket.models import build_model
+
+    m = build_model(193, 50, 64, {"arch": "transformer"})
+    assert m(torch.zeros(3, 64, 193)).shape == (3, 50)
+    assert n_parameters(m) < 5_000_000  # browser budget (CLAUDE.md)
+    with pytest.raises(ValueError, match="T=64"):
+        m(torch.zeros(1, 32, 193))
+    with pytest.raises(ValueError, match="arch"):
+        build_model(193, 50, 64, {"arch": "lstm"})
+
+
+def test_transformer_learns_synthetic_signs(tmp_path: Path) -> None:
+    cfg = tiny(
+        epochs=30,
+        lr=1e-3,
+        model={"arch": "transformer", "d_model": 32, "heads": 2, "layers": 2, "dropout": 0.1},
+    )
+    out = train(cfg, items(0, 24), items(1, 8), N_CLASSES, tmp_path / "run", log=lambda _: None)
+    assert out["best_val_acc"] >= 0.9, out

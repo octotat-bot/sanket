@@ -275,3 +275,4 @@ logged here in one line each.
 - Repo public at github.com/octotat-bot/sanket; MIT license for code (dataset keeps CC BY 4.0).
 - From 2026-11-26 all work is committed and pushed straight to `main` (Mukund's call); no branches or PRs unless asked.
 - INCLUDE-50 extraction downloads the next video in a background thread while MediaPipe processes the current one (~2× faster; per-video code unchanged, network failure test added).
+- Transformer (`ml/src/sanket/models/transformer.py`, `configs/transformer_include50.yaml`): CLS token, learned positions, 4 pre-norm layers, d=128, 4 heads (570,292 params vs the GRU's 533,172; measured); same data/augmentations/schedule family as the GRU so the rows compare models. `model.arch` picks the class.

@@ -31,7 +31,8 @@ from torch.utils.tensorboard import SummaryWriter
 
 from sanket.augment.transforms import AugmentConfig, augment
 from sanket.keypoints.features import FeatureSpec, clip_to_model_input
-from sanket.models.gru_baseline import GRUClassifier, n_parameters
+from sanket.models import build_model
+from sanket.models.gru_baseline import n_parameters
 from sanket.paths import REPO_ROOT
 
 Clip = dict[str, np.ndarray]
@@ -135,7 +136,7 @@ def train(
     yv = torch.tensor([lab for _, lab in val_items], device=device)
 
     n_features = xv.shape[-1]
-    model = GRUClassifier(n_features, n_classes, **cfg.model).to(device)
+    model = build_model(n_features, n_classes, cfg.T, cfg.model).to(device)
     opt = torch.optim.AdamW(model.parameters(), lr=cfg.lr, weight_decay=cfg.weight_decay)
     loss_fn = nn.CrossEntropyLoss(label_smoothing=cfg.label_smoothing)
     use_amp = cfg.amp and device.type == "cuda"
