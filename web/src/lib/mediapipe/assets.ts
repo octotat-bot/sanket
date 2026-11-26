@@ -27,10 +27,11 @@ export async function loadSpec(): Promise<Spec> {
   return (await res.json()) as Spec;
 }
 
-/** Fetch each pinned .task file and check its sha256 against spec/keypoints.json. */
-export async function loadVerifiedModels(spec: Spec): Promise<Record<string, VerifiedModel>> {
+/** Fetch pinned .task files (all, or only `names`) and check each sha256 against spec/keypoints.json. */
+export async function loadVerifiedModels(spec: Spec, names?: string[]): Promise<Record<string, VerifiedModel>> {
   const out: Record<string, VerifiedModel> = {};
   for (const [name, pin] of Object.entries(spec.extractor.models)) {
+    if (names && !names.includes(name)) continue;
     const res = await fetch(`/models/mediapipe/${name}.task`);
     if (!res.ok) throw new Error(`${name}.task: HTTP ${res.status} (run \`make models\`)`);
     const bytes = new Uint8Array(await res.arrayBuffer());

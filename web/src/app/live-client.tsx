@@ -101,7 +101,7 @@ export default function LiveClient({ words }: { words: Word[] }) {
           spec_version: string;
         };
         fsRef.current = featureSpecFrom(specJson);
-        const models = await loadVerifiedModels(spec);
+        const models = await loadVerifiedModels(spec, ["holistic_landmarker"]); // 13.7 MB, the only one used
         const bad = Object.values(models).filter((m) => !m.ok);
         if (bad.length) throw new Error(`MediaPipe model check failed (sha256): ${bad.map((m) => m.name).join(", ")}`);
         const fileset = await loadFileset();
