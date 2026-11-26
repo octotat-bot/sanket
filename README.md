@@ -24,5 +24,11 @@ Trained on **INCLUDE** (Sridhar, Ganesan, Kumar, Khapra; AI4Bharat / IIT Madras;
 [doi:10.1145/3394171.3413528](https://doi.org/10.1145/3394171.3413528)), hosted on
 [Zenodo](https://zenodo.org/records/4010759). Official split files are from
 [AI4Bharat/INCLUDE](https://github.com/AI4Bharat/INCLUDE) (MIT).
-License wording is pending confirmation (see `reports/phase0.md`, discrepancy 1). This project
-is non-commercial.
+The dataset is licensed **CC BY 4.0** (Zenodo record and the `ai4bharat/INCLUDE` Hugging Face card;
+see [ADR 003](docs/decisions/003-dataset-source-of-truth.md)). No dataset videos are in this
+repository or in the deployed app. This project is non-commercial.
+
+## License
+
+Code: [MIT](LICENSE). The INCLUDE dataset and anything derived from it keep the dataset's own
+license and attribution (above).
