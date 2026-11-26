@@ -6,6 +6,7 @@ import { sha256Hex } from "@/lib/bench/stats";
 import { frameForMediaPipe } from "@/lib/frames/downscale";
 import { loadFileset, loadSpec, loadVerifiedModels } from "@/lib/mediapipe/assets";
 import { createHolistic, type StoredFrame, toStoredFrame } from "@/lib/mediapipe/holistic";
+import { REFERENCE_CREDIT } from "@/lib/record/reference";
 import {
   appendFrame,
   buildPlan,
@@ -13,6 +14,7 @@ import {
   CONSENT_VERSION,
   type ClipQuality,
   clipQuality,
+  type Fluency,
   participantId,
   type Prompt,
   type RecordedClip,
@@ -22,10 +24,11 @@ import {
 
 /** Shown to the participant and hashed into the session file (consent.text_sha256). */
 export const CONSENT_TEXT = [
-  "This tool records keypoints only: numbers describing where your body and hands are in each video frame. It does not record or store images, video or audio.",
-  "The keypoints stay on this device until you choose to save the session file and hand it over.",
-  "No name or contact details are recorded. You get a random participant code; keep it if you might want your data deleted later.",
-  "The recordings are used to measure how well the Sanket ISL word recognizer works on real webcams. Results may be published only as aggregate numbers.",
+  "You must be 18 or older to take part.",
+  "This tool records keypoints only: numbers describing where your body and hands are in each video frame. No video, images or audio are recorded or stored.",
+  "Your keypoints are used only to measure how accurately the Sanket ISL word recognizer works on real webcams, and for nothing else.",
+  "Your keypoint files are kept private by the project and are never published or shared. Only overall accuracy numbers, combined across all participants, may appear in the project's results.",
+  "No name or contact details are recorded. After you agree, you get a random participant code. Write it down: to withdraw later, send the code to Mukund and every recording with that code is deleted.",
   "Taking part is voluntary. You can stop at any time, and anything not saved is discarded.",
 ].join("\n");
 
@@ -59,6 +62,9 @@ export default function RecordClient() {
 
   const [phase, setPhase] = useState<Phase>("consent");
   const [agreed, setAgreed] = useState(false);
+  const [adult, setAdult] = useState(false);
+  const [fluency, setFluency] = useState<Fluency | null>(null);
+  const [referenceOk, setReferenceOk] = useState<boolean | null>(null);
   const [takes, setTakes] = useState(2);
   const [noSign, setNoSign] = useState(10);
   const [seconds, setSeconds] = useState(3);
@@ -177,6 +183,8 @@ export default function RecordClient() {
       metaRef.current = {
         session_id: randomId("S-"),
         participant_id: id,
+        participant: { adult_confirmed: true, fluent_isl_signer: fluency ?? "not_stated" },
+        reference_clips: "none", // set from an actual check when the session starts
         consent: {
           version: CONSENT_VERSION,
           accepted_at: consentAt,
@@ -200,6 +208,11 @@ export default function RecordClient() {
 
   async function startSession() {
     const vocab = (await (await fetch("/spec/vocab_include50.json")).json()).words as Word[];
+    // Reference clips exist only on the dev server, after `make reference-clips` (never deployed).
+    const probe = await fetch(`/dev/reference/${vocab[0].label}`, { method: "HEAD" }).catch(() => null);
+    const available = !!probe && probe.ok;
+    setReferenceOk(available);
+    if (metaRef.current) metaRef.current.reference_clips = available ? "include50_train_local" : "none";
     const seed = crypto.getRandomValues(new Uint32Array(1))[0];
     setPlan(buildPlan(vocab, takes, noSign, seed));
     setIndex(0);
@@ -327,9 +340,28 @@ export default function RecordClient() {
             participant code, so your recordings can&apos;t be linked to your name.
           </p>
           <label className="flex items-center gap-2 font-medium">
+            <input type="checkbox" checked={adult} onChange={(e) => setAdult(e.target.checked)} />
+            I am 18 or older
+          </label>
+          <label className="flex items-center gap-2 font-medium">
             <input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} />
             I have read this and agree to take part
           </label>
+          <fieldset className="flex flex-col gap-1">
+            <legend className="font-medium">Are you a fluent ISL signer?</legend>
+            {(
+              [
+                ["yes", "Yes"],
+                ["no", "No"],
+                ["not_stated", "Prefer not to say"],
+              ] as const
+            ).map(([value, label]) => (
+              <label key={value} className="flex items-center gap-2">
+                <input type="radio" name="fluency" checked={fluency === value} onChange={() => setFluency(value)} />
+                {label}
+              </label>
+            ))}
+          </fieldset>
           <div className="flex flex-wrap gap-4 text-sm">
             {(
               [
@@ -353,7 +385,7 @@ export default function RecordClient() {
           </div>
           <button
             type="button"
-            disabled={!agreed}
+            disabled={!agreed || !adult || fluency === null}
             onClick={() => void begin()}
             className="self-start rounded-md bg-zinc-900 px-4 py-2 font-medium text-white disabled:opacity-40 dark:bg-zinc-100 dark:text-zinc-900"
           >
@@ -404,6 +436,27 @@ export default function RecordClient() {
           ) : (
             <p className="text-2xl font-semibold" data-testid="prompt">
               No sign: {prompt.display}
+            </p>
+          )}
+          {prompt.kind === "sign" && referenceOk && (
+            <figure className="flex flex-col gap-1">
+              {/* Dev only: INCLUDE train clip from the local cache (never in the deployed app). */}
+              <video
+                key={prompt.label}
+                src={`/dev/reference/${prompt.label}`}
+                autoPlay
+                loop
+                muted
+                playsInline
+                className="w-full max-w-sm rounded-md bg-black"
+                aria-label={`INCLUDE reference clip for ${prompt.display}`}
+              />
+              <figcaption className="text-xs text-zinc-500">{REFERENCE_CREDIT}</figcaption>
+            </figure>
+          )}
+          {prompt.kind === "sign" && referenceOk === false && (
+            <p className="text-sm text-zinc-500">
+              No reference clip: they exist only on the dev server after <code>make reference-clips</code>.
             </p>
           )}
           {clipState === "countdown" && <p className="text-5xl font-bold">{countdown}</p>}

@@ -57,6 +57,11 @@ test("consent first, then record, accept and save a keypoints-only session file"
   await page.getByLabel("No-sign clips").fill("1");
   await page.getByLabel("Seconds per clip").fill("2");
   await page.getByLabel("I have read this and agree to take part").check();
+  await expect(start).toBeDisabled(); // 18+ and the fluency question are also required
+  await page.getByLabel("I am 18 or older").check();
+  await expect(start).toBeDisabled();
+  await page.getByLabel("No", { exact: true }).check(); // fluent ISL signer? No
+  await expect(start).toBeEnabled();
   await start.click();
 
   await expect(page.getByRole("status")).toContainText("ready", { timeout: 120_000 });
@@ -81,7 +86,15 @@ test("consent first, then record, accept and save a keypoints-only session file"
   expect(clip.t_ms.length).toBeGreaterThan(10);
   expect(clip.t_ms[0]).toBe(0);
   expect(file.consent.version).toBe("1");
+  expect(file.participant).toEqual({ adult_confirmed: true, fluent_isl_signer: "no" });
+  expect(file.reference_clips).toBe("none"); // production build: no reference clips
   expect(file.consent.text_sha256).toMatch(/^[0-9a-f]{64}$/);
   expect(JSON.stringify(file)).not.toMatch(/data:image|data:video|base64/);
   expect(completedForeign).toEqual([]); // nothing left the device
+});
+
+test("INCLUDE reference clips are never served by the production build", async ({ request }) => {
+  for (const label of ["hello", "bird", "notaword"]) {
+    expect((await request.get(`/dev/reference/${label}`)).status()).toBe(404);
+  }
 });

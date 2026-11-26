@@ -34,6 +34,8 @@ def session(n_frames: int = 12) -> dict[str, Any]:
         "format": "sanket-recording-v1",
         "session_id": "S-ABC234",
         "participant_id": "P-ABC234",
+        "participant": {"adult_confirmed": True, "fluent_isl_signer": "no"},
+        "reference_clips": "include50_train_local",
         "consent": {
             "version": "1",
             "accepted_at": "2026-11-25T10:00:00.000Z",
@@ -59,6 +61,7 @@ def test_valid_session_converts_to_the_stored_layout(tmp_path: Path) -> None:
     assert d["frame_size"].tolist() == [640, 480] and int(d["label_id"]) == 22
     meta = json.loads(str(d["meta"]))
     assert meta["participant_id"] == "P-ABC234" and "name" not in meta
+    assert meta["fluent_isl_signer"] == "no" and meta["reference_clips"] == "include50_train_local"
     # Flows through the same feature code as INCLUDE keypoints.
     x = clip_to_model_input(d, FeatureSpec.from_spec(), T=16)
     assert x.shape == (16, FeatureSpec.from_spec().n_features) and np.isfinite(x).all()
@@ -72,6 +75,9 @@ def test_valid_session_converts_to_the_stored_layout(tmp_path: Path) -> None:
         (lambda s: s["clips"][0].update(t_ms=[0, 5, 3] + [10] * 9), "t_ms not increasing"),
         (lambda s: s["clips"][0].update(pose=[[[0.5] * 4] * 24] * 12), "pose shape"),
         (lambda s: s.pop("consent"), "missing consent"),
+        (lambda s: s["participant"].update(adult_confirmed=False), "participant.adult_confirmed"),
+        (lambda s: s["participant"].pop("fluent_isl_signer"), "participant.fluent_isl_signer"),
+        (lambda s: s.update(reference_clips="youtube"), "reference_clips"),
     ],
 )
 def test_invalid_sessions_are_rejected(mutate: Any, error: str, tmp_path: Path) -> None:

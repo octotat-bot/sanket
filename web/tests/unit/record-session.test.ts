@@ -50,6 +50,8 @@ const emptyClip = (kind: "sign" | "no_sign" = "sign"): RecordedClip => ({
 const meta: SessionMeta = {
   session_id: "S-TEST",
   participant_id: "P-ABC234",
+  participant: { adult_confirmed: true, fluent_isl_signer: "no" },
+  reference_clips: "include50_train_local",
   consent: { version: "1", accepted_at: "2026-11-25T10:00:00.000Z", text_sha256: "x".repeat(64) },
   created_at: "2026-11-25T10:00:00.000Z",
   app: { commit: null, user_agent: "test" },
@@ -115,7 +117,22 @@ describe("session file", () => {
     const errs = validateSession(bad as unknown as Record<string, unknown>, recSpec);
     expect(errs).toContain("participant_id");
     expect(errs.some((e) => e.includes("t_ms"))).toBe(true);
+    const minor = { ...file, participant: { adult_confirmed: false, fluent_isl_signer: "no" } };
+    expect(validateSession(minor as unknown as Record<string, unknown>, recSpec)).toContain("participant.adult_confirmed");
+    const noFluency = { ...file, participant: { adult_confirmed: true } };
+    expect(validateSession(noFluency as unknown as Record<string, unknown>, recSpec)).toContain("participant.fluent_isl_signer");
     const withImage = { ...file, image: "data:..." };
     expect(validateSession(withImage as unknown as Record<string, unknown>, recSpec)).toContain("forbidden key image");
+  });
+});
+
+describe("reference clips (dev only)", async () => {
+  const { referenceFileName } = await import("@/lib/record/reference");
+  const labels = vocab.map((w) => w.label);
+  it("maps known labels to cache files and rejects anything else", () => {
+    expect(referenceFileName("hello", labels)).toBe("hello.mp4");
+    for (const bad of ["../../etc/passwd", "hello.mp4", "Hello", "notaword", ""]) {
+      expect(referenceFileName(bad, labels)).toBeNull();
+    }
   });
 });

@@ -13,7 +13,9 @@
     "model_sha256",
     "delegate",
     "extract_height",
-    "clips"
+    "clips",
+    "participant",
+    "reference_clips"
   ],
   "consent_required": [
     "version",
@@ -77,6 +79,24 @@
     "frame_size": "size of the image MediaPipe processed (always 480 rows, ADR 007)",
     "camera_size": "size the camera delivered, logged only",
     "t_ms": "milliseconds from the clip's first frame, strictly increasing",
-    "left/right": "the signer's own hands (unmirrored frames; the preview is mirrored for display only)"
-  }
+    "left/right": "the signer's own hands (unmirrored frames; the preview is mirrored for display only)",
+    "participant": "adult_confirmed must be true (18+ only). fluent_isl_signer separates fluent signers from non-native imitators in every report.",
+    "reference_clips": "include50_train_local = INCLUDE train clips were shown from the local cache (dev server only); none = no reference shown.",
+    "consent": "version 1 is the first version used with participants (no session was recorded with earlier drafts)."
+  },
+  "participant_required": {
+    "adult_confirmed": [
+      true
+    ],
+    "fluent_isl_signer": [
+      "yes",
+      "no",
+      "not_stated"
+    ]
+  },
+  "reference_clips": [
+    "include50_train_local",
+    "none"
+  ],
+  "test_set_label": "non-native signers imitating INCLUDE references"
 }

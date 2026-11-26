@@ -117,9 +117,15 @@ export function clipQuality(c: RecordedClip): ClipQuality {
 
 const round = (x: number, d: number) => Math.round(x * 10 ** d) / 10 ** d;
 
+export type Fluency = "yes" | "no" | "not_stated";
+
 export interface SessionMeta {
   session_id: string;
   participant_id: string;
+  /** 18+ only; fluent_isl_signer splits fluent signers from non-native imitators in reports. */
+  participant: { adult_confirmed: true; fluent_isl_signer: Fluency };
+  /** "include50_train_local": INCLUDE train clips were shown from the local cache (dev server). */
+  reference_clips: "include50_train_local" | "none";
   consent: { version: string; accepted_at: string; text_sha256: string };
   created_at: string;
   app: { commit: string | null; user_agent: string };
@@ -155,6 +161,8 @@ export interface RecordingSpec {
   shapes: Record<string, [number, number]>;
   participant_id_pattern: string;
   forbidden_keys: string[];
+  participant_required: Record<string, unknown[]>;
+  reference_clips: string[];
 }
 
 /** Errors (empty = valid). Mirrors ml/src/sanket/data/recorded.py `validate_session`. */
@@ -165,6 +173,10 @@ export function validateSession(s: Record<string, unknown>, spec: RecordingSpec)
   if (s.format !== spec.format) errs.push(`format ${String(s.format)}`);
   for (const k of spec.session_required) if (!(k in s)) errs.push(`missing ${k}`);
   if (!new RegExp(spec.participant_id_pattern).test(String(s.participant_id))) errs.push("participant_id");
+  const participant = (s.participant ?? {}) as Record<string, unknown>;
+  for (const [k, allowed] of Object.entries(spec.participant_required))
+    if (!allowed.includes(participant[k])) errs.push(`participant.${k}`);
+  if (!spec.reference_clips.includes(String(s.reference_clips))) errs.push("reference_clips");
   const consent = (s.consent ?? {}) as Record<string, unknown>;
   for (const k of spec.consent_required) if (!(k in consent)) errs.push(`consent.${k}`);
   const clips = (s.clips ?? []) as Record<string, unknown>[];

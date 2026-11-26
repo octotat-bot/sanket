@@ -38,6 +38,14 @@ def validate_session(s: dict[str, Any], spec: dict[str, Any]) -> list[str]:
     errs += [f"missing {k}" for k in spec["session_required"] if k not in s]
     if not re.fullmatch(spec["participant_id_pattern"].strip("^$"), str(s.get("participant_id"))):
         errs.append("participant_id")
+    participant = s.get("participant") or {}
+    errs += [
+        f"participant.{k}"
+        for k, allowed in spec["participant_required"].items()
+        if participant.get(k) not in allowed
+    ]
+    if s.get("reference_clips") not in spec["reference_clips"]:
+        errs.append("reference_clips")
     consent = s.get("consent") or {}
     errs += [f"consent.{k}" for k in spec["consent_required"] if k not in consent]
     for i, c in enumerate(s.get("clips") or []):
@@ -99,8 +107,10 @@ def convert(path: Path, out_root: Path = OUT) -> list[Path]:
                 "spec_version",
                 "mediapipe_version",
                 "delegate",
+                "reference_clips",
             )
         }
+        meta["fluent_isl_signer"] = s["participant"]["fluent_isl_signer"]
         dest = out_dir / f"{c['clip_id']}.npz"
         payload: dict[str, Any] = {
             "meta": np.array(json.dumps(meta, sort_keys=True)),
