@@ -70,10 +70,29 @@ def fit_temperature(logits: np.ndarray, labels: np.ndarray) -> float:
         logp = z - np.log(np.exp(z).sum(axis=1, keepdims=True))
         return float(-logp[np.arange(len(labels)), labels].mean())
 
-    grid = np.exp(np.linspace(np.log(0.25), np.log(8.0), 61))
+    grid = np.exp(np.linspace(np.log(GRID[0]), np.log(GRID[1]), 61))
     best = float(min(grid, key=nll))
     fine = np.linspace(best / 1.06, best * 1.06, 41)
     return round(float(min(fine, key=nll)), 4)
+
+
+GRID = (0.25, 8.0)
+
+
+def calibrate(logits: np.ndarray, labels: np.ndarray) -> dict[str, Any]:
+    """Fitted temperature, or 1.0 with the reason when a fit would be meaningless: with no val
+    errors the likelihood keeps improving as T → 0, so the optimum sits at the grid's lower edge
+    and would make every live prediction look certain (rejection would never fire)."""
+    errors = int((logits.argmax(1) != labels).sum())
+    t = fit_temperature(logits, labels)
+    if errors == 0 or not (GRID[0] * 1.06 < t < GRID[1] / 1.06):
+        return {
+            "temperature": 1.0,
+            "fitted": False,
+            "reason": f"degenerate fit (val errors: {errors}, optimum {t} at the grid edge)",
+            "val_errors": errors,
+        }
+    return {"temperature": t, "fitted": True, "val_errors": errors}
 
 
 def run_onnx(path: Path, x: np.ndarray, batch: int = 64) -> np.ndarray:
@@ -154,8 +173,9 @@ def main() -> None:
     yv = np.array([it.label_id for it in vix.items])
     with torch.no_grad():
         val_logits = model(torch.tensor(xv.astype(np.float32))).numpy()
-    temperature = fit_temperature(val_logits, yv)
-    report["calibration"] = {"temperature": temperature, "fit_on": "val", "n": len(yv)}
+    cal = calibrate(val_logits, yv)
+    temperature = cal["temperature"]
+    report["calibration"] = {**cal, "fit_on": "val", "n": len(yv)}
 
     git_sha = (args.run_dir / "git_sha.txt").read_text().strip()
     spec = load_spec()

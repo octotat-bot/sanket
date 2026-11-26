@@ -67,3 +67,15 @@ def test_temperature_fit_recovers_a_known_temperature() -> None:
     # A model that is 3x overconfident: its logits are 3x the calibrated ones.
     assert abs(fit_temperature(true_logits * 3, y) - 3) < 0.25
     assert abs(fit_temperature(true_logits, y) - 1) < 0.1
+
+
+def test_calibration_refuses_a_degenerate_fit_on_a_perfect_val_set() -> None:
+    from sanket.export.onnx_export import calibrate
+
+    rng = np.random.default_rng(0)
+    y = rng.integers(0, 5, 200)
+    logits = rng.normal(size=(200, 5))
+    logits[np.arange(200), y] += 10  # every val prediction correct
+    assert (logits.argmax(1) == y).all()
+    c = calibrate(logits, y)
+    assert c["temperature"] == 1.0 and not c["fitted"] and c["val_errors"] == 0
