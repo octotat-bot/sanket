@@ -5,7 +5,7 @@ import re
 
 from sanket.paths import REPO_ROOT
 
-NB = REPO_ROOT / "ml" / "notebooks" / "kaggle_include50_gru.ipynb"
+NB = REPO_ROOT / "ml" / "notebooks" / "kaggle_include50.ipynb"
 
 
 def cells() -> list[dict]:  # type: ignore[type-arg]
@@ -24,8 +24,8 @@ def test_notebook_calls_src_and_uses_an_existing_config() -> None:
     src = "".join("".join(c["source"]) for c in cells())
     assert "sanket.train" in src and "sanket.evaluate" in src
     assert "--group train" in src and "uv sync --locked" in src
-    config = re.search(r'CONFIG = "([^"]+)"', src)
-    assert config and (REPO_ROOT / "ml" / config.group(1)).exists()
+    configs = re.findall(r'"(configs/[^"]+\.yaml)"', src)
+    assert configs and all((REPO_ROOT / "ml" / c).exists() for c in configs), configs
     assert "GIT_SHA" in src  # every run traces to a commit
 
 

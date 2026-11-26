@@ -282,3 +282,4 @@ logged here in one line each.
 - Live e2e uses a tiny **untrained** fixture model (`web/tests/fixtures/model`, `sanket.export.fixture`) routed in place of `/models/include50.*`: page warms up, camera runs, no foreign requests, label-drift guard refuses a mismatched model. 6/6 on repeat locally; one earlier local run reported "camera in use" and didn't reproduce.
 - Recorder e2e frame-count check lowered to ≥ 3 (the GPU-less CI runner recorded 6 frames in 3 s).
 - Export fits a softmax temperature on INCLUDE-50 **val** (NLL grid search, tested to recover a known temperature) and writes it with the rejection thresholds into `<name>.labels.json`; the app uses it.
+- Kaggle notebook renamed `ml/notebooks/kaggle_include50.ipynb`: trains the GRU baseline, then the Transformer, in one T4 session (both resumable), evaluates both on val and test, and deletes the code checkout so the output is only `runs/`.
