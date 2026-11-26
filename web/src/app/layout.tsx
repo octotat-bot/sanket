@@ -1,30 +1,21 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Atkinson_Hyperlegible_Next, Bricolage_Grotesque } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+// Self-hosted by next/font at build time: served from our own origin (CSP connect-src 'self').
+const display = Bricolage_Grotesque({ variable: "--font-display", subsets: ["latin"] });
+const body = Atkinson_Hyperlegible_Next({ variable: "--font-body", subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Sanket: real-time ISL word recognition",
+  title: "Sanket: real-time ISL word recognition in your browser",
   description:
-    "Isolated Indian Sign Language word recognition that runs entirely in your browser. Work in progress.",
+    "Sign an Indian Sign Language word to your webcam and see it recognised live. Runs entirely on your device: no video leaves the browser.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
-      <body className="min-h-full flex flex-col">{children}</body>
+    <html lang="en" className={`${display.variable} ${body.variable} h-full antialiased`}>
+      <body className="flex min-h-full flex-col">{children}</body>
     </html>
   );
 }

@@ -1,0 +1,84 @@
+{
+ "labels": [
+  "bank",
+  "biglarge",
+  "bird",
+  "black",
+  "boy",
+  "brother",
+  "car",
+  "cellphone",
+  "court",
+  "cow",
+  "death",
+  "dog",
+  "dry",
+  "election",
+  "fall",
+  "fan",
+  "father",
+  "girl",
+  "good",
+  "goodmorning",
+  "happy",
+  "hat",
+  "hello",
+  "hot",
+  "house",
+  "i",
+  "it",
+  "long",
+  "loud",
+  "monday",
+  "new",
+  "paint",
+  "pen",
+  "priest",
+  "quiet",
+  "red",
+  "shoes",
+  "short",
+  "smalllittle",
+  "storeorshop",
+  "summer",
+  "teacher",
+  "thankyou",
+  "time",
+  "trainticket",
+  "tshirt",
+  "white",
+  "window",
+  "year",
+  "youplural"
+ ],
+ "labels_sha256": "572dda29ef10ff0061ec2a68338d624bb7b252321bdf1449d5dff030bae6e81e",
+ "dataset": "include50",
+ "input": {
+  "name": "x",
+  "shape": [
+   "batch",
+   64,
+   193
+  ],
+  "dtype": "float32"
+ },
+ "output": {
+  "name": "logits",
+  "shape": [
+   "batch",
+   50
+  ]
+ },
+ "T": 64,
+ "use_velocity": false,
+ "spec_version": "0.7.0",
+ "arch": "untrained-test-fixture",
+ "files": {
+  "fp32": "include50.fp32.onnx",
+  "int8": "include50.int8.onnx"
+ },
+ "sha256": {
+  "include50.fp32.onnx": "18c860551e5d3b7cb237c25ec0162ede48f7d1e8707336ec08107ec989016e6f",
+  "include50.int8.onnx": "d3da8930dfc837b38ff4d8a752b9157341a2c022aa462ebc61ecf2e2700aebe3"
+ }
+}

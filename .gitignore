@@ -24,6 +24,7 @@ runs/
 checkpoints/
 *.onnx
 !web/public/models/**/*.onnx
+!web/tests/fixtures/model/*.onnx
 
 # Local env
 .env*
