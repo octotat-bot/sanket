@@ -22,7 +22,9 @@ def test_table_is_built_only_from_result_files(tmp_path: Path) -> None:
     (run / "eval_val.json").write_text(json.dumps({**ev, "top1": 0.5}))
     (run / "config.yaml").write_text(yaml.safe_dump({"train": {"model": {"arch": "gru"}}}))
     (run / "git_sha.txt").write_text("abc1234def\n")
+    (run / "environment.json").write_text(json.dumps({"hardware": "Apple M3 Pro CPU"}))
     runs = load_runs(tmp_path / "runs")
     md = table(runs, {})
     assert "75.0%" in md and "50.0%" in md and "n = 4" in md and "94.5%" in md
+    assert "Apple M3 Pro CPU" in md
     assert BEGIN not in md and END not in md

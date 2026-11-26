@@ -25,7 +25,14 @@ REPORTS = REPO_ROOT / "reports"
 README = REPO_ROOT / "README.md"
 BEGIN, END = "<!-- results:begin -->", "<!-- results:end -->"
 PAPER_INCLUDE50_TOP1 = 0.945  # Sridhar et al. 2020, best INCLUDE-50 result (CLAUDE.md section 3)
-RUN_FILES = ("eval_test.json", "eval_val.json", "config.yaml", "git_sha.txt", "history.json")
+RUN_FILES = (
+    "eval_test.json",
+    "eval_val.json",
+    "config.yaml",
+    "git_sha.txt",
+    "history.json",
+    "environment.json",
+)
 
 
 def bootstrap_ci(correct: list[int], n_boot: int = 10_000, seed: int = 0) -> tuple[float, float]:
@@ -54,6 +61,9 @@ def load_runs(runs_dir: Path) -> list[dict[str, Any]]:
                 "val": val,
                 "ci": bootstrap_ci(test["correct"]),
                 "git_sha": (d / "git_sha.txt").read_text().strip(),
+                "hardware": json.loads((d / "environment.json").read_text())["hardware"]
+                if (d / "environment.json").exists()
+                else "unknown",
             }
         )
     return out
@@ -61,14 +71,15 @@ def load_runs(runs_dir: Path) -> list[dict[str, Any]]:
 
 def table(runs: list[dict[str, Any]], exports: dict[str, dict[str, Any]]) -> str:
     rows = [
-        "| Model | INCLUDE-50 test top-1 (95% CI) | top-5 | val top-1 | Session-independent | "
-        "Real-webcam | Paper (best) |",
-        "|---|---|---|---|---|---|---|",
+        "| Model | Trained on | INCLUDE-50 test top-1 (95% CI) | top-5 | val top-1 | "
+        "Session-independent | Real-webcam | Paper (best) |",
+        "|---|---|---|---|---|---|---|---|",
     ]
     for r in runs:
         lo, hi = r["ci"]
         rows.append(
-            f"| {r['arch']} (`{r['name']}`) | {pct(r['test']['top1'])} ({pct(lo)} to {pct(hi)}), "
+            f"| {r['arch']} (`{r['name']}`) | {r['hardware']} | "
+            f"{pct(r['test']['top1'])} ({pct(lo)} to {pct(hi)}), "
             f"n = {r['test']['n']} | {pct(r['test']['top5'])} | {pct(r['val']['top1'])} | "
             f"not measured | not measured | {pct(PAPER_INCLUDE50_TOP1)} |"
         )

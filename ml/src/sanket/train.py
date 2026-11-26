@@ -13,8 +13,10 @@
 """
 
 import argparse
+import contextlib
 import json
 import math
+import platform
 import random
 import subprocess
 from collections.abc import Callable, Sequence
@@ -95,6 +97,31 @@ def featurize(
     return clip_to_model_input(clip, fs, use_velocity=cfg.use_velocity, T=cfg.T)
 
 
+def hardware_name(device: torch.device) -> str:
+    """What the run trained on, e.g. "Apple M3 Pro CPU" or "Tesla T4" (for the results table)."""
+    if device.type == "cuda":
+        return torch.cuda.get_device_name(device)
+    cpu = platform.processor() or platform.machine()
+    if platform.system() == "Darwin":
+        with contextlib.suppress(OSError):
+            brand = subprocess.run(
+                ["sysctl", "-n", "machdep.cpu.brand_string"], capture_output=True, text=True
+            ).stdout.strip()
+            cpu = brand or cpu
+    return f"{cpu} CPU"
+
+
+def environment(device: torch.device) -> dict[str, Any]:
+    return {
+        "hardware": hardware_name(device),
+        "device": str(device),
+        "torch": torch.__version__,
+        "python": platform.python_version(),
+        "platform": platform.platform(),
+        "threads": torch.get_num_threads(),
+    }
+
+
 def _git_sha() -> str:
     try:
         return subprocess.run(
@@ -157,6 +184,7 @@ def train(
     else:
         (run_dir / "config.yaml").write_text(yaml.safe_dump({"train": asdict(cfg)}, sort_keys=True))
         (run_dir / "git_sha.txt").write_text(_git_sha() + "\n")
+        (run_dir / "environment.json").write_text(json.dumps(environment(device), indent=1) + "\n")
     log(f"model: {n_parameters(model):,} parameters, {n_features} features, device {device}")
 
     writer = SummaryWriter(log_dir=str(run_dir / "tb"))
