@@ -274,6 +274,6 @@ logged here in one line each.
   accuracy measurement only (so no fine-tuning on this data), private and never published, withdrawal by code.
 - Repo public at github.com/octotat-bot/sanket; MIT license for code (dataset keeps CC BY 4.0).
 - From 2026-11-26 all work is committed and pushed straight to `main` (Mukund's call); no branches or PRs unless asked.
-- INCLUDE-50 extraction downloads the next video in a background thread while MediaPipe processes the current one (~2× faster; per-video code unchanged, network failure test added).
+- INCLUDE-50 extraction downloads 4 videos in parallel (Zenodo caps each connection at ~0.55 MB/s, measured; 3 parallel connections each kept that rate) while MediaPipe processes them in order (~1.3 s/video). Per-video code unchanged; network-failure test added.
 - Transformer (`ml/src/sanket/models/transformer.py`, `configs/transformer_include50.yaml`): CLS token, learned positions, 4 pre-norm layers, d=128, 4 heads (570,292 params vs the GRU's 533,172; measured); same data/augmentations/schedule family as the GRU so the rows compare models. `model.arch` picks the class.
 - ONNX export (`make export-onnx`): TorchScript exporter (`dynamo=False`, opset 17; the dynamo path would need onnxscript, a new dependency), dynamic batch, fixed T; dynamic int8 via onnxruntime; parity tests 1–2 on the test split → `reports/export_<name>.json`; `<name>.labels.json` carries labels + sha256 for the web app's label check.

@@ -17,18 +17,18 @@ Edge cases (CLAUDE.md section 8):
 """
 
 import argparse
-import contextlib
+import collections
 import hashlib
 import io
 import json
 import math
 import platform
-import queue
 import subprocess
 import tempfile
 import threading
 import time
 import zipfile
+from concurrent.futures import Future, ThreadPoolExecutor
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
@@ -286,10 +286,13 @@ def process_remote(
     guard: DiskGuard,
     base_meta: dict[str, Any],
     log: Any,
+    workers: int = 4,
 ) -> dict[str, int]:
-    """Only `names` from a remote zip, each pulled by HTTP Range (CRC-checked). The next video
-    downloads in a background thread while the current one is processed; all zip reads happen in
-    that thread, all MediaPipe work in this one. Network errors propagate (the run stops and
+    """Only `names` from a remote zip, each pulled by HTTP Range (CRC-checked).
+
+    Zenodo caps each connection (~0.5-1 MB/s measured 2026-11-26) but not the total, so `workers`
+    threads download the next videos in parallel, each through its own ZipFile, while this thread
+    runs MediaPipe on them one at a time, in order. Network errors propagate (the run stops and
     resumes later from the .npz files already written)."""
     counts = {"ok": 0, "error": 0, "skipped": 0, "review": 0}
     todo = []
@@ -298,41 +301,46 @@ def process_remote(
             counts["skipped"] += 1
         else:
             todo.append(name)
-    q: queue.Queue[tuple[str, bytes] | BaseException | None] = queue.Queue(maxsize=1)
-    stop = threading.Event()
+    if not todo:
+        return counts
 
-    def producer() -> None:
-        try:
-            reader = io.BufferedReader(remote_zip.RangeReader(size, fetch), buffer_size=1 << 16)
-            with zipfile.ZipFile(reader) as zf:
-                for name in todo:
-                    if stop.is_set():
-                        return
-                    info = zf.getinfo(name)
-                    guard.check(about_to_write=info.file_size)
-                    q.put((name, zf.read(info)))
-            q.put(None)
-        except BaseException as e:  # handed to the main thread, which re-raises it
-            q.put(e)
+    local = threading.local()
 
-    t = threading.Thread(target=producer, name=f"fetch-{zip_key}", daemon=True)
-    t.start()
+    def open_zip() -> zipfile.ZipFile:
+        reader = io.BufferedReader(remote_zip.RangeReader(size, fetch), buffer_size=1 << 16)
+        return zipfile.ZipFile(reader)
+
+    def download(name: str) -> bytes:
+        if not hasattr(local, "zf"):  # zipfile objects are not thread-safe: one per worker
+            local.zf = open_zip()
+        data: bytes = local.zf.read(name)
+        return data
+
+    index = open_zip()  # sizes for the disk guard
+    pending: collections.deque[tuple[str, Future[bytes]]] = collections.deque()
+    queue_names = iter(todo)
+    pool = ThreadPoolExecutor(max_workers=workers, thread_name_prefix=f"fetch-{zip_key}")
+
+    def submit_next() -> None:
+        name = next(queue_names, None)
+        if name is not None:
+            guard.check(about_to_write=index.getinfo(name).file_size * (len(pending) + 1))
+            pending.append((name, pool.submit(download, name)))
+
     try:
         with tempfile.TemporaryDirectory(dir=cfg.raw_dir) as tmpd:
-            while (item := q.get()) is not None:
-                if isinstance(item, BaseException):
-                    raise item
-                name, data = item
+            for _ in range(workers + 1):
+                submit_next()
+            while pending:
+                name, fut = pending.popleft()
+                data = fut.result()  # re-raises the worker's network error
+                submit_next()
                 status = process_video(
                     name, data, zip_key, cfg, make_extractor, base_meta, Path(tmpd), log
                 )
                 _count(counts, status)
     finally:
-        stop.set()
-        while t.is_alive():  # unblock a producer waiting on a full queue
-            with contextlib.suppress(queue.Empty):
-                q.get_nowait()
-            t.join(timeout=0.1)
+        pool.shutdown(wait=True, cancel_futures=True)
     return counts
 
 
