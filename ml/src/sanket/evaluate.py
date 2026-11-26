@@ -39,6 +39,9 @@ def topk_metrics(logits: np.ndarray, labels: np.ndarray, n_classes: int) -> dict
         "top1": float(top1.mean()),
         "top5": float(top5.mean()),
         "per_class": per_class,
+        "correct": [int(v) for v in top1],  # per sample, in split order: for bootstrap CIs
+        "pred": [int(v) for v in order[:, 0]],
+        "label": [int(v) for v in labels],
     }
 
 
