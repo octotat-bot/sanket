@@ -86,3 +86,48 @@ def test_guard_counts_planned_writes(monkeypatch: pytest.MonkeyPatch, tmp_path: 
     assert g.check(about_to_write=1 * GB) == 12 * GB
     with pytest.raises(LowDiskSpace):
         g.check(about_to_write=3 * GB)
+
+
+def test_many_failures_with_progress_still_complete(tmp_path: Path) -> None:
+    """The failure that killed the first full run: intermittent errors during a long download."""
+    calls: list[int] = []
+
+    def flaky(url: str, start: int) -> Iterator[bytes]:
+        calls.append(start)
+        yield PAYLOAD[start : start + 1000]  # a little progress every attempt...
+        if start + 1000 < len(PAYLOAD):
+            raise TimeoutError("The read operation timed out")  # ...then a drop
+
+    out = download(
+        REMOTE, tmp_path, plenty(tmp_path), stream=flaky, sleep=lambda s: None, log=lambda m: None
+    )
+    assert out.read_bytes() == PAYLOAD
+    assert len(calls) > 20  # far more than the old limit of 5 retries
+
+
+def test_gives_up_only_after_max_stall_without_progress(tmp_path: Path) -> None:
+    t = [0.0]
+
+    def dead(url: str, start: int) -> Iterator[bytes]:
+        raise TimeoutError("down")
+        yield b""  # pragma: no cover
+
+    waits: list[float] = []
+
+    def sleep(s: float) -> None:
+        waits.append(s)
+        t[0] += s
+
+    with pytest.raises(TimeoutError):
+        download(
+            REMOTE,
+            tmp_path,
+            plenty(tmp_path),
+            stream=dead,
+            sleep=sleep,
+            log=lambda m: None,
+            clock=lambda: t[0],
+            max_stall_s=600,
+        )
+    assert 600 < t[0] <= 600 + 120  # waited out the stall budget, not a fixed retry count
+    assert max(waits) == 120  # backoff capped

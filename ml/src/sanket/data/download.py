@@ -54,10 +54,14 @@ def download(
     dest_dir: Path,
     guard: DiskGuard,
     stream: Streamer = http_stream,
-    retries: int = 5,
+    max_stall_s: float = 3600.0,
     sleep: Callable[[float], None] = time.sleep,
     log: Callable[[str], None] = print,
+    clock: Callable[[], float] = time.monotonic,
 ) -> Path:
+    """Survives outages (Wi-Fi drops, the Mac sleeping): retries with backoff (2, 4, ... capped at
+    120 s) for as long as bytes keep arriving, and gives up only after `max_stall_s` seconds with
+    no progress at all. The failure count resets whenever a retry made progress."""
     dest_dir.mkdir(parents=True, exist_ok=True)
     final = dest_dir / remote.key
     if final.exists() and final.stat().st_size == remote.size and md5_of(final) == remote.md5:
@@ -67,8 +71,12 @@ def download(
 
     for _full_pass in range(2):  # a second full pass only after a checksum mismatch
         failures = 0
+        last_progress_t = clock()
+        last_size = part.stat().st_size if part.exists() else 0
         while True:
             have = part.stat().st_size if part.exists() else 0
+            if have > last_size:  # progress since the last failure: reset the stall clock
+                last_size, last_progress_t, failures = have, clock(), 0
             if have > remote.size:
                 part.unlink()  # corrupt / foreign partial: start over
                 have = 0
@@ -84,11 +92,16 @@ def download(
                 part.unlink(missing_ok=True)
                 raise
             except (urllib.error.URLError, TimeoutError, ConnectionError, OSError) as e:
-                failures += 1
-                if failures > retries:
+                now_size = part.stat().st_size if part.exists() else 0
+                if now_size > last_size:
+                    last_size, last_progress_t, failures = now_size, clock(), 0
+                stalled = clock() - last_progress_t
+                if stalled > max_stall_s:
+                    log(f"{remote.key}: no progress for {stalled:.0f}s; giving up")
                     raise
-                wait = min(2**failures, 60)
-                log(f"{remote.key}: {e!r}; resuming in {wait}s ({failures}/{retries})")
+                failures += 1
+                wait = min(2**failures, 120)
+                log(f"{remote.key}: {e!r}; resuming in {wait}s (no progress for {stalled:.0f}s)")
                 sleep(wait)
         got = md5_of(part)
         if got == remote.md5:
