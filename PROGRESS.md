@@ -266,3 +266,10 @@ logged here in one line each.
   one from their zips by HTTP Range (CRC-checked), same `process_video` code as the full run, so the
   .npz files are identical (tested against a local zip). ~13 GB instead of 57 GB. The full 44-zip run
   (4 zips done) is stopped and marked in `_runs.jsonl`; its .npz files are kept.
+- `make upload ONLY=include50` checks that every INCLUDE-50 split video has a .npz (no 44-zip requirement).
+- Kaggle notebook: repo URL set, `GIT_SHA` defaults to `phase-1` (the resolved SHA is printed and saved in
+  `git_sha.txt`), cell 5 stops unless the GPU is a T4, and the checks run via subprocess (IPython would
+  substitute `{...}` in `!` lines).
+- Paper consent form (`tools/record/CONSENT.md`) now matches the on-screen text: 18+, keypoints only,
+  accuracy measurement only (so no fine-tuning on this data), private and never published, withdrawal by code.
+- Repo public at github.com/octotat-bot/sanket; MIT license for code (dataset keeps CC BY 4.0).

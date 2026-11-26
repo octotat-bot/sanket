@@ -157,8 +157,22 @@ def test_upload_refuses_incomplete_extraction_or_media(tmp_path: Path) -> None:
     (tmp_path / "a.jpg").write_bytes(b"x")
     with pytest.raises(SystemExit, match="refusing"):
         check_complete(tmp_path)
+    with pytest.raises(SystemExit, match="include50 videos missing"):
+        check_complete(tmp_path, "include50")
     m = metadata("me/ds", "holistic")
     assert m["licenses"] == [{"name": "CC-BY-4.0"}] and "INCLUDE" in str(m["description"])
+
+
+def test_upload_include50_only_needs_every_split_video(tmp_path: Path) -> None:
+    from sanket.data.splits import SPLITS, load_split
+    from sanket.pipeline.upload import check_complete
+
+    for s in SPLITS:
+        for e in load_split("include50", s):
+            p = tmp_path / Path(e).with_suffix(".npz")
+            p.parent.mkdir(parents=True, exist_ok=True)
+            p.write_bytes(b"")
+    check_complete(tmp_path, "include50")  # no _done_zips.txt needed
 
 
 def test_split_index_joins_by_key_and_reports_missing(tmp_path: Path) -> None:

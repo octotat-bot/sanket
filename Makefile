@@ -108,9 +108,9 @@ extract: models  ## download + extract all 44 zips, one at a time (resumable; ab
 extract-include50: models  ## only the 958 INCLUDE-50 videos, pulled per video by HTTP Range (~13 GB, no full zips)
 	$(ML) $(UV) run python -m sanket.pipeline.extract --only include50
 
-upload:  ## upload keypoints as a PRIVATE Kaggle dataset: make upload KAGGLE_DATASET=user/slug
+upload:  ## upload keypoints as a PRIVATE Kaggle dataset: make upload KAGGLE_DATASET=user/slug [ONLY=include50]
 	@test -n "$(KAGGLE_DATASET)" || (echo "set KAGGLE_DATASET=<kaggle-user>/<slug>"; exit 1)
-	$(ML) $(UV) run --group upload python -m sanket.pipeline.upload --dataset $(KAGGLE_DATASET)
+	$(ML) $(UV) run --group upload python -m sanket.pipeline.upload --dataset $(KAGGLE_DATASET) $(if $(ONLY),--only $(ONLY))
 
 clean:
 	rm -rf web/.next web/test-results web/playwright-report ml/.pytest_cache ml/.mypy_cache ml/.ruff_cache
